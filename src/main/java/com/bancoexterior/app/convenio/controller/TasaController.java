@@ -139,9 +139,10 @@ public class TasaController {
 				if(tasa2.getFechaModificacion() != null) {
 					String[] arrOfStr = tasa2.getFechaModificacion().split(" ", 2);
 					tasa2.setFechaModificacion(arrOfStr[0]);
-					tasa2.setMontoTasaCompraString(libreriaUtil.formatNumber(tasa2.getMontoTasaCompra()));
-					tasa2.setMontoTasaVentaString(libreriaUtil.formatNumber(tasa2.getMontoTasaVenta()));
 				}
+				
+				tasa2.setMontoTasaCompraString(libreriaUtil.formatNumber(tasa2.getMontoTasaCompra()));
+				tasa2.setMontoTasaVentaString(libreriaUtil.formatNumber(tasa2.getMontoTasaVenta()));
 			}
 			model.addAttribute(LISTATASAS, listaTasas);
 			

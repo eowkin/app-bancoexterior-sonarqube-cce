@@ -189,6 +189,7 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String aprobacionesConsultasJSON;
 		aprobacionesConsultasJSON = new Gson().toJson(aprobacionesConsultasRequest);
 		wsrequest.setBody(aprobacionesConsultasJSON);
+		LOGGER.info(aprobacionesConsultasJSON);
 		wsrequest.setUrl(url);	
 		retorno = wsService.post(wsrequest);
 		return retorno;
@@ -199,6 +200,7 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String fiToFiCustomerCreditTransferJSON;
 		fiToFiCustomerCreditTransferJSON = new Gson().toJson(fiToFiCustomerCreditTransferRequest);
 		wsrequest.setBody(fiToFiCustomerCreditTransferJSON);
+		LOGGER.info(fiToFiCustomerCreditTransferJSON);
 		wsrequest.setUrl(url);	
 		retorno = wsService.post(wsrequest);
 		return retorno;

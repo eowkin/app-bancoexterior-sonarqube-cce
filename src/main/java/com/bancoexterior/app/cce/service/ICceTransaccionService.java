@@ -26,7 +26,8 @@ public interface ICceTransaccionService {
 			String fechaDesde, String fechaHasta, Pageable page);
     
    
-    
+    public Page<CceTransaccion> consultaMovimientosConFechasPage(String codTransaccion, String bancoDestino, String numeroIdentificacion, 
+			String fechaDesde, String fechaHasta, int page);
     
     
     public List<CceTransaccionDto> consultaMovimientosConFechasPrueba(String fechaDesde, String fechaHasta);

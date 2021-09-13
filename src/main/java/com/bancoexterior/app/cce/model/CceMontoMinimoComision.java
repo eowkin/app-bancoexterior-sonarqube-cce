@@ -2,7 +2,6 @@ package com.bancoexterior.app.cce.model;
 
 import java.math.BigDecimal;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,12 +16,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data @AllArgsConstructor @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "\"monto_maximo_apro_automatica\"", schema = "\"cce\"")
-public class CceMontoMaximoAproAuto {
-	
+@Table(name = "\"monto_minimo_comision\"", schema = "\"cce\"")
+public class CceMontoMinimoComision {
+
 	@Id
 	@Column(name = "id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +34,9 @@ public class CceMontoMaximoAproAuto {
 	
 	@Column(name = "usuario", nullable = false)
 	private String usuario;
+	
+	@Column(name = "tipo_cliente", nullable = false)
+	private String tipoCliente;
 	
 	@Transient
 	private String montoString;

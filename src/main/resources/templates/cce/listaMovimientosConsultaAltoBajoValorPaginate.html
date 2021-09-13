@@ -69,13 +69,49 @@
 		                  <td th:if="${transaccion.tipoTransaccion == '804'}">Intrabancaria ONT</td>
 		                  <td th:if="${transaccion.tipoTransaccion == '040'}">Crédito Inmediato</td>
 		                  <td th:if="${transaccion.codTransaccion == '5727'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5714'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5718'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9024'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9025'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5745'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5746'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5783'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5797'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5793'}"  th:text="${transaccion.cuentaOrigen}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5723'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9733'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9740'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9741'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5760'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5759'}"  th:text="${transaccion.cuentaOrigen}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5724'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9734'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9742'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9743'}"  th:text="${transaccion.cuentaDestino}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5728'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9738'}"  th:text="${transaccion.cuentaDestino}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5727'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5714'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5718'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9024'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9025'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5745'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5746'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5783'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5797'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5793'}"  th:text="${transaccion.cuentaDestino}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5723'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9733'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9740'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9741'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5760'}"  th:text="${transaccion.cuentaDestino}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '5759'}"  th:text="${transaccion.cuentaDestino}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5724'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9734'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9742'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9743'}"  th:text="${transaccion.cuentaOrigen}"></td>
 		                  <td th:if="${transaccion.codTransaccion == '5728'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.codTransaccion == '9738'}"  th:text="${transaccion.cuentaOrigen}"></td>
 		                  <td th:text="${transaccion.montoString}"></td>
 		                  <td>
 			                	<span class="badge badge-success" th:if="${transaccion.estadobcv == 'ACCP'}">Aprobada</span>

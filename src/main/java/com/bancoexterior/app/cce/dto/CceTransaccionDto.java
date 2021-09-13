@@ -72,6 +72,10 @@ public class CceTransaccionDto implements Serializable{
 	
 	private Date fechaModificacion;
 	
+	private Date fechaLiquidaBcv;
+	
+	private Integer corteLiquidacion;
+	
 	private String fechaDesde;
 	
 	private String fechaHasta;

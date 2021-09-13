@@ -1,6 +1,10 @@
 package com.bancoexterior.app.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -19,8 +23,12 @@ import com.bancoexterior.app.cce.dto.CceTransaccionDto;
 
 
 public class MovimientosExcelExporter {
-	@Autowired
-	private LibreriaUtil libreriaUtil; 
+	
+	public static final char COMA                                 = ',';
+	
+	public static final char PUNTO                                = '.';
+	
+	public static final String NUMEROFORMAT                       = "#,##0.00";
 	
 	private XSSFWorkbook workbook;
     private XSSFSheet sheet;
@@ -98,9 +106,7 @@ public class MovimientosExcelExporter {
 		return cuentaBeneficiario;
 	}
 	
-	public String monto(CceTransaccionDto cceTransaccionDto) {
-		return libreriaUtil.formatNumber(cceTransaccionDto.getMonto());
-	}
+	
 	
 	
 	public String estado(String estadobcv) {
@@ -117,6 +123,31 @@ public class MovimientosExcelExporter {
 		}	
 		return estado;
 	}
+	
+	public String getCorteLiquidacion(Integer corteLiquidacion) {
+		String corteLiquidacionRes = "";
+		
+		if(corteLiquidacion == null) {
+			corteLiquidacionRes = "No Asigando";
+		}else {
+			corteLiquidacionRes = corteLiquidacion.toString();
+		}	
+		return corteLiquidacionRes;
+	}
+	
+	
+	public String getFechaLiquidaBcv(Date fechaLiquidaBcv) {
+		String fechaLiquidaBcvRes = "";
+		
+		if(fechaLiquidaBcv == null) {
+			fechaLiquidaBcvRes = "No Asigando";
+		}else {
+			fechaLiquidaBcvRes = fechaLiquidaBcv.toString();
+		}	
+		return fechaLiquidaBcvRes;
+	}
+	
+	
 	
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderLine();
@@ -146,8 +177,10 @@ public class MovimientosExcelExporter {
             createCellMovimiento(row, columnCount++, tipoTransaccion(cceTransaccionDto.getTipoTransaccion()), style);
             createCellMovimiento(row, columnCount++, cuentaOrdenante(cceTransaccionDto), style);
             createCellMovimiento(row, columnCount++, cuentaBeneficiario(cceTransaccionDto), style);
-            createCellMovimiento(row, columnCount++, cceTransaccionDto.getMonto().toString(), style);
-            createCellMovimiento(row, columnCount, estado(cceTransaccionDto.getEstadobcv()), style); 
+            createCellMovimiento(row, columnCount++, formatNumber(cceTransaccionDto.getMonto()), style);
+            createCellMovimiento(row, columnCount++, estado(cceTransaccionDto.getEstadobcv()), style);
+            createCellMovimiento(row, columnCount++, getCorteLiquidacion(cceTransaccionDto.getCorteLiquidacion()), style);
+            createCellMovimiento(row, columnCount, getFechaLiquidaBcv(cceTransaccionDto.getFechaLiquidaBcv()), style);
         }
     }
     
@@ -168,8 +201,21 @@ public class MovimientosExcelExporter {
         createCellMovimiento(row, 3, "Cta. Ordenante", style);
         createCellMovimiento(row, 4, "Cta. Beneficiario", style);
         createCellMovimiento(row, 5, "Monto", style);      
-        createCellMovimiento(row, 6, "Estado", style);       
+        createCellMovimiento(row, 6, "Estado", style);
+        createCellMovimiento(row, 7, "Corte Liquidacion", style);      
+        createCellMovimiento(row, 8, "Fecha Liquidacion BCV", style);
         
          
+    }
+    
+    public  String formatNumber(BigDecimal numero) {
+		
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator(COMA);
+        decimalFormatSymbols.setGroupingSeparator(PUNTO);
+        DecimalFormat df = new DecimalFormat(NUMEROFORMAT, decimalFormatSymbols);
+        
+         return df.format(numero);
+        
     }
 }

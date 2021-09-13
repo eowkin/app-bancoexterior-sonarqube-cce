@@ -29,8 +29,7 @@
 		      <div class="col-lg-1-12">
 		        <div class="card">
 		          <div class="card-header">
-		            <i class="fa fa-align-justify"></i> Listado de Auditoria Consulta
-		            <p align="right"></p>
+		            <i class="fa fa-align-justify" aria-hidden="true"></i> Listado de Auditoria Consulta
 		            <div class="my-2 text-right">	
 		              <a class="btn btn-primary" th:href="@{/auditoria/formAuditoriaConsulta}" title="Consulta Auditoria" role="button">Consulta Auditoria</a>
 		            </div>
@@ -44,7 +43,7 @@
 		            	</div>
 	          	
 	          			<div th:if="${mensaje != null}" class="alert alert-success" th:text="${mensaje}" role="alert"></div>
-		            <table class="table">
+		            <table class="table table-striped table-hover">
 		              <thead>
 		                <tr>
 		                  <th>Usuario</th>

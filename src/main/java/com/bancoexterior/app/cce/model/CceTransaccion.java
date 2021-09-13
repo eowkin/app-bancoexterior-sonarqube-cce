@@ -138,6 +138,12 @@ public class CceTransaccion {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaModificacion;
 	
+	@Column(name = "corte_liquidacion")
+	private Integer corteLiquidacion;
+	
+	@Column(name = "fecha_liquida_bcv", nullable = false)
+	@Temporal(TemporalType.DATE)
+	private Date fechaLiquidaBcv;
 	
 	@Transient
 	private String montoString;

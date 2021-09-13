@@ -424,12 +424,19 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
 		if(isFechaDesdeHastaIgual(fechaDesde, fechaHasta)) {
 			LOGGER.info("isFechaDesdeHastaIgual");
 			if(hDesdeInt == hHastaInt) {
+				LOGGER.info("hora iguales");
 				if(minutoDesdeInt == minutoHastaInt) {
+					LOGGER.info("minutos iguales");
 					return true;
 				}else {
-					return minutoDesdeInt > minutoHastaInt;
+					LOGGER.info("minutos distintos");
+					LOGGER.info(minutoDesdeInt < minutoHastaInt);
+					return minutoDesdeInt < minutoHastaInt;
 				}
 			}else {
+				LOGGER.info("horas distintos");
+				LOGGER.info(hDesdeInt);
+				LOGGER.info(hHastaInt);
 				return hDesdeInt < hHastaInt;					
 			}
 		}

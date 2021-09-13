@@ -59,6 +59,7 @@ import com.bancoexterior.app.convenio.exception.CustomException;
 import com.bancoexterior.app.convenio.response.Resultado;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
+import com.bancoexterior.app.util.Mapper;
 import com.bancoexterior.app.util.MovimientosExcelExporter;
 import com.google.gson.Gson;
 
@@ -77,6 +78,9 @@ public class CceTransaccionController {
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil; 
+	
+	@Autowired
+	private Mapper mapper;
 	
 	@Value("${${app.ambiente}"+".canal}")
     private String canal;	
@@ -287,10 +291,10 @@ public class CceTransaccionController {
 		return URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR;
 		
 	}
-		
+	
 	@GetMapping("/procesarConsultaMovimientosAltoBajoValorPageable")
 	public String procesarConsultaMovimientosAltoBajoValorPageable(CceTransaccionDto cceTransaccionDto, 
-			Model model, Pageable page, HttpSession httpSession, HttpServletRequest request) {
+			Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaMovimientosBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -306,14 +310,14 @@ public class CceTransaccionController {
 			
 			if(libreriaUtil.isFechaValidaDesdeHasta(cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta())){
 				LOGGER.info("hablame mano");	
-				listaTransacciones = service.consultaMovimientosConFechas(cceTransaccionDto.getCodTransaccion(), cceTransaccionDto.getBancoDestino(),
-					cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), page);
+				listaTransacciones = service.consultaMovimientosConFechasPage(cceTransaccionDto.getCodTransaccion(), cceTransaccionDto.getBancoDestino(),
+					cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
 			
 				
 				listaTransacciones = convertirLista(listaTransacciones);
 				
-				List<CceTransaccionDto> listaTransaccionesDto = service.consultaMovimientosConFechas(cceTransaccionDto.getCodTransaccion(),
-						cceTransaccionDto.getBancoDestino(), cceTransaccionDto.getNumeroIdentificacion(), cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta());
+				
+				List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones.getContent());
 				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesDto);	
 					
 				if(listaTransacciones.isEmpty()) {
@@ -350,11 +354,13 @@ public class CceTransaccionController {
 		
 	}
 	
+	
+	
 	@GetMapping("/consultaMovimientosAltoBajoValorPageable")
 	public String consultaMovimientosAltoBajoValorPageable(@RequestParam("codTransaccion") String codTransaccion, 
 			@RequestParam("bancoDestino") String bancoDestino, @RequestParam("numeroIdentificacion") String numeroIdentificacion,
 			@RequestParam("fechaDesde") String fechaDesde, @RequestParam("fechaHasta") String fechaHasta, 
-			Model model, Pageable page, HttpSession httpSession) {
+			Model model, int page, HttpSession httpSession) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERCONSULTARMOVIMIENTOSALTOBAJOVALORI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaMovimientosBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -364,8 +370,12 @@ public class CceTransaccionController {
 		Page<CceTransaccion> listaTransacciones;
 		
 		if(libreriaUtil.isFechaValidaDesdeHasta(fechaDesde, fechaHasta)){
-			listaTransacciones = service.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion,
+			listaTransacciones = service.consultaMovimientosConFechasPage(codTransaccion, bancoDestino, numeroIdentificacion,
 							                                          fechaDesde, fechaHasta, page);
+			
+			
+			List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones.getContent());
+			httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesDto);
 			listaTransacciones = convertirLista(listaTransacciones);
 			if(listaTransacciones.isEmpty()) {
 					model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
@@ -387,6 +397,8 @@ public class CceTransaccionController {
 		LOGGER.info(CCETRANSACCIONCONTROLLERCONSULTARMOVIMIENTOSALTOBAJOVALORF);
 		return URLLISTAMOVIMIENTOSCONSULTAALTOBAJOVALORPAGINATE;
 	}
+	
+	
 	
 	@GetMapping("/detalleMovimiento")
 	public String verMovimineto(@RequestParam("endtoendId") String endtoendId,@RequestParam("codTransaccion") String codTransaccion, 
@@ -513,7 +525,9 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(cceTransaccionDto.getMontoDesde());
 				filtros.setMontoHasta(cceTransaccionDto.getMontoHasta());
 			}else {
-				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+				LOGGER.info(new BigDecimal("0.01"));
+				LOGGER.info(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")));
+				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
 			
@@ -619,7 +633,7 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(montoDesde);
 				filtros.setMontoHasta(montoHasta);
 			}else {
-				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
 			if(libreriaUtil.isFechaHoraValidaDesdeHasta(fechaDesde, fechaHasta)) {
@@ -693,7 +707,7 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(montoDesde);
 				filtros.setMontoHasta(montoHasta);
 			}else {
-				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
 			
@@ -858,7 +872,7 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(montoDesde);
 				filtros.setMontoHasta(montoHasta);
 			}else {
-				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
 			
@@ -955,7 +969,7 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(montoDesde);
 				filtros.setMontoHasta(montoHasta);
 			}else {
-				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
 			
@@ -1004,6 +1018,8 @@ public class CceTransaccionController {
 		LOGGER.info("exportarExcelMoviminetos");
 		
 		List<CceTransaccionDto> listaTransaccionesDto =(List<CceTransaccionDto>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
+		//List<CceTransaccion> listaTransacciones =(List<CceTransaccion>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
+		//List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones);
 		
 		response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -1022,6 +1038,18 @@ public class CceTransaccionController {
 		
 	}
 	
+	public List<CceTransaccionDto> getListaTransaccionesDto(List<CceTransaccion> listaTransacciones){
+		 
+		List<CceTransaccionDto> listaTransaccionesDto = new ArrayList<>();
+		
+		for (CceTransaccion cceTransaccion : listaTransacciones) {
+			CceTransaccionDto cceTransaccionDto = mapper.map(cceTransaccion, CceTransaccionDto.class);
+			listaTransaccionesDto.add(cceTransaccionDto);
+		}
+		
+		return listaTransaccionesDto;
+	}
+	
 	public void setAprobacionesConsultasRequestFiltrosPage(int numeroPagina, Filtros filtros, AprobacionesConsultasRequest aprobacionesConsultasRequest) {
 		aprobacionesConsultasRequest.setNumeroPagina(numeroPagina);   
 		aprobacionesConsultasRequest.setTamanoPagina(5);
@@ -1035,7 +1063,7 @@ public class CceTransaccionController {
 	}
 	
 	public void setFiltrosMontosNull(CceMontoMaximoAproAuto cceMontoMaximoAproAuto, Filtros filtros) {
-		filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+		filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 		filtros.setMontoHasta(montoTopeMaximoAproAuto);
 	}
 	
@@ -1399,7 +1427,7 @@ public class CceTransaccionController {
 		aprobacionesConsultasRequest.setTamanoPagina(2147483647);
 		Filtros filtros = new Filtros();
 		filtros.setStatus("I");
-		filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto())));
+		filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 		filtros.setMontoHasta(montoTopeMaximoAproAuto);
 		
 		
@@ -1486,18 +1514,8 @@ public class CceTransaccionController {
 	
 	public String getHora(String hora) {
 		String[] arrOfHora = hora.split(":");
-		for (String a: arrOfHora)
-			LOGGER.info(a);
 		String horaCambio = arrOfHora[0];
-		int horaCambioInt = Integer.parseInt(horaCambio);
 		String minutos = arrOfHora[1];
-		
-		if(horaCambioInt > 12) {
-			horaCambioInt = horaCambioInt - 12;
-			horaCambio = String.valueOf(horaCambioInt);
-		}
-		
-		
 		return horaCambio+":"+minutos;
 	}
 	
@@ -1668,13 +1686,13 @@ public class CceTransaccionController {
 	
 	public String nombreTransaccion(String codTransaccion) {
 		String nombreTransaccion="";
-		if(codTransaccion.equals("5724")) {
+		if(codTransaccion.equals("5724") || codTransaccion.equals("9734") || codTransaccion.equals("9742") || codTransaccion.equals("9743")) {
 			nombreTransaccion = "Credito Inmediato Recibido";
 		}else {
-			if(codTransaccion.equals("5723")) {
+			if(codTransaccion.equals("5723") || codTransaccion.equals("9733") || codTransaccion.equals("9740") || codTransaccion.equals("9741") || codTransaccion.equals("5760") || codTransaccion.equals("5759")) {
 				nombreTransaccion = "Credito Inmediato Enviado";
 			}else {
-				if(codTransaccion.equals("5728")) {
+				if(codTransaccion.equals("5728") || codTransaccion.equals("9738")) {
 					nombreTransaccion = "Alto valor Recibido";
 				}else {
 					nombreTransaccion = "Alto Valor Enviado";

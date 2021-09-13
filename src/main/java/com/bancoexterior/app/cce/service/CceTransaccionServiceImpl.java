@@ -9,7 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.bancoexterior.app.cce.dto.CceTransaccionDto;
@@ -46,7 +48,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	
 	private static final String HORADESDE = " 00:00:00";
 	
-	private static final String HORAHASTA = " 23:59:00";
+	private static final String HORAHASTA = " 23:59:59";
 	
 	@Override
 	public List<CceTransaccionDto> consultar() {
@@ -119,6 +121,49 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);
 		return repo.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, page); 
 	}
+	
+	@Override
+	public Page<CceTransaccion> consultaMovimientosConFechasPage(String codTransaccion, String bancoDestino,
+			String numeroIdentificacion, String fechaDesde, String fechaHasta, int page) {
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
+		fechaDesde = fechaDesde +HORADESDE;
+		fechaHasta = fechaHasta +HORAHASTA;
+		int pageNumber = page;
+		int pageSize = 10;
+		//Sort sort = Sort.by("fecha_modificacion").descending();
+		Sort sort = Sort.by("fecha_modificacion").ascending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		LOGGER.info(codTransaccion.equals(""));
+		
+		if(codTransaccion.equals("")) {
+			LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+			return repo.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
+		}else {
+			if(codTransaccion.equals("5723")) {
+				LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+				return repo.consultaMovimientosCreditoInmediato(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
+			}else {
+				if(codTransaccion.equals("5724")) {
+					LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+					return repo.consultaMovimientosCreditoInmediatoRecibido(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
+				}else {
+					if(codTransaccion.equals("5727")) {
+						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+						return repo.consultaMovimientosLbtrEnviado(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
+					}else {
+						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+						return repo.consultaMovimientosLbtrRecibido(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		
+		
+	}
 
 	
 
@@ -149,6 +194,8 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		
 		return listaMovimientosPorAprobarAltoValor;
 	}
+
+	
 
 	
 
