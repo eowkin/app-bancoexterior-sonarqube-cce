@@ -412,7 +412,9 @@ public class CceTransaccionController {
 		}
 		CceTransaccionDto cceTransaccionDto = service.findByEndtoendId(endtoendId);
 		if(cceTransaccionDto != null) {
-			if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("5728")) {
+			if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
+					|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
+				LOGGER.info(cceTransaccionDto.getCodTransaccion());
 				String cuentaOrigen = cceTransaccionDto.getCuentaOrigen();
 				String cuentaDestino = cceTransaccionDto.getCuentaDestino();
 				cceTransaccionDto.setCuentaOrigen(cuentaDestino);
@@ -1018,8 +1020,6 @@ public class CceTransaccionController {
 		LOGGER.info("exportarExcelMoviminetos");
 		
 		List<CceTransaccionDto> listaTransaccionesDto =(List<CceTransaccionDto>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
-		//List<CceTransaccion> listaTransacciones =(List<CceTransaccion>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
-		//List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones);
 		
 		response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");

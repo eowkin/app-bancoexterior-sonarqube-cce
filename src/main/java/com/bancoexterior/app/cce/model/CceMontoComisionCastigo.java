@@ -27,16 +27,20 @@ public class CceMontoComisionCastigo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Transient
+	private String montoString;
+	
 	@Column(name = "monto", nullable = false)
 	@Digits(integer=13, fraction=2)
 	private BigDecimal monto;
 	
-	@Column(name = "usuario", nullable = false)
-	private String usuario;
-	
 	@Column(name = "tipo_cliente", nullable = false)
 	private String tipoCliente;
 	
-	@Transient
-	private String montoString;
+	@Column(name = "usuario", nullable = false)
+	private String usuario;
+	
+	
+	
+	
 }

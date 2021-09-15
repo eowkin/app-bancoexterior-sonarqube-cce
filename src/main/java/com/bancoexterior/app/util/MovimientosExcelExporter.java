@@ -16,7 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import com.bancoexterior.app.cce.dto.CceTransaccionDto;
 
@@ -84,7 +84,8 @@ public class MovimientosExcelExporter {
      
 	public String cuentaOrdenante(CceTransaccionDto cceTransaccionDto) {
 		String cuentaOrdenante = "";
-		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("5728")) {
+		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
+				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
 			cuentaOrdenante = cceTransaccionDto.getCuentaDestino();
 		}else {
 			cuentaOrdenante = cceTransaccionDto.getCuentaOrigen();
@@ -96,7 +97,8 @@ public class MovimientosExcelExporter {
 	
 	public String cuentaBeneficiario(CceTransaccionDto cceTransaccionDto) {
 		String cuentaBeneficiario = "";
-		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("5728")) {
+		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
+				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
 			cuentaBeneficiario = cceTransaccionDto.getCuentaOrigen();
 		}else {
 			cuentaBeneficiario = cceTransaccionDto.getCuentaDestino();

@@ -130,6 +130,18 @@ public class CceMontoComisionCastigoController {
 		
 	}
 	
+	
+	public Model setError(Model model, BindingResult result) {
+		List<String> listaError = new ArrayList<>();
+		for (ObjectError error : result.getAllErrors()) {
+			LOGGER.info(error.getDefaultMessage());
+			listaError.add("Los valores de los montos debe ser numerico");
+		}
+		model.addAttribute(LISTAERROR, listaError);
+		return model;
+	}
+	
+	
 	@PostMapping("/guardar")
 	public String guardar(CceMontoComisionCastigoDto cceMontoComisionCastigoDto, BindingResult result,
 			RedirectAttributes redirectAttributes, Model model, HttpSession httpSession, HttpServletRequest request) {
@@ -139,14 +151,8 @@ public class CceMontoComisionCastigoController {
 			return URLNOPERMISO;
 		}
 		
-		List<String> listaError = new ArrayList<>();
-		
 		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
-				LOGGER.info(error.getDefaultMessage());
-				listaError.add("Los valores de los montos debe ser numerico");
-			}
-			model.addAttribute(LISTAERROR, listaError);
+			setError(model, result);
 			return "cce/comisionCastigo/formEditMontoComisionCastigo";
 		}	
 		

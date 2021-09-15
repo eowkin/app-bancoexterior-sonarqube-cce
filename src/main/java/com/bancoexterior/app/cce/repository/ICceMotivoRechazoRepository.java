@@ -14,13 +14,13 @@ import com.bancoexterior.app.cce.model.CceMotivoRechazo;
 @Repository
 public interface ICceMotivoRechazoRepository extends JpaRepository<CceMotivoRechazo, String>{
 
-	public static final String UPDATEMOTIVORECHAZO = "UPDATE cce.motivo_rechazo "
+	public static final String UPDATEMOTIVORECHAZOQUERY = "UPDATE cce.motivo_rechazo "
 			+ "SET descripcion=?1, aplica_comision_castigo=?2 "
 			+ "WHERE codigo=?3";
 	
 	@Modifying
 	@Transactional
-	@Query(value = UPDATEMOTIVORECHAZO, nativeQuery = true)
+	@Query(value = UPDATEMOTIVORECHAZOQUERY, nativeQuery = true)
 	public void updateMotivoRechazo(String descripcion, String aplicaComisionCastigo, String codigo);
 	
 }

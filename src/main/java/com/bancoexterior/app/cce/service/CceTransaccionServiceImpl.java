@@ -130,7 +130,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		fechaHasta = fechaHasta +HORAHASTA;
 		int pageNumber = page;
 		int pageSize = 10;
-		//Sort sort = Sort.by("fecha_modificacion").descending();
+
 		Sort sort = Sort.by("fecha_modificacion").ascending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		LOGGER.info(codTransaccion.equals(""));

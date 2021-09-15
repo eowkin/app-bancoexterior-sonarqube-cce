@@ -106,7 +106,7 @@ public class CceMontoMinimoComisionController {
 	
 	
 	@GetMapping("/edit")
-	public String editMontoComisionCastigo(@RequestParam("id") int id, Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String editMontoMinimoComision(@RequestParam("id") int id, Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLEREDITI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -139,14 +139,8 @@ public class CceMontoMinimoComisionController {
 			return URLNOPERMISO;
 		}
 		
-		List<String> listaError = new ArrayList<>();
-		
 		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
-				LOGGER.info(error.getDefaultMessage());
-				listaError.add("Los valores de los montos debe ser numerico");
-			}
-			model.addAttribute(LISTAERROR, listaError);
+			setError(model, result);
 			return "cce/comisionMinima/formEditMontoComisionMinima";
 		}
 		
@@ -158,6 +152,16 @@ public class CceMontoMinimoComisionController {
 		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERGUARDARF);
 		return REDIRECTINDEX;
 	}	
+	
+	public Model setError(Model model, BindingResult result) {
+		List<String> listaError = new ArrayList<>();
+		for (ObjectError error : result.getAllErrors()) {
+			LOGGER.info(error.getDefaultMessage());
+			listaError.add("Los valores de los montos debe ser numerico");
+		}
+		model.addAttribute(LISTAERROR, listaError);
+		return model;
+	}
 	
 	public List<CceMontoMinimoComision> convertirLista(List<CceMontoMinimoComision> listCceMontoMinimoComision){
 		
