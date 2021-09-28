@@ -1,10 +1,22 @@
 package com.bancoexterior.app.cce.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +61,12 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	private static final String HORADESDE = " 00:00:00";
 	
 	private static final String HORAHASTA = " 23:59:59";
+	
+	public static final char COMA                                 = ',';
+	
+	public static final char PUNTO                                = '.';
+	
+	public static final String NUMEROFORMAT                       = "#,##0.00";
 	
 	@Override
 	public List<CceTransaccionDto> consultar() {
@@ -195,8 +213,218 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		return listaMovimientosPorAprobarAltoValor;
 	}
 
-	
+	@Override
+	public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(String codTransaccionExcel, String bancoDestinoExcel,
+			String numeroIdentificacionExcel, String fechaDesdeExcel, String fechaHastaExcel, int page) {
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
+		fechaDesdeExcel = fechaDesdeExcel +HORADESDE;
+		fechaHastaExcel = fechaHastaExcel +HORAHASTA;
+		int pageNumber = page;
+		int pageSize = 10000;
 
+		Sort sort = Sort.by("fecha_modificacion").ascending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		LOGGER.info(codTransaccionExcel.equals(""));
+		
+		if(codTransaccionExcel.equals("")) {
+			LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+			return repo.consultaMovimientosConFechas(codTransaccionExcel, bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
+		}else {
+			if(codTransaccionExcel.equals("5723")) {
+				LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+				return repo.consultaMovimientosCreditoInmediato(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
+			}else {
+				if(codTransaccionExcel.equals("5724")) {
+					LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+					return repo.consultaMovimientosCreditoInmediatoRecibido(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
+				}else {
+					if(codTransaccionExcel.equals("5727")) {
+						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+						return repo.consultaMovimientosLbtrEnviado(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
+					}else {
+						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+						return repo.consultaMovimientosLbtrRecibido(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
+					}
+					
+				}
+				
+			}
+			
+		}
+	}
+
+	@Override
+	public ByteArrayInputStream exportAllData(List<CceTransaccionDto> listaTransaccionesDto) throws IOException {
+		String[] columns = { "Referencia BCV", "Referencia IBS", "Tipo Transaccion", "Cta. Ordenante", "Cta. Beneficiario", "Monto", "Estado", "Corte Liquidacion", "Fecha Liquidacion BCV" };
+
+		XSSFSheet sheet;
+		try(XSSFWorkbook workbookCce = new XSSFWorkbook();
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();){
+
+			sheet = workbookCce.createSheet("Transacciones");
+			Row row = sheet.createRow(0);
+		
+		
+			CellStyle style = workbookCce.createCellStyle();
+			XSSFFont font = workbookCce.createFont();
+	        font.setBold(true);
+	        font.setFontHeight(16);
+	        style.setFont(font);
+			
+			for (int i = 0; i < columns.length; i++) {
+				sheet.autoSizeColumn(i);
+				Cell cell = row.createCell(i);
+				cell.setCellValue(columns[i]);
+				cell.setCellStyle(style);
+			}
 	
+			
+			int initRow = 1;
+			CellStyle style2 = workbookCce.createCellStyle();
+			XSSFFont font2 = workbookCce.createFont();
+	        font2.setBold(false);
+	        font2.setFontHeight(14);
+	        style2.setFont(font2);
+	       
+			for (CceTransaccionDto cceTransaccionDto : listaTransaccionesDto) {
+				sheet.autoSizeColumn(initRow);
+				row = sheet.createRow(initRow);
+				Cell cell = row.createCell(0);
+				cell.setCellValue(cceTransaccionDto.getEndtoendId());
+				cell.setCellStyle(style2);
+				Cell cell1 = row.createCell(1);
+				cell1.setCellValue(cceTransaccionDto.getReferencia());
+				cell1.setCellStyle(style2);
+				Cell cell2 = row.createCell(2);
+				cell2.setCellValue(tipoTransaccion(cceTransaccionDto.getTipoTransaccion()));
+				cell2.setCellStyle(style2);
+				Cell cell3 = row.createCell(3);
+				cell3.setCellValue(cuentaOrdenante(cceTransaccionDto));
+				cell3.setCellStyle(style2);
+				Cell cell4 = row.createCell(4);
+				cell4.setCellValue(cuentaBeneficiario(cceTransaccionDto));
+				cell4.setCellStyle(style2);
+				Cell cell5 = row.createCell(5);
+				cell5.setCellValue(formatNumber(cceTransaccionDto.getMonto()));
+				cell5.setCellStyle(style2);
+				Cell cell6 = row.createCell(6);
+				cell6.setCellValue(estado(cceTransaccionDto.getEstadobcv()));
+				cell6.setCellStyle(style2);
+				Cell cell7 = row.createCell(7);
+				cell7.setCellValue(getCorteLiquidacion(cceTransaccionDto.getCorteLiquidacion()));
+				cell7.setCellStyle(style2);
+				Cell cell8 = row.createCell(8);
+				cell8.setCellValue(getFechaLiquidaBcv(cceTransaccionDto.getFechaLiquidaBcv()));
+				cell8.setCellStyle(style2);
+				initRow++;
+			}
+
+			workbookCce.write(stream);
+			
+			return new ByteArrayInputStream(stream.toByteArray());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		} 
+	}
+
+	public String tipoTransaccion(String tipo) {
+		
+		String tipoTransaccion = "";
+		if(tipo.equals("801")) {
+			tipoTransaccion = "Interbancaria";
+		}else {
+			if(tipo.equals("802")) {
+				tipoTransaccion = "Intrabancaria";
+			}else {
+				if(tipo.equals("803")) {
+					tipoTransaccion = "Interbancaria ONT";
+				}else {
+					if(tipo.equals("804")) {
+						tipoTransaccion = "Intrabancaria ONT";
+					}else {
+						tipoTransaccion = "Crédito Inmediato";
+					}
+				}
+			}
+		}
+		
+		return tipoTransaccion;
+	}
+     
+	public String cuentaOrdenante(CceTransaccionDto cceTransaccionDto) {
+		String cuentaOrdenante = "";
+		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
+				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
+			cuentaOrdenante = cceTransaccionDto.getCuentaDestino();
+		}else {
+			cuentaOrdenante = cceTransaccionDto.getCuentaOrigen();
+		}
+		
+		
+		return cuentaOrdenante;
+	}
+	
+	public String cuentaBeneficiario(CceTransaccionDto cceTransaccionDto) {
+		String cuentaBeneficiario = "";
+		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
+				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
+			cuentaBeneficiario = cceTransaccionDto.getCuentaOrigen();
+		}else {
+			cuentaBeneficiario = cceTransaccionDto.getCuentaDestino();
+		}
+		
+		
+		return cuentaBeneficiario;
+	}
+	
+	public String estado(String estadobcv) {
+		String estado = "";
+		
+		if(estadobcv == null) {
+			estado = "Incompleta";
+		}else {
+			if(estadobcv.equals("ACCP")) {
+				estado = "Aprobada";
+			}else {
+				estado = "Rechazada";
+			}
+		}	
+		return estado;
+	}
+	
+	public String getCorteLiquidacion(Integer corteLiquidacion) {
+		String corteLiquidacionRes = "";
+		
+		if(corteLiquidacion == null) {
+			corteLiquidacionRes = "No Asigando";
+		}else {
+			corteLiquidacionRes = corteLiquidacion.toString();
+		}	
+		return corteLiquidacionRes;
+	}
+	
+	
+	public String getFechaLiquidaBcv(Date fechaLiquidaBcv) {
+		String fechaLiquidaBcvRes = "";
+		
+		if(fechaLiquidaBcv == null) {
+			fechaLiquidaBcvRes = "No Asigando";
+		}else {
+			fechaLiquidaBcvRes = fechaLiquidaBcv.toString();
+		}	
+		return fechaLiquidaBcvRes;
+	}
+	
+	public  String formatNumber(BigDecimal numero) {
+		
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator(COMA);
+        decimalFormatSymbols.setGroupingSeparator(PUNTO);
+        DecimalFormat df = new DecimalFormat(NUMEROFORMAT, decimalFormatSymbols);
+        
+         return df.format(numero);
+        
+    }
 
 }

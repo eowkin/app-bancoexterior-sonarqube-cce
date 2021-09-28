@@ -1,5 +1,10 @@
 package com.bancoexterior.app.cce.controller;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
@@ -60,7 +64,6 @@ import com.bancoexterior.app.convenio.response.Resultado;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
 import com.bancoexterior.app.util.Mapper;
-import com.bancoexterior.app.util.MovimientosExcelExporter;
 import com.google.gson.Gson;
 
 
@@ -269,6 +272,13 @@ public class CceTransaccionController {
 		return "cce/listaMovimientosConsultaAltoBajoValorPaginateTodas";
 	}
 	
+	@GetMapping("/cargarLoader")
+	public String cargarLoaderPaginado() {
+		
+		LOGGER.info("Cargar");   
+		return "/index";
+	}
+	
 	@GetMapping("/formConsultaMovimientosConsultaAltoBajoValor")
 	public String formConsultaMovimientosAltoBajoValor(CceTransaccionDto cceTransaccionDto, Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTARMOVIMIENTOSALTOBAJOVALORI);
@@ -317,7 +327,12 @@ public class CceTransaccionController {
 				listaTransacciones = convertirLista(listaTransacciones);
 				
 				
-				List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones.getContent());
+				Page<CceTransaccion> listaTransaccionesExcel = service.consultaMovimientosConFechasPageExcel(cceTransaccionDto.getCodTransaccion(), cceTransaccionDto.getBancoDestino(),
+						cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
+				
+				List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransaccionesExcel.getContent());
+				
+				
 				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesDto);	
 					
 				if(listaTransacciones.isEmpty()) {
@@ -333,6 +348,7 @@ public class CceTransaccionController {
 				model.addAttribute(NUMEROIDENTIFICACION, cceTransaccionDto.getNumeroIdentificacion());
 				model.addAttribute(FECHADESDE, cceTransaccionDto.getFechaDesde());
 				model.addAttribute(FECHAHASTA, cceTransaccionDto.getFechaHasta());
+				model.addAttribute("seleccion", getSeleccion(cceTransaccionDto.getCodTransaccion()));
 				guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOSALTOBAJOVALORPAGEABLE, true, "0000",  MENSAJEOPERACIONEXITOSA, cceTransaccionDto, request);
 				LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORF);
 				return URLLISTAMOVIMIENTOSCONSULTAALTOBAJOVALORPAGINATE;
@@ -354,6 +370,25 @@ public class CceTransaccionController {
 		
 	}
 	
+	public String getSeleccion(String codTransaccion) {
+		if(codTransaccion.equals("5724")) {
+			return "Credito Inmediato Recibido";
+		}else {
+			if(codTransaccion.equals("5723")) {
+				return "Credito Inmediato Enviado";
+			}else {
+				if(codTransaccion.equals("5728")) {
+					return "Alto valor Recibido";
+				}else {
+					if(codTransaccion.equals("5727")) {
+						return "Alto Valor Enviado";
+					}else {
+						return "Todas";
+					}
+				}
+			}
+		}
+	}
 	
 	
 	@GetMapping("/consultaMovimientosAltoBajoValorPageable")
@@ -373,9 +408,6 @@ public class CceTransaccionController {
 			listaTransacciones = service.consultaMovimientosConFechasPage(codTransaccion, bancoDestino, numeroIdentificacion,
 							                                          fechaDesde, fechaHasta, page);
 			
-			
-			List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransacciones.getContent());
-			httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesDto);
 			listaTransacciones = convertirLista(listaTransacciones);
 			if(listaTransacciones.isEmpty()) {
 					model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
@@ -386,7 +418,7 @@ public class CceTransaccionController {
 			model.addAttribute(NUMEROIDENTIFICACION, numeroIdentificacion);
 			model.addAttribute(FECHADESDE, fechaDesde);
 			model.addAttribute(FECHAHASTA, fechaHasta);
-			
+			model.addAttribute("seleccion", getSeleccion(codTransaccion));
 				
 		}else {
 			LOGGER.info("fechas invalidas");
@@ -432,6 +464,7 @@ public class CceTransaccionController {
 			cceTransaccionDto.setNombreTransaccion(nombreTransaccion(cceTransaccionDto.getCodTransaccion())+"-"+cceTransaccionDto.getCodTransaccion());
 			cceTransaccionDto.setNombreEstadoBcv(nombreEstadoBcv(cceTransaccionDto.getEstadobcv()));
 			cceTransaccionDto.setMonto(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceTransaccionDto.getMonto())));
+			cceTransaccionDto.setMontoString(libreriaUtil.formatNumber(cceTransaccionDto.getMonto()));
 			model.addAttribute("cceTransaccionDto", cceTransaccionDto);
 			model.addAttribute(CODTRANSACCION, codTransaccion);
 			model.addAttribute(BANCODESTINO, bancoDestino);
@@ -549,7 +582,7 @@ public class CceTransaccionController {
 			DatosPaginacion datosPaginacion;
 			AprobacionesConsultasRequest aprobacionesConsultasRequest = getAprobacionesConsultasRequest(request);
 			aprobacionesConsultasRequest.setNumeroPagina(1);   
-			aprobacionesConsultasRequest.setTamanoPagina(5);
+			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
 			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "procesarConsultaOperacionesAprobarAltoBajoValorPageable", request);
@@ -592,7 +625,7 @@ public class CceTransaccionController {
 		BigDecimal montoAprobarOperacionesSeleccionadas = libreriaUtil.montoAprobarOperacionesSeleccionadas(listaBCVLBTPorAprobar);
 		model.addAttribute(LISTABCVLBTPORAPROBAR,listaBCVLBTPorAprobar);
 		model.addAttribute(DATOSPAGINACION,datosPaginacion);
-		model.addAttribute(MONTOAPROBAROPERACIONESSELECCIONADOS, montoAprobarOperacionesSeleccionadas);
+		model.addAttribute(MONTOAPROBAROPERACIONESSELECCIONADOS, libreriaUtil.formatNumber(montoAprobarOperacionesSeleccionadas));
 	}
 	
 	public void setModelCceTransaccionDtoMostrar(Model model, HttpServletRequest request) throws CustomException{
@@ -653,7 +686,7 @@ public class CceTransaccionController {
 			
 			AprobacionesConsultasRequest aprobacionesConsultasRequest = getAprobacionesConsultasRequest(request);
 			aprobacionesConsultasRequest.setNumeroPagina(page);   
-			aprobacionesConsultasRequest.setTamanoPagina(5);
+			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
 			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "consultaOperacionesAprobarAltoBajoValorPageable", request);
@@ -727,7 +760,7 @@ public class CceTransaccionController {
 					
 			AprobacionesConsultasRequest aprobacionesConsultasRequest = getAprobacionesConsultasRequest(request);
 			aprobacionesConsultasRequest.setNumeroPagina(page);   
-			aprobacionesConsultasRequest.setTamanoPagina(5);
+			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
 			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "seleccionarTodosAprobarOperaciones", request);
@@ -939,7 +972,7 @@ public class CceTransaccionController {
 			listaBancos  = bancoService.listaBancos(bancoRequest);
 			setModelCceTransaccionDtoMostrar(model, request);
 			aprobacionesConsultasRequest.setNumeroPagina(page);   
-			aprobacionesConsultasRequest.setTamanoPagina(5);
+			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			Filtros filtros = new Filtros();
 			filtros.setStatus("I");
 				
@@ -1015,28 +1048,23 @@ public class CceTransaccionController {
 	}
 	
 	
-	@GetMapping("/exportarExcelMoviminetos")
-	public void exportarExcelMoviminetos(HttpServletResponse response, HttpSession httpSession) {
-		LOGGER.info("exportarExcelMoviminetos");
-		
+	
+	
+	@GetMapping("/export/all")
+	public ResponseEntity<InputStreamResource> exportAllData(HttpSession httpSession) throws IOException {
 		List<CceTransaccionDto> listaTransaccionesDto =(List<CceTransaccionDto>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
+		ByteArrayInputStream stream = service.exportAllData(listaTransaccionesDto);
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+		HttpHeaders headers = new HttpHeaders();
 		
-		response.setContentType("application/octet-stream");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-         
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=movimientosconsulta_" + currentDateTime + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-        MovimientosExcelExporter excelExporter = new MovimientosExcelExporter(listaTransaccionesDto);
-        try {
-			excelExporter.export(response);
-			
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
-		}
 		
+		
+		headers.add("Content-Disposition", "attachment; filename=transaccionesconsultaCCE_" + currentDateTime + ".xlsx");
+
+		return ResponseEntity.ok().headers(headers).body(new InputStreamResource(stream));
 	}
+
 	
 	public List<CceTransaccionDto> getListaTransaccionesDto(List<CceTransaccion> listaTransacciones){
 		 
@@ -1052,7 +1080,7 @@ public class CceTransaccionController {
 	
 	public void setAprobacionesConsultasRequestFiltrosPage(int numeroPagina, Filtros filtros, AprobacionesConsultasRequest aprobacionesConsultasRequest) {
 		aprobacionesConsultasRequest.setNumeroPagina(numeroPagina);   
-		aprobacionesConsultasRequest.setTamanoPagina(5);
+		aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 		aprobacionesConsultasRequest.setFiltros(filtros);
 	 
 	}
@@ -1121,7 +1149,7 @@ public class CceTransaccionController {
 			model.addAttribute(DATOSPAGINACION,datosPaginacion);
 			model.addAttribute(SELECCIONADOS, seleccionados);
 			model.addAttribute(SELECCIONADOSBOTON, seleccionadosBoton);
-			model.addAttribute(MONTOAPROBAROPERACIONESSELECCIONADOS, montoAprobarOperacionesSeleccionadas);
+			model.addAttribute(MONTOAPROBAROPERACIONESSELECCIONADOS, libreriaUtil.formatNumber(montoAprobarOperacionesSeleccionadas));
 		
 	}
 	
@@ -1204,6 +1232,7 @@ public class CceTransaccionController {
 		List<String> listaAprobado = new ArrayList<>();
 		List<BCVLBT> listaBCVLBTPorAprobar =(List<BCVLBT>)httpSession.getAttribute(LISTABCVLBTPORAPROBAR);
 	
+		httpSession.setMaxInactiveInterval(3600);
 		for (BCVLBT bcvlbt : listaBCVLBTPorAprobar) {
 			LOGGER.info(bcvlbt);
 			String transaccion = "Transaccion ref:"+bcvlbt.getReferencia();  
@@ -1224,6 +1253,7 @@ public class CceTransaccionController {
 		model.addAttribute(LISTAERROR, listaError);
 		model.addAttribute("listaAprobado", listaAprobado);
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARAPROBARALTOVALORLOTEAUTOMATICOF);
+		httpSession.setMaxInactiveInterval(180);
 		return URLRESULTADOAPROBARSELECCION;
 	}	
 	
@@ -1236,7 +1266,7 @@ public class CceTransaccionController {
 		}
 		List<String> listaError = new ArrayList<>();
 		List<String> listaAprobado = new ArrayList<>();
-		
+		httpSession.setMaxInactiveInterval(3600);
 		List<BCVLBT> listaBCVLBTPorAprobar = getListaBCVLTSeleccionadosTrue((List<BCVLBT>)httpSession.getAttribute(LISTABCVLBTPORAPROBARSELECCION));
 		for (BCVLBT bcvlbt : listaBCVLBTPorAprobar) {
 			LOGGER.info(bcvlbt);
@@ -1253,10 +1283,14 @@ public class CceTransaccionController {
 			
 		}
 		
-		
+		String mensajeError = "El total de trasnacciones fallidas son "+listaError.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		model.addAttribute(MENSAJEERROR, mensajeError);
 		model.addAttribute(LISTAERROR, listaError);
+		String mensaje = "El total de transacciones aprobadas son "+listaAprobado.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		model.addAttribute("mensaje", mensaje);
 		model.addAttribute("listaAprobado", listaAprobado);
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARAPROBARALTOVALORLOTESELECCIONF);
+		httpSession.setMaxInactiveInterval(180);
 		return URLRESULTADOAPROBARSELECCION;
 	}
 	
@@ -1522,10 +1556,20 @@ public class CceTransaccionController {
     public List<BCVLBT> convertirListaBCVLT(List<BCVLBT> listaTransacciones){
 		for (BCVLBT bcvlbt : listaTransacciones) {
 			bcvlbt.setMontoString(libreriaUtil.formatNumber(bcvlbt.getMonto()));
+			bcvlbt.setFechaTransaccion(convetirFecha(bcvlbt.getFechaTransaccion()));	
 		}
 	
 		return listaTransacciones;
 	}
+    
+    public String convetirFecha(String fechaTransaccion) {
+    	if(fechaTransaccion != null) {
+			LOGGER.info(fechaTransaccion);
+			return fechaTransaccion.substring(0,19);
+		}else {
+			return fechaTransaccion;
+		}
+    }
     
     public List<BCVLBT> convertirListaBCVLTSeleccionadosTrue(List<BCVLBT> listaTransacciones){
 		for (BCVLBT bcvlbt : listaTransacciones) {
@@ -1623,8 +1667,10 @@ public class CceTransaccionController {
         while(it.hasNext() && encontrado) {
         	BCVLBT bcvlbt = it.next();
         	LOGGER.info(bcvlbt.getReferencia());
-        	if(!bcvlbt.isSeleccionado())
-				encontrado = false;
+        	if(!bcvlbt.isSeleccionado()) {
+        		encontrado = false;
+        	}
+				
         }
 		
 		

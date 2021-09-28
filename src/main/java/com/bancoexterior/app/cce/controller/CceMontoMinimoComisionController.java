@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bancoexterior.app.cce.dto.CceMontoMinimoComisionDto;
+import com.bancoexterior.app.cce.model.CceHistorialMontoMinimoComision;
 import com.bancoexterior.app.cce.model.CceMontoMinimoComision;
+import com.bancoexterior.app.cce.service.ICceHistorialMontoMinimoComisionService;
 import com.bancoexterior.app.cce.service.ICceMontoMinimoComisionService;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
@@ -36,6 +38,9 @@ public class CceMontoMinimoComisionController {
 	
 	@Autowired
 	private ICceMontoMinimoComisionService service;
+	
+	@Autowired
+	private ICceHistorialMontoMinimoComisionService serviceHistorial;
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil;
@@ -53,6 +58,10 @@ public class CceMontoMinimoComisionController {
 	private static final String MONTOMINIMOCOMISIONCONTROLLERINDEXI = "[==== INICIO Index MontoMinimoComision Consultas - Controller ====]";
 	
 	private static final String MONTOMINIMOCOMISIONCONTROLLERINDEXF = "[==== FIN Index MontoMinimoComision Consultas - Controller ====]";
+	
+	private static final String MONTOMINIMOCOMISIONCONTROLLERHISTORIALI = "[==== INICIO Historial MontoMinimoComision Consultas - Controller ====]";
+	
+	private static final String MONTOMINIMOCOMISIONCONTROLLERHISTORIALF = "[==== FIN Historial MontoMinimoComision Consultas - Controller ====]";
 	
 	private static final String MENSAJEERROR = "mensajeError";
 	
@@ -97,13 +106,34 @@ public class CceMontoMinimoComisionController {
 		}else {
 			convertirLista(listCceMontoMinimoComision);
 		}
-		
+		guardarAuditoria("index", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 		model.addAttribute("listCceMontoMinimoComision", listCceMontoMinimoComision);
 		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERINDEXF);
 		return "cce/comisionMinima/listaMontosComisionMinima";
 		
 	}	
 	
+	@GetMapping("/historial")
+	public String historial(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERHISTORIALI);
+		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
+			LOGGER.info(NOTIENEPERMISO);
+			return URLNOPERMISO;
+		}
+		
+		List<CceHistorialMontoMinimoComision> listCceHistorialMontoMinimoComision = serviceHistorial.findAll();
+		
+		if(listCceHistorialMontoMinimoComision.isEmpty()) {
+			model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+		}else {
+			convertirListaHistorial(listCceHistorialMontoMinimoComision);
+		}
+		guardarAuditoria("historial", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+		model.addAttribute("listCceHistorialMontoMinimoComision", listCceHistorialMontoMinimoComision);
+		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERHISTORIALF);
+		return "cce/comisionMinima/listaHistorialMontosComisionMinima";
+			
+	}	
 	
 	@GetMapping("/edit")
 	public String editMontoMinimoComision(@RequestParam("id") int id, Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
@@ -170,6 +200,15 @@ public class CceMontoMinimoComisionController {
 		}
 		
 		return listCceMontoMinimoComision;
+	}
+	
+	public List<CceHistorialMontoMinimoComision> convertirListaHistorial(List<CceHistorialMontoMinimoComision> listCceHistorialMontoMinimoComision){
+		
+		for (CceHistorialMontoMinimoComision cceHistorialMontoMinimoComision : listCceHistorialMontoMinimoComision) {
+			cceHistorialMontoMinimoComision.setMontoString(libreriaUtil.formatNumber(cceHistorialMontoMinimoComision.getMonto()));
+		}
+		
+		return listCceHistorialMontoMinimoComision;
 	}
 	
 	@ModelAttribute

@@ -1,5 +1,7 @@
 package com.bancoexterior.app.cce.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -38,5 +40,10 @@ public interface ICceTransaccionService {
     
     public List<CceTransaccionDto> consultaMovimientosPorAprobarAltoValor();
     
+    public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(String codTransaccion, String bancoDestino, String numeroIdentificacion, 
+			String fechaDesde, String fechaHasta, int page);
+    
+    
+    public ByteArrayInputStream exportAllData(List<CceTransaccionDto> listaTransaccionesDto) throws IOException;
     
 }

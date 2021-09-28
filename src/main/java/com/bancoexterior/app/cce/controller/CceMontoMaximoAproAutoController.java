@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bancoexterior.app.cce.dto.CceMontoMaximoAproAutoDto;
+import com.bancoexterior.app.cce.model.CceHistorialMontoMaximoAproAuto;
 import com.bancoexterior.app.cce.model.CceMontoMaximoAproAuto;
+import com.bancoexterior.app.cce.service.ICceHistorialMontoMaximoAproAutoService;
 import com.bancoexterior.app.cce.service.ICceMontoMaximoAproAutoService;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
@@ -37,6 +39,9 @@ public class CceMontoMaximoAproAutoController {
 	
 	@Autowired
 	private ICceMontoMaximoAproAutoService service;
+	
+	@Autowired
+	private ICceHistorialMontoMaximoAproAutoService serviceHistorial;
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil;
@@ -106,6 +111,28 @@ public class CceMontoMaximoAproAutoController {
 		
 	}	
 	
+	@GetMapping("/historial")
+	public String historial(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+		LOGGER.info(MONTOMAXIMOAPROAUTOCONTROLLERINDEXI);
+		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
+			LOGGER.info(NOTIENEPERMISO);
+			return URLNOPERMISO;
+		}
+		
+		List<CceHistorialMontoMaximoAproAuto> listaCceHistorialMontoMaximoAproAuto = serviceHistorial.findAll();
+		if(listaCceHistorialMontoMaximoAproAuto.isEmpty()) {
+			model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+		}else {
+			convertirListaHistorial(listaCceHistorialMontoMaximoAproAuto);
+		}
+		
+		model.addAttribute("listaCceHistorialMontoMaximoAproAuto", listaCceHistorialMontoMaximoAproAuto); 
+		guardarAuditoria("historial", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+		LOGGER.info(MONTOMAXIMOAPROAUTOCONTROLLERINDEXF);
+		return "cce/aprobacionAutomatica/listaHistorialMontosAprobacionAutomatica";
+		
+	}
+	
 	
 	@GetMapping("/edit")
 	public String editMontoComisionCastigo(@RequestParam("id") int id, Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
@@ -167,6 +194,14 @@ public class CceMontoMaximoAproAutoController {
 		}
 		
 		return listaCceMontoMaximoAproAuto;
+	}
+	
+	public List<CceHistorialMontoMaximoAproAuto> convertirListaHistorial(List<CceHistorialMontoMaximoAproAuto> listaCceHistorialMontoMaximoAproAuto){
+		for (CceHistorialMontoMaximoAproAuto cceHistorialMontoMaximoAproAuto : listaCceHistorialMontoMaximoAproAuto) {
+			cceHistorialMontoMaximoAproAuto.setMontoString(libreriaUtil.formatNumber(cceHistorialMontoMaximoAproAuto.getMonto()));
+		}
+		
+		return listaCceHistorialMontoMaximoAproAuto;
 	}
 	
 	@ModelAttribute

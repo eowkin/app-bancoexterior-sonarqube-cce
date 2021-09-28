@@ -1,5 +1,6 @@
 package com.bancoexterior.app.convenio.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -15,6 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.bancoexterior.app.convenio.dto.AcumuladoCompraVentaResponse;
 import com.bancoexterior.app.convenio.dto.AcumuladoRequest;
 import com.bancoexterior.app.convenio.dto.AcumuladoResponse;
@@ -45,7 +50,6 @@ import com.bancoexterior.app.convenio.model.Venta;
 import com.bancoexterior.app.convenio.service.IAcumuladosServiceApiRest;
 import com.bancoexterior.app.convenio.service.IMonedaServiceApiRest;
 import com.bancoexterior.app.convenio.service.IMovimientosApiRest;
-import com.bancoexterior.app.util.ConsultaExcelExporter;
 import com.bancoexterior.app.util.LibreriaUtil;
 
 
@@ -241,6 +245,10 @@ public class SolicitudController {
 	private static final String SOLICITUDCONTROLLERLISTACONSULTASEARCHESTATUSCOMPRAI = "[==== INICIO ListaConsultaSearchEstatusCompra Movimientos Consultas - Controller ====]";
 	
 	private static final String SOLICITUDCONTROLLERLISTACONSULTASEARCHESTATUSCOMPRAF = "[==== FIN ListaConsultaSearchEstatusCompra Movimientos Consultas - Controller ====]";
+	
+	private static final String REDIRECTEXPORTEXCELLALL = "redirect:/solicitudes/export/all";
+	
+	private static final String LISTATRANSACCIONESEXCELCONVENIO = "listaTransaccionesConvenio";
 	
 	@GetMapping("/listaSolicitudesMovimientosPorAprobarVentas/{page}")
 	public String consultaMovimientoPorAprobarVenta(@PathVariable("page") int page,Model model, HttpSession httpSession) {
@@ -1128,7 +1136,7 @@ public class SolicitudController {
 	@GetMapping("/precesarConsulta/export/excel")
     public String procesarExportToExcelConsulta(Movimiento movimiento, BindingResult result, Model model, 
     		RedirectAttributes redirectAttributes, HttpServletResponse response, HttpSession httpSession){
-		LOGGER.info("exportToExcelConsulta");
+		LOGGER.info(SOLICITUDCONTROLLEREXPORTEXCELI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
@@ -1162,7 +1170,7 @@ public class SolicitudController {
 					result.addError(new ObjectError(LISTAERROR, MENSAJEFECHASINVALIDAS));
 					listaError.add(MENSAJEFECHASINVALIDAS);
 					model.addAttribute(LISTAERROR, listaError);
-					
+					return URLFORMSOLICITUDGENERARREPORTE;
 				}
 			}
 			
@@ -1173,17 +1181,23 @@ public class SolicitudController {
 			if(responseVenta != null) {
 				listaMovimientos = responseVenta.getMovimientos();
 				if(!listaMovimientos.isEmpty()) {
-					exportToExcelConsulta(listaMovimientos, response);
+					httpSession.setAttribute(LISTATRANSACCIONESEXCELCONVENIO, listaMovimientos);
+					return REDIRECTEXPORTEXCELLALL;
 				}else {
 					MonedasRequest monedasRequest = getMonedasRequest();
 					Moneda moneda = new Moneda();
 					moneda.setFlagActivo(true);
 					monedasRequest.setMoneda(moneda);
-					model.addAttribute(LISTAERROR, monedaServiceApiRest.listaMonedas(monedasRequest));
+					model.addAttribute(LISTAMONEDAS, monedaServiceApiRest.listaMonedas(monedasRequest));
 					result.addError(new ObjectError(LISTAERROR, MENSAJENORESULTADO));
 					model.addAttribute(LISTAERROR, MENSAJENORESULTADO);
 				}
 			}else {
+				MonedasRequest monedasRequest = getMonedasRequest();
+				Moneda moneda = new Moneda();
+				moneda.setFlagActivo(true);
+				monedasRequest.setMoneda(moneda);
+				model.addAttribute(LISTAMONEDAS, monedaServiceApiRest.listaMonedas(monedasRequest));
 				result.addError(new ObjectError(LISTAERROR, MENSAJENORESULTADO));
 				model.addAttribute(LISTAERROR, MENSAJENORESULTADO);
 			}
@@ -1192,6 +1206,8 @@ public class SolicitudController {
 			result.addError(new ObjectError(LISTAERROR,e.getMessage()));
 			 listaError.add(e.getMessage());
 			 model.addAttribute(LISTAERROR, listaError);			
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 		}
 		
 		return URLFORMSOLICITUDGENERARREPORTE;
@@ -1211,31 +1227,21 @@ public class SolicitudController {
 		return filtros;
 	}
 	
-    public void exportToExcelConsulta(List<Movimiento> listaMovimientos, HttpServletResponse response) {
-    	LOGGER.info(SOLICITUDCONTROLLEREXPORTEXCELI);
-        	
+    @GetMapping("/export/all")
+    public ResponseEntity<InputStreamResource> exportAllData(HttpSession httpSession) throws IOException{
+    	
+    	List<Movimiento> listaMovimientos =(List<Movimiento>)httpSession.getAttribute(LISTATRANSACCIONESEXCELCONVENIO);
+    	ByteArrayInputStream stream = movimientosApiRest.exportAllData(listaMovimientos);
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+		HttpHeaders headers = new HttpHeaders();
 		
 		
-				response.setContentType("application/octet-stream");
-		        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-		        String currentDateTime = dateFormatter.format(new Date());
-		         
-		        String headerKey = "Content-Disposition";
-		        String headerValue = "attachment; filename=movimientosconsulta_" + currentDateTime + ".xlsx";
-		        response.setHeader(headerKey, headerValue);
-		        ConsultaExcelExporter excelExporter = new ConsultaExcelExporter(listaMovimientos); 
-		        try {
-					excelExporter.export(response);
-					response.getOutputStream().flush();
-					 response.getOutputStream().close();
-					 LOGGER.info(SOLICITUDCONTROLLEREXPORTEXCELF);
-				} catch (IOException e) {
-					LOGGER.error(e.getMessage());
-				}
 		
+		headers.add("Content-Disposition", "attachment; filename=transaccionesconsultaMonitor_" + currentDateTime + ".xlsx");
+		LOGGER.info(SOLICITUDCONTROLLEREXPORTEXCELF);
+		return ResponseEntity.ok().headers(headers).body(new InputStreamResource(stream));
     }
-	
-    
 	
 	
 	

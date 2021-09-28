@@ -94,6 +94,8 @@ public class CceTransaccionDto implements Serializable{
 	
 	private BigDecimal montoHasta;
 	
+	private String montoString;
+	
 	/**
 	 * 
 	 */

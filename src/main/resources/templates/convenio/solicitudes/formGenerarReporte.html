@@ -13,6 +13,8 @@
   </head>
   <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
     <header class="app-header navbar" th:insert="fragments/header :: header">
+       
+      
     </header>
     <div class="app-body">
       <div class="sidebar" th:insert="fragments/menu :: menu-principal">
@@ -27,36 +29,28 @@
           <div class="animated fadeIn">
 		    <div class="card">
 		      <div class="card-header">
-		        <strong>Resultado Aprobar Transacciones</strong>
+		        <strong>Generar Reporte Solicitudes</strong>
 		      </div>
 		      <div class="card-body">
-		      		
-		      	  <div th:if="${listaAprobado != null}" class="alert alert-success" role="alert">
-		            		Resultado Transacciones Aprobadas:
-		            		<div th:if="${mensaje != null}" class="alert alert-success" th:text="${mensaje}" role="alert"></div>
-		            		<ul>
-		            			<li th:each="valor : ${listaAprobado}"  th:text="${valor}"></li>
-		            		</ul>
-		            	</div>
-		          <div th:if="${listaError != null}" class="alert alert-danger" role="alert">
-		            		Resultado Transacciones No Aprobadas Error:
-		            		<div th:if="${mensajeError != null}" class="alert alert-danger" th:text="${mensajeError}" role="alert"></div>
+		        <form  th:action = "@{/solicitudes/precesarConsulta/export/excel}"   method="get" th:object="${movimiento}"   class="form-horizontal">
+		          <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+		            		Por favor corrija los siguientes errores:
 		            		<ul>
 		            			<li th:each="error : ${listaError}"  th:text="${error}"></li>
 		            		</ul>
 		            	</div>
+
+		         
+		          
 		          <div class="card-footer">
-		        	<div class="card-footer">
-			      	 
-			         <a class="btn btn-primary" th:href="@{/ccetransacciones/formConsultaOperacionesAprobarAltoBajoValor}" title="Volver" role="button">Volver</a>
-			         
-			      </div>
+		        	<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-circle-o" aria-hidden="true"></i> Exportar</button>
+		        	<a   class="btn btn-sm btn-danger" role="button" th:href="@{/solicitudes/listaSolicitudesMovimientosVentas/1}"><i class="fa fa-ban" aria-hidden="true"></i>Cancelar</a>
 		      	  </div>
-		      
+		        </form>
 		      </div>
 		      
 		    </div>
-		  </div><!--/.col--> <!--/.animated fadeIn-->
+		  </div><!--/.col-->
         </div>
       </main>
       
@@ -71,6 +65,7 @@
     <script th:src="@{/node_modules/pace-progress/pace.min.js}"></script>
     <script th:src="@{/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui/dist/js/coreui.min.js}"></script>
+    <script th:src="@{/node_modules/@fortawesome/fontawesome-free/js/all.js}" type="text/javascript"></script>
     <!-- Plugins and scripts required by this view-->
     <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>

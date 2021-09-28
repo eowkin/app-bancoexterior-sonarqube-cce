@@ -1,5 +1,7 @@
 package com.bancoexterior.app.convenio.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import com.bancoexterior.app.convenio.dto.AprobarRechazarRequest;
 import com.bancoexterior.app.convenio.dto.MovimientosRequest;
@@ -24,4 +26,6 @@ public interface IMovimientosApiRest {
 	public String rechazarVenta(AprobarRechazarRequest aprobarRechazarRequest) throws CustomException;
 	
 	public String aprobarVenta(AprobarRechazarRequest aprobarRechazarRequest) throws CustomException;
+	
+	public ByteArrayInputStream exportAllData(List<Movimiento> listaMovimientos) throws IOException;
 }

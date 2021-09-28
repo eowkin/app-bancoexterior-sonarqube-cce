@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bancoexterior.app.cce.dto.CceMontoComisionCastigoDto;
+import com.bancoexterior.app.cce.model.CceHistorialMontoComisionCastigo;
 import com.bancoexterior.app.cce.model.CceMontoComisionCastigo;
+import com.bancoexterior.app.cce.service.ICceHistorialMontoComisionCastigoService;
 import com.bancoexterior.app.cce.service.ICceMontoComisionCastigoService;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
@@ -37,6 +39,9 @@ public class CceMontoComisionCastigoController {
 	
 	@Autowired
 	private ICceMontoComisionCastigoService service;
+	
+	@Autowired
+	private ICceHistorialMontoComisionCastigoService serviceHistorial;
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil;
@@ -54,6 +59,10 @@ public class CceMontoComisionCastigoController {
 	private static final String MONTOCOMISIONCASTIGOCONTROLLERINDEXI = "[==== INICIO Index MontoComisionCastigo Consultas - Controller ====]";
 	
 	private static final String MONTOCOMISIONCASTIGOCONTROLLERINDEXF = "[==== FIN Index MontoComisionCastigo Consultas - Controller ====]";
+	
+	private static final String MONTOCOMISIONCASTIGOCONTROLLERHISTORIALI = "[==== INICIO Historial MontoComisionCastigo Consultas - Controller ====]";
+	
+	private static final String MONTOCOMISIONCASTIGOCONTROLLERHISTORIALF = "[==== FIN Historial MontoComisionCastigo Consultas - Controller ====]";
 	
 	private static final String MONTOCOMISIONCASTIGOCONTROLLEREDITI = "[==== INICIO Edit MontoComisionCastigo - Controller ====]";
 	
@@ -102,6 +111,27 @@ public class CceMontoComisionCastigoController {
 		model.addAttribute("listaCceMontoComisionCastigo", listaCceMontoComisionCastigo); 
 		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERINDEXF);
 		return "cce/comisionCastigo/listaMontosComisionCastigo";
+	}
+	
+	@GetMapping("/historial")
+	public String historial(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERHISTORIALI);
+		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
+			LOGGER.info(NOTIENEPERMISO);
+			return URLNOPERMISO;
+		}
+		
+		List<CceHistorialMontoComisionCastigo> listaCceHistorialMontoComisionCastigo = serviceHistorial.findAll();
+		if(listaCceHistorialMontoComisionCastigo.isEmpty()) {
+			model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+		}else {
+			convertirListaHistorial(listaCceHistorialMontoComisionCastigo);
+		}
+		
+		guardarAuditoria("historial", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+		model.addAttribute("listaCceHistorialMontoComisionCastigo", listaCceHistorialMontoComisionCastigo); 
+		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERHISTORIALF);
+		return "cce/comisionCastigo/listaHistorialMontosComisionCastigo";
 	}
 	
 	@GetMapping("/edit")
@@ -171,6 +201,14 @@ public class CceMontoComisionCastigoController {
 		}
 		
 		return listaCceMontoComisionCastigo;
+	}
+	
+	public List<CceHistorialMontoComisionCastigo> convertirListaHistorial(List<CceHistorialMontoComisionCastigo> listaCceHistorialMontoComisionCastigo){
+		for (CceHistorialMontoComisionCastigo cceHistorialMontoComisionCastigo : listaCceHistorialMontoComisionCastigo) {
+			cceHistorialMontoComisionCastigo.setMontoString(libreriaUtil.formatNumber(cceHistorialMontoComisionCastigo.getMonto()));
+		}
+		
+		return listaCceHistorialMontoComisionCastigo;
 	}
 	
 	

@@ -1,11 +1,22 @@
 package com.bancoexterior.app.convenio.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -94,7 +105,14 @@ public class MovimientosApiRestImpl implements IMovimientosApiRest{
 	
 	private static final String MOVIMIENTOSSERVICEGETLISTAMOVIMIENTOSF = "[==== FIN GetListaMovimientos Movimientos Consultas- Service ====]";
     
-    
+	public static final char COMA                                 = ',';
+	
+	public static final char PUNTO                                = '.';
+	
+	public static final String NUMEROFORMAT                       = "#,##0.00";
+	
+	
+	
     public WSRequest getWSRequest() {
     	WSRequest wsrequest = new WSRequest();
     	wsrequest.setConnectTimeout(connectTimeout);
@@ -184,8 +202,12 @@ public class MovimientosApiRestImpl implements IMovimientosApiRest{
 		String movimientosRequestJSON;
 		movimientosRequestJSON = new Gson().toJson(movimientosRequest);
 		wsrequest.setBody(movimientosRequestJSON);
+		LOGGER.info(movimientosRequestJSON);
 		wsrequest.setUrl(urlConsultarMovimientos);
+		LOGGER.info(urlConsultarMovimientos);
 		retorno = wsService.post(wsrequest);
+		LOGGER.info("luego retorno");
+		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(MOVIMIENTOSSERVICECONSULTARMOVIMIENTOSF);
@@ -402,5 +424,163 @@ public class MovimientosApiRestImpl implements IMovimientosApiRest{
 			return null;
 		}
 	}
+
+
+	@Override
+	public ByteArrayInputStream exportAllData(List<Movimiento> listaMovimientos) throws IOException{
+		
+		String[] columns = { "Cod. Operacion", "Fecha Operacion", "Codigo Moneda", "Codigo Ibs", "Nro IdCliente", "Cuenta en divisas", "Cuenta en Bolivares", 
+				"Monto Divisa", "Monto Bs", "Tasa Cliente", "Tasa Operacion", "Monto Bs Operacion", "Referencia Debito", "Referencia Credito", "Tipo Transaccion", 
+				"Estatus", "Fecha Liquidacion", "Tipo Pacto" };
+
+		
+	    XSSFSheet sheet;
+	    try(XSSFWorkbook workbook = new XSSFWorkbook();
+		   ByteArrayOutputStream stream = new ByteArrayOutputStream();) {
+	    	
+
+			sheet = workbook.createSheet("Transacciones");
+			Row row = sheet.createRow(0);
+			
+			
+			CellStyle style = workbook.createCellStyle();
+			XSSFFont font = workbook.createFont();
+	        font.setBold(true);
+	        font.setFontHeight(16);
+	        style.setFont(font);
+			
+			for (int i = 0; i < columns.length; i++) {
+				sheet.autoSizeColumn(i);
+				Cell cell = row.createCell(i);
+				cell.setCellValue(columns[i]);
+				cell.setCellStyle(style);
+			}
+
+			
+			int initRow = 1;
+			CellStyle style2 = workbook.createCellStyle();
+			XSSFFont font2 = workbook.createFont();
+	        font2.setBold(false);
+	        font2.setFontHeight(14);
+	        style2.setFont(font2);
+	       
+			for (Movimiento movimiento : listaMovimientos) {
+				sheet.autoSizeColumn(initRow);
+				row = sheet.createRow(initRow);
+				Cell cell = row.createCell(0);
+				cell.setCellValue(movimiento.getCodOperacion());
+				cell.setCellStyle(style2);
+				Cell cell1 = row.createCell(1);
+				cell1.setCellValue(movimiento.getFechaOperacion());
+				cell1.setCellStyle(style2);
+				Cell cell2 = row.createCell(2);
+				cell2.setCellValue(movimiento.getCodMoneda());
+				cell2.setCellStyle(style2);
+				Cell cell3 = row.createCell(3);
+				cell3.setCellValue(movimiento.getCodigoIbs());
+				cell3.setCellStyle(style2);
+				Cell cell4 = row.createCell(4);
+				cell4.setCellValue(movimiento.getNroIdCliente());
+				cell4.setCellStyle(style2);
+				Cell cell5 = row.createCell(5);
+				cell5.setCellValue(movimiento.getCuentaDivisa());
+				cell5.setCellStyle(style2);
+				Cell cell6 = row.createCell(6);
+				cell6.setCellValue(movimiento.getCuentaNacional());
+				cell6.setCellStyle(style2);
+				Cell cell7 = row.createCell(7);
+				cell7.setCellValue(formatNumber(movimiento.getMontoDivisa()));
+				cell7.setCellStyle(style2);
+				Cell cell8 = row.createCell(8);
+				cell8.setCellValue(formatNumber(movimiento.getMontoBsCliente()));
+				cell8.setCellStyle(style2);
+				Cell cell9 = row.createCell(9);
+				cell9.setCellValue(formatNumber(movimiento.getTasaCliente()));
+				cell9.setCellStyle(style2);
+				Cell cell10 = row.createCell(10);
+				cell10.setCellValue(formatNumber(movimiento.getTasaOperacion()));
+				cell10.setCellStyle(style2);
+				Cell cell11 = row.createCell(11);
+				cell11.setCellValue(formatNumber(movimiento.getMontoBsOperacion()));
+				cell11.setCellStyle(style2);
+				Cell cell12 = row.createCell(12);
+				cell12.setCellValue(movimiento.getReferenciaDebito());
+				cell12.setCellStyle(style2);
+				Cell cell13 = row.createCell(13);
+				cell13.setCellValue(movimiento.getReferenciaCredito());
+				cell13.setCellStyle(style2);
+				Cell cell14 = row.createCell(14);
+				cell14.setCellValue(compraVenta(movimiento.getTipoTransaccion()));
+				cell14.setCellStyle(style2);
+				Cell cell15 = row.createCell(15);
+				cell15.setCellValue(getEstatus(movimiento.getEstatus()));
+				cell15.setCellStyle(style2);
+				Cell cell16 = row.createCell(16);
+				cell16.setCellValue(movimiento.getFechaValor());
+				cell16.setCellStyle(style2);
+				Cell cell17 = row.createCell(17);
+				cell17.setCellValue(movimiento.getTipoPacto());
+				cell17.setCellStyle(style2);
+				initRow++;
+			}
+			
+			workbook.write(stream);
+			
+			return new ByteArrayInputStream(stream.toByteArray());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return null;
+		} 
+		
+
+		
+		
+		
+
+		
+	}
+	
+	public String compraVenta(String tipoTransaccion) {
+    	String valor = ""; 
+    	if(tipoTransaccion.equals("C")) {
+    		valor = "Compra"; 
+         }else {
+        	 valor = "Venta";
+         }
+    	return valor;
+    }
+	
+	public String getEstatus(Integer estatus) {
+    	String valor = ""; 
+    	if(estatus == 0) {
+    		valor = "Por Aprobar";
+        }else {
+        	if(estatus == 1) {
+        		valor = "Aprobada Automática";
+            }else {
+            	if(estatus == 2) {
+            		valor = "Aprobada Funcional";
+                }else {
+                	if(estatus == 3) {
+                		valor = "Rechazada Automática";
+                    }else {
+                    	valor = "Rechazada Funcional";
+                    }
+                }
+            }
+        }
+    	return valor;
+    }
+	
+	public  String formatNumber(BigDecimal numero) {
+		
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator(COMA);
+        decimalFormatSymbols.setGroupingSeparator(PUNTO);
+        DecimalFormat df = new DecimalFormat(NUMEROFORMAT, decimalFormatSymbols);
+        
+         return df.format(numero);
+        
+    }
 
 }
