@@ -96,6 +96,10 @@ public class CceTransaccionDto implements Serializable{
 	
 	private String montoString;
 	
+	private int tipoTransaccionInt;
+	
+	private boolean envio;
+	
 	/**
 	 * 
 	 */

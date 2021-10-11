@@ -1174,10 +1174,12 @@ public class SolicitudController {
 				}
 			}
 			
-			
+			httpSession.setMaxInactiveInterval(3600);
 			
 			movimientosRequest.setFiltros(filtros);
+			LOGGER.info("COMIENZA LA CONSULTA");
 			MovimientosResponse responseVenta = movimientosApiRest.consultarMovimientos(movimientosRequest);
+			LOGGER.info("FIN LA CONSULTA");
 			if(responseVenta != null) {
 				listaMovimientos = responseVenta.getMovimientos();
 				if(!listaMovimientos.isEmpty()) {

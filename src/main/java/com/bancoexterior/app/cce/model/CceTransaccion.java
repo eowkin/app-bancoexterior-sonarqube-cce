@@ -13,7 +13,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 
-
+import org.springframework.data.annotation.AccessType;
+import org.springframework.data.annotation.AccessType.Type;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -147,5 +148,7 @@ public class CceTransaccion {
 	
 	@Transient
 	private String montoString;
-
+	
+	@AccessType(Type.FIELD)
+	private boolean envio;
 }

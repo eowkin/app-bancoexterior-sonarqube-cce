@@ -117,13 +117,13 @@
 		            <nav th:if="${datosPaginacion.totalPaginas > 0}" aria-label="Page navigation example" > 
 		            	<ul class="pagination justify-content-center">         
 		            		<li class="page-item" th:classappend="${datosPaginacion.paginaActual == 1 ? 'disabled' : ''}">
-		            			<a th:href="@{/ccetransacciones/consultaOperacionesAprobarAltoBajoValorPageable(page=${datosPaginacion.paginaActual - 1}, montoDesde=${montoDesde}, montoHasta=${montoHasta}, bancoEmisor=${bancoEmisor}, nroIdEmisor=${nroIdEmisor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Anterior</a>
+		            			<a th:href="@{/ccetransacciones/consultaOperacionesAprobarPage(page=${datosPaginacion.paginaActual - 1}, montoDesde=${montoDesde}, montoHasta=${montoHasta}, bancoEmisor=${bancoEmisor}, nroIdEmisor=${nroIdEmisor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Anterior</a>
 		            		</li> 
 		            		<li class="page-item">
 								<a class="page-link"  th:text="${'Pagina '+ datosPaginacion.paginaActual + ' -  '+ datosPaginacion.totalPaginas}" th:title="${'Page '+ datosPaginacion.paginaActual}" data-toggle="tooltip"></a>
 							</li>
 		            		<li class="page-item" th:classappend="${datosPaginacion.paginaActual == (datosPaginacion.totalPaginas) ? 'disabled' : ''}">
-		            			<a th:href="@{/ccetransacciones/consultaOperacionesAprobarAltoBajoValorPageable(page=${datosPaginacion.paginaActual + 1}, montoDesde=${montoDesde}, montoHasta=${montoHasta}, bancoEmisor=${bancoEmisor}, nroIdEmisor=${nroIdEmisor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Siguiente</a>
+		            			<a th:href="@{/ccetransacciones/consultaOperacionesAprobarPage(page=${datosPaginacion.paginaActual + 1}, montoDesde=${montoDesde}, montoHasta=${montoHasta}, bancoEmisor=${bancoEmisor}, nroIdEmisor=${nroIdEmisor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Siguiente</a>
 		            		</li>  
 		            	</ul> 
 		            </nav>	

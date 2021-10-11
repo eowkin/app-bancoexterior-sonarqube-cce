@@ -202,12 +202,8 @@ public class MovimientosApiRestImpl implements IMovimientosApiRest{
 		String movimientosRequestJSON;
 		movimientosRequestJSON = new Gson().toJson(movimientosRequest);
 		wsrequest.setBody(movimientosRequestJSON);
-		LOGGER.info(movimientosRequestJSON);
 		wsrequest.setUrl(urlConsultarMovimientos);
-		LOGGER.info(urlConsultarMovimientos);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info("luego retorno");
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(MOVIMIENTOSSERVICECONSULTARMOVIMIENTOSF);

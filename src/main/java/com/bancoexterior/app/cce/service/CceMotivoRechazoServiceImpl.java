@@ -29,6 +29,7 @@ public class CceMotivoRechazoServiceImpl implements ICceMotivoRechazoService{
 		CceMotivoRechazo cceMotivoRechazo = mapper.map(cceMotivoRechazoDto, CceMotivoRechazo.class);
 		CceMotivoRechazo cceMotivoRechazoSave = repo.save(cceMotivoRechazo);
 		return mapper.map(cceMotivoRechazoSave, CceMotivoRechazoDto.class);
+	
 	}
 
 	@Override

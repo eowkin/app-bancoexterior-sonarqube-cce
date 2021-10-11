@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,12 +37,14 @@ import com.bancoexterior.app.cce.dto.AprobacionRequest;
 import com.bancoexterior.app.cce.dto.AprobacionesConsultasRequest;
 import com.bancoexterior.app.cce.dto.AprobacionesConsultasResponse;
 import com.bancoexterior.app.cce.dto.BancoRequest;
+import com.bancoexterior.app.cce.dto.CceTipoTransaccionDto;
 import com.bancoexterior.app.cce.dto.CceTransaccionDto;
 import com.bancoexterior.app.cce.dto.FiToFiCustomerCreditTransferRequest;
 import com.bancoexterior.app.cce.dto.Sglbtr;
 import com.bancoexterior.app.cce.model.BCVLBT;
 import com.bancoexterior.app.cce.model.Banco;
 import com.bancoexterior.app.cce.model.CceMontoMaximoAproAuto;
+import com.bancoexterior.app.cce.model.CceTipoTransaccion;
 import com.bancoexterior.app.cce.model.CceTransaccion;
 import com.bancoexterior.app.cce.model.Cuenta;
 import com.bancoexterior.app.cce.model.DatosAprobacion;
@@ -58,6 +59,7 @@ import com.bancoexterior.app.cce.model.PmtInfObject;
 import com.bancoexterior.app.cce.service.IBancoService;
 import com.bancoexterior.app.cce.service.IBcvlbtService;
 import com.bancoexterior.app.cce.service.ICceMontoMaximoAproAutoService;
+import com.bancoexterior.app.cce.service.ICceTipoTransaccionService;
 import com.bancoexterior.app.cce.service.ICceTransaccionService;
 import com.bancoexterior.app.convenio.exception.CustomException;
 import com.bancoexterior.app.convenio.response.Resultado;
@@ -97,10 +99,14 @@ public class CceTransaccionController {
 	@Autowired
 	private IAuditoriaService auditoriaService;
 	
-	private static final String URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR = "cce/formConsultarMovimientosAltoBajoValor";
+	private static final String URLFORMCONSULTAMOVIMIENTOS = "cce/formConsultarMovimientosAltoBajoValor";
 	
 	@Autowired
 	private ICceMontoMaximoAproAutoService montoMaximoAproAutoService; 
+	
+	@Autowired
+	private ICceTipoTransaccionService tipoTransaccionService;
+	
 	
 	private static final String LISTATRANSACCIONES = "listaTransacciones";
 	
@@ -118,13 +124,15 @@ public class CceTransaccionController {
 	
 	private static final String LISTABANCOS = "listaBancos";
 	
+	private static final String LISTATIPOTRANSACCION = "listaTipoTransaccion"; 
+	
 	private static final String LISTAERROR = "listaError";
 	
-	private static final String CCETRANSACCIONCONTROLLERFORMCONSULTARMOVIMIENTOSALTOBAJOVALORI = "[==== INICIO FormConsultarMovimientosAltoBajoValor CceTransaccion Consultas - Controller ====]";
+	private static final String CCETRANSACCIONCONTROLLERFORMCONSULTAMOVIMIENTOSI = "[==== INICIO FormConsultaMovimientos CceTransaccion Consultas - Controller ====]";
 	
-	private static final String CCETRANSACCIONCONTROLLERFORMCONSULTARMOVIMIENTOSALTOBAJOVALORF = "[==== FIN FormConsultarMovimientosAltoBajoValor CceTransaccion Consultas - Controller ====]";
+	private static final String CCETRANSACCIONCONTROLLERFORMCONSULTAMOVIMIENTOSF = "[==== FIN FormConsultaMovimientos CceTransaccion Consultas - Controller ====]";
 	
-	private static final String CODTRANSACCION = "codTransaccion";
+	private static final String TIPOTRANSACCION = "tipoTransaccion";
 	
 	private static final String BANCODESTINO = "bancoDestino";
 	
@@ -134,11 +142,13 @@ public class CceTransaccionController {
 	
 	private static final String FECHAHASTA = "fechaHasta";	
 	
+	private static final String SELECCION = "seleccion";
+	
 	private static final String MENSAJEERROR = "mensajeError";
 	
-	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORI = "[==== INICIO ProcesarConsultarMovimientosAltoBajoValor CceTransaccion Consultas - Controller ====]";
+	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTAMOVIMIENTOSI = "[==== INICIO ProcesarConsultaMovimientos CceTransaccion Consultas - Controller ====]";
 	
-	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORF = "[==== FIN ProcesarConsultarMovimientosAltoBajoValor CceTransaccion Consultas - Controller ====]";
+	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTAMOVIMIENTOSF = "[==== FIN ProcesarConsultaMovimientos CceTransaccion Consultas - Controller ====]";
 	
 	private static final String CCETRANSACCIONCONTROLLERCONSULTARMOVIMIENTOSALTOBAJOVALORI = "[==== INICIO ConsultarMovimientosAltoBajoValor CceTransaccion Consultas - Controller ====]";
 	
@@ -250,27 +260,25 @@ public class CceTransaccionController {
 	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
-	private static final String PROCESARCONSULTAMOVIMIENTOSALTOBAJOVALORPAGEABLE = "procesarConsultaMovimientosAltoBajoValorPageable";
+	private static final String PROCESARCONSULTAMOVIMIENTOS = "procesarConsultaMovimientos";
 	
-	private static final String FORMAPROBARMOVIMIENTOSALTOVALORAUTOMATICO = "formAprobarMovimientosAltoValorLoteAutomatico";
+	private static final String FORMCONSULTAMOVIMIENTOS = "formConsultaMovimientos";
+	
+	private static final String FORMAPROBARAUTOMATICO = "formAprobarLoteAutomatico";
 	
 	private static final String URLRESULTADOAPROBARSELECCION = "cce/resultadoAprobarSeleccion";
 	
-	@GetMapping("/listaMovimientosConsultaAltoBajoValor")
-	public String index(Model model) {
-		
-		List<CceTransaccionDto> listaTransacciones = service.consultar();
-		model.addAttribute(LISTATRANSACCIONES, listaTransacciones);   
-		return "cce/listaMovimientosConsultaAltoBajoValor";
-	}
+	private static final String CONSULTAOPERACIONESAPROBARPAGE = "consultaOperacionesAprobarPage";
 	
-	@GetMapping("/listaMovimientosConsultaAltoBajoValorPaginate")
-	public String indexPaginado(Model model, Pageable page) {
-		
-		Page<CceTransaccion> listaTransacciones = service.consultar(page);
-		model.addAttribute(LISTATRANSACCIONES, listaTransacciones);   
-		return "cce/listaMovimientosConsultaAltoBajoValorPaginateTodas";
-	}
+	private static final String SELECCIONARTODOSAPROBAROPERACIONES = "seleccionarTodosAprobarOperaciones";
+	
+	private static final String DESELECCIONARTODOSAPROBAROPERACIONES = "deseleccionarTodosAprobarOperaciones";
+	
+	private static final String SELECCIONARUNAAPROBAROPERACIONES = "seleccionarUnaAprobarOperaciones";
+	
+	private static final String DESELECCIONARUNAAPROBAROPERACIONES = "deseleccionarUnaAprobarOperaciones";
+	
+	private static final String PROCESARCONSULTAOPERACIONESAPROBAR = "procesarConsultaOperacionesAprobar";
 	
 	@GetMapping("/cargarLoader")
 	public String cargarLoaderPaginado() {
@@ -279,9 +287,9 @@ public class CceTransaccionController {
 		return "/index";
 	}
 	
-	@GetMapping("/formConsultaMovimientosConsultaAltoBajoValor")
+	@GetMapping("/formConsultaMovimientos")
 	public String formConsultaMovimientosAltoBajoValor(CceTransaccionDto cceTransaccionDto, Model model, HttpSession httpSession, HttpServletRequest request) {
-		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTARMOVIMIENTOSALTOBAJOVALORI);
+		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTAMOVIMIENTOSI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaMovimientosBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
@@ -289,23 +297,26 @@ public class CceTransaccionController {
 		BancoRequest bancoRequest = getBancoRequest();
 		
 		try {
+			
+			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
 			List<Banco> listaBancos  = bancoService.listaBancos(bancoRequest);
 			model.addAttribute(LISTABANCOS, listaBancos);
-			guardarAuditoria("formConsultaMovimientosConsultaAltoBajoValor", true, "0000", MENSAJEOPERACIONEXITOSA, request);
+			guardarAuditoria(FORMCONSULTAMOVIMIENTOS, true, "0000", MENSAJEOPERACIONEXITOSA, request);
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
 			model.addAttribute(LISTAERROR, e.getMessage());
-			guardarAuditoria("formConsultaMovimientosConsultaAltoBajoValor", false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
+			guardarAuditoria(FORMCONSULTAMOVIMIENTOS, false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
 		}
-		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTARMOVIMIENTOSALTOBAJOVALORF);
-		return URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR;
+		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTAMOVIMIENTOSF);
+		return URLFORMCONSULTAMOVIMIENTOS;
 		
 	}
 	
-	@GetMapping("/procesarConsultaMovimientosAltoBajoValorPageable")
+	@GetMapping("/procesarConsultaMovimientos")
 	public String procesarConsultaMovimientosAltoBajoValorPageable(CceTransaccionDto cceTransaccionDto, 
 			Model model, HttpSession httpSession, HttpServletRequest request) {
-		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORI);
+		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTAMOVIMIENTOSI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaMovimientosBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
@@ -318,81 +329,80 @@ public class CceTransaccionController {
 			List<String> listaError = new ArrayList<>();
 			Page<CceTransaccion> listaTransacciones;
 			
-			if(libreriaUtil.isFechaValidaDesdeHasta(cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta())){
-				LOGGER.info("hablame mano");	
-				listaTransacciones = service.consultaMovimientosConFechasPage(cceTransaccionDto.getCodTransaccion(), cceTransaccionDto.getBancoDestino(),
-					cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
 			
+			if(libreriaUtil.isFechaValidaDesdeHasta(cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta())){
 				
+				listaTransacciones = service.consultaMovimientosConFechasPageFinal(cceTransaccionDto.getTipoTransaccionInt(), cceTransaccionDto.getBancoDestino(),
+						cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
 				listaTransacciones = convertirLista(listaTransacciones);
 				
 				
-				Page<CceTransaccion> listaTransaccionesExcel = service.consultaMovimientosConFechasPageExcel(cceTransaccionDto.getCodTransaccion(), cceTransaccionDto.getBancoDestino(),
-						cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
 				
-				List<CceTransaccionDto> listaTransaccionesDto = getListaTransaccionesDto(listaTransaccionesExcel.getContent());
-				
-				
-				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesDto);	
-					
 				if(listaTransacciones.isEmpty()) {
 					model.addAttribute(LISTAERROR, MENSAJENORESULTADO);
+					List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+					model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
 					List<Banco> listaBancos  = bancoService.listaBancos(bancoRequest);
 					model.addAttribute(LISTABANCOS, listaBancos);
-					guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOSALTOBAJOVALORPAGEABLE, true, "0001",  MENSAJENORESULTADO, cceTransaccionDto, request);
-					return URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR;
+					guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOS, true, "0001",  MENSAJENORESULTADO, cceTransaccionDto, request);
+					return URLFORMCONSULTAMOVIMIENTOS;
 				}
+				
+				Page<CceTransaccion> listaTransaccionesExcelPageable = service.consultaMovimientosConFechasPageExcel(cceTransaccionDto.getTipoTransaccionInt(), cceTransaccionDto.getBancoDestino(),
+						cceTransaccionDto.getNumeroIdentificacion(),cceTransaccionDto.getFechaDesde(), cceTransaccionDto.getFechaHasta(), 0);
+				
+				List<CceTransaccion> listaTransaccionesExcel = listaTransaccionesExcelPageable.getContent();
+				
+				
+				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesExcel);
+				
 				model.addAttribute(LISTATRANSACCIONES, listaTransacciones);
-				model.addAttribute(CODTRANSACCION, cceTransaccionDto.getCodTransaccion());
+				model.addAttribute(TIPOTRANSACCION, cceTransaccionDto.getTipoTransaccionInt());
 				model.addAttribute(BANCODESTINO, cceTransaccionDto.getBancoDestino());
 				model.addAttribute(NUMEROIDENTIFICACION, cceTransaccionDto.getNumeroIdentificacion());
 				model.addAttribute(FECHADESDE, cceTransaccionDto.getFechaDesde());
 				model.addAttribute(FECHAHASTA, cceTransaccionDto.getFechaHasta());
-				model.addAttribute("seleccion", getSeleccion(cceTransaccionDto.getCodTransaccion()));
-				guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOSALTOBAJOVALORPAGEABLE, true, "0000",  MENSAJEOPERACIONEXITOSA, cceTransaccionDto, request);
-				LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTARMOVIMIENTOSALTOBAJOVALORF);
+				model.addAttribute(SELECCION, getSeleccion2(cceTransaccionDto.getTipoTransaccionInt()));
+				guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOS, true, "0000",  MENSAJEOPERACIONEXITOSA, cceTransaccionDto, request);
+				LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTAMOVIMIENTOSF);
 				return URLLISTAMOVIMIENTOSCONSULTAALTOBAJOVALORPAGINATE;
 					
 			}else {
-				LOGGER.info("fechas invalidas");
 				listaError.add(MENSAJEFECHASINVALIDAS);
 				model.addAttribute(LISTAERROR, listaError);
-				return URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR;
+				List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+				model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+				List<Banco> listaBancos  = bancoService.listaBancos(bancoRequest);
+				model.addAttribute(LISTABANCOS, listaBancos);
+				return URLFORMCONSULTAMOVIMIENTOS;
 			}
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
 			model.addAttribute(LISTAERROR, e.getMessage());
-			guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOSALTOBAJOVALORPAGEABLE, false, "0001",  e.getMessage(), cceTransaccionDto, request);
-			return URLFORMCONSULTARMOVIMIENTOSALTOBAJOVALOR;
+			guardarAuditoriaCceTransaccionDto(PROCESARCONSULTAMOVIMIENTOS, false, "0001",  e.getMessage(), cceTransaccionDto, request);
+			return URLFORMCONSULTAMOVIMIENTOS;
 		}
 		
 		
 		
 	}
 	
-	public String getSeleccion(String codTransaccion) {
-		if(codTransaccion.equals("5724")) {
-			return "Credito Inmediato Recibido";
+	
+	
+	public String getSeleccion2(int tipoTransaccion) {
+		CceTipoTransaccionDto cceTipoTransaccionDto = tipoTransaccionService.findById(tipoTransaccion);
+		if(cceTipoTransaccionDto != null) {
+			return cceTipoTransaccionDto.getDescripcion();
 		}else {
-			if(codTransaccion.equals("5723")) {
-				return "Credito Inmediato Enviado";
-			}else {
-				if(codTransaccion.equals("5728")) {
-					return "Alto valor Recibido";
-				}else {
-					if(codTransaccion.equals("5727")) {
-						return "Alto Valor Enviado";
-					}else {
-						return "Todas";
-					}
-				}
-			}
+			return "Todas";
 		}
+		
 	}
 	
 	
-	@GetMapping("/consultaMovimientosAltoBajoValorPageable")
-	public String consultaMovimientosAltoBajoValorPageable(@RequestParam("codTransaccion") String codTransaccion, 
+	
+	@GetMapping("/consultaMovimientosPage")
+	public String consultaMovimientosAltoBajoValorPageable(@RequestParam("tipoTransaccion") int tipoTransaccion, 
 			@RequestParam("bancoDestino") String bancoDestino, @RequestParam("numeroIdentificacion") String numeroIdentificacion,
 			@RequestParam("fechaDesde") String fechaDesde, @RequestParam("fechaHasta") String fechaHasta, 
 			Model model, int page, HttpSession httpSession) {
@@ -405,20 +415,21 @@ public class CceTransaccionController {
 		Page<CceTransaccion> listaTransacciones;
 		
 		if(libreriaUtil.isFechaValidaDesdeHasta(fechaDesde, fechaHasta)){
-			listaTransacciones = service.consultaMovimientosConFechasPage(codTransaccion, bancoDestino, numeroIdentificacion,
+			listaTransacciones = service.consultaMovimientosConFechasPageFinal(tipoTransaccion, bancoDestino, numeroIdentificacion,
 							                                          fechaDesde, fechaHasta, page);
 			
 			listaTransacciones = convertirLista(listaTransacciones);
+			
 			if(listaTransacciones.isEmpty()) {
 					model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
 			}
 			model.addAttribute(LISTATRANSACCIONES, listaTransacciones);
-			model.addAttribute(CODTRANSACCION, codTransaccion);
+			model.addAttribute(TIPOTRANSACCION, tipoTransaccion);
 			model.addAttribute(BANCODESTINO, bancoDestino);
 			model.addAttribute(NUMEROIDENTIFICACION, numeroIdentificacion);
 			model.addAttribute(FECHADESDE, fechaDesde);
 			model.addAttribute(FECHAHASTA, fechaHasta);
-			model.addAttribute("seleccion", getSeleccion(codTransaccion));
+			model.addAttribute(SELECCION, getSeleccion2(tipoTransaccion));
 				
 		}else {
 			LOGGER.info("fechas invalidas");
@@ -432,20 +443,21 @@ public class CceTransaccionController {
 	
 	
 	
+	
+	
 	@GetMapping("/detalleMovimiento")
-	public String verMovimineto(@RequestParam("endtoendId") String endtoendId,@RequestParam("codTransaccion") String codTransaccion, 
+	public String verMovimineto(@RequestParam("endtoendId") String endtoendId,@RequestParam("tipoTransaccion") int tipoTransaccion, 
 			@RequestParam("bancoDestino") String bancoDestino, @RequestParam("numeroIdentificacion") String numeroIdentificacion,
 			@RequestParam("fechaDesde") String fechaDesde, @RequestParam("fechaHasta") String fechaHasta, 
-			Model model, Pageable page, HttpSession httpSession, HttpServletRequest request) {
+			Model model, int page, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERVERDETALLEMOVIMIENTOSI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorConsultaMovimientosBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
 		CceTransaccionDto cceTransaccionDto = service.findByEndtoendId(endtoendId);
-		if(cceTransaccionDto != null) {
-			if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
-					|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
+		if(cceTransaccionDto != null) {	
+			if(!cceTransaccionDto.isEnvio()) {
 				LOGGER.info(cceTransaccionDto.getCodTransaccion());
 				String cuentaOrigen = cceTransaccionDto.getCuentaOrigen();
 				String cuentaDestino = cceTransaccionDto.getCuentaDestino();
@@ -466,22 +478,22 @@ public class CceTransaccionController {
 			cceTransaccionDto.setMonto(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceTransaccionDto.getMonto())));
 			cceTransaccionDto.setMontoString(libreriaUtil.formatNumber(cceTransaccionDto.getMonto()));
 			model.addAttribute("cceTransaccionDto", cceTransaccionDto);
-			model.addAttribute(CODTRANSACCION, codTransaccion);
+			model.addAttribute(TIPOTRANSACCION, tipoTransaccion);
 			model.addAttribute(BANCODESTINO, bancoDestino);
 			model.addAttribute(NUMEROIDENTIFICACION, numeroIdentificacion);
 			model.addAttribute(FECHADESDE, fechaDesde);
 			model.addAttribute(FECHAHASTA, fechaHasta);
-			model.addAttribute("page", page.getPageNumber());
+			model.addAttribute("page", page);
 			guardarAuditoriaId("detalleMovimiento", true, "0000", MENSAJEOPERACIONEXITOSA, endtoendId, request);
 			LOGGER.info(CCETRANSACCIONCONTROLLERVERDETALLEMOVIMIENTOSF);
 			return URLFORMMOVIMIENTOSALTOBAJOVALORDETALLEFECHAS;
 		}else {
 			Page<CceTransaccion> listaTransacciones;
-			listaTransacciones = service.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion,
+			listaTransacciones = service.consultaMovimientosConFechasPageFinal(tipoTransaccion, bancoDestino, numeroIdentificacion,
 					fechaDesde, fechaHasta, page);
 			listaTransacciones = convertirLista(listaTransacciones);
 			model.addAttribute(LISTATRANSACCIONES, listaTransacciones);
-			model.addAttribute(CODTRANSACCION, codTransaccion);
+			model.addAttribute(TIPOTRANSACCION, tipoTransaccion);
 			model.addAttribute(BANCODESTINO, bancoDestino);
 			model.addAttribute(NUMEROIDENTIFICACION, numeroIdentificacion);
 			model.addAttribute(FECHADESDE, fechaDesde);
@@ -497,7 +509,8 @@ public class CceTransaccionController {
 	}
 	
 	
-	@GetMapping("/formConsultaOperacionesAprobarAltoBajoValor")
+	
+	@GetMapping("/formConsultaOperacionesAprobar")
 	public String formConsultaOperacionesAprobarAltoBajoValor(CceTransaccionDto cceTransaccionDto, Model model, 
 			HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTAROPERACIONESAPROBARALTOVALORI);
@@ -510,10 +523,10 @@ public class CceTransaccionController {
 		try {
 			List<Banco> listaBancos  = bancoService.listaBancos(bancoRequest);
 			model.addAttribute(LISTABANCOS, listaBancos);
-			guardarAuditoria("formConsultaOperacionesAprobarAltoBajoValor", true, "0000", MENSAJEOPERACIONEXITOSA, request);
+			guardarAuditoria("formConsultaOperacionesAprobar", true, "0000", MENSAJEOPERACIONEXITOSA, request);
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
-			guardarAuditoria("formConsultaOperacionesAprobarAltoBajoValor", false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
+			guardarAuditoria("formConsultaOperacionesAprobar", false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
 			model.addAttribute(LISTAERROR, e.getMessage());
 		}
 		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTAROPERACIONESAPROBARALTOVALORF);
@@ -522,7 +535,7 @@ public class CceTransaccionController {
 	}
 	
 	
-	@GetMapping("/procesarConsultaOperacionesAprobarAltoBajoValorPageable")
+	@GetMapping("/procesarConsultaOperacionesAprobar")
 	public String procesarConsultaOperacionesAprobarAltoBajoValorPageable(CceTransaccionDto cceTransaccionDto, BindingResult result, Model model,
 			RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARCONSULTAROPERACIONESAPROBARALTOVALORI);
@@ -585,7 +598,7 @@ public class CceTransaccionController {
 			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "procesarConsultaOperacionesAprobarAltoBajoValorPageable", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, PROCESARCONSULTAOPERACIONESAPROBAR, request);
 			
 			listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 			datosPaginacion = aprobacionesConsultasResponse.getDatosPaginacion();
@@ -635,7 +648,7 @@ public class CceTransaccionController {
 	}
 	
 	
-	@GetMapping("/consultaOperacionesAprobarAltoBajoValorPageable")
+	@GetMapping("/consultaOperacionesAprobarPage")
 	public String consultaOperacionesAprobarAltoBajoValorPageable(@RequestParam("montoDesde") BigDecimal montoDesde, @RequestParam("montoHasta") BigDecimal montoHasta, 
 			@RequestParam("bancoEmisor") String bancoEmisor, @RequestParam("nroIdEmisor") String nroIdEmisor, @RequestParam("fechaDesde") String fechaDesde,
 			@RequestParam("fechaHasta") String fechaHasta, @RequestParam("page") int page, Model model, HttpServletRequest request, HttpSession httpSession) {
@@ -689,7 +702,7 @@ public class CceTransaccionController {
 			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "consultaOperacionesAprobarAltoBajoValorPageable", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, CONSULTAOPERACIONESAPROBARPAGE, request);
 			List<BCVLBT> listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 			DatosPaginacion datosPaginacion = aprobacionesConsultasResponse.getDatosPaginacion();
 			if(!listaBCVLBTPorAprobar.isEmpty()) {
@@ -763,7 +776,7 @@ public class CceTransaccionController {
 			aprobacionesConsultasRequest.setTamanoPagina(numeroRegistroPage);
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "seleccionarTodosAprobarOperaciones", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, SELECCIONARTODOSAPROBAROPERACIONES, request);
 			List<BCVLBT> listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 			DatosPaginacion datosPaginacion = aprobacionesConsultasResponse.getDatosPaginacion();
 			if(!listaBCVLBTPorAprobar.isEmpty()) {
@@ -841,7 +854,7 @@ public class CceTransaccionController {
 			setAprobacionesConsultasRequestFiltrosPage(page, filtros, aprobacionesConsultasRequest);
 			
 			
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "deseleccionarTodosAprobarOperaciones", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, DESELECCIONARTODOSAPROBAROPERACIONES, request);
 			List<BCVLBT> listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 			DatosPaginacion datosPaginacion = aprobacionesConsultasResponse.getDatosPaginacion();
 			if(!listaBCVLBTPorAprobar.isEmpty()) {
@@ -919,7 +932,7 @@ public class CceTransaccionController {
 					
 			AprobacionesConsultasRequest aprobacionesConsultasRequest = getAprobacionesConsultasRequest(request);
 			setAprobacionesConsultasRequestFiltrosPage(page, filtros, aprobacionesConsultasRequest);
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "seleccionarUnaAprobarOperaciones", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, SELECCIONARUNAAPROBAROPERACIONES, request);
 			
 			
 			List<BCVLBT> listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
@@ -1015,7 +1028,7 @@ public class CceTransaccionController {
 					
 			aprobacionesConsultasRequest.setFiltros(filtros);
 			
-			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, "deseleccionarUnaAprobarOperaciones", request);
+			AprobacionesConsultasResponse aprobacionesConsultasResponse = aprobacionesConsultasResponse(aprobacionesConsultasRequest, DESELECCIONARUNAAPROBAROPERACIONES, request);
 			listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 			
 			if(!listaBCVLBTPorAprobar.isEmpty()) {
@@ -1052,8 +1065,8 @@ public class CceTransaccionController {
 	
 	@GetMapping("/export/all")
 	public ResponseEntity<InputStreamResource> exportAllData(HttpSession httpSession) throws IOException {
-		List<CceTransaccionDto> listaTransaccionesDto =(List<CceTransaccionDto>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
-		ByteArrayInputStream stream = service.exportAllData(listaTransaccionesDto);
+		List<CceTransaccion> listaTransacciones =(List<CceTransaccion>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
+		ByteArrayInputStream stream = service.exportAllData(listaTransacciones);
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
 		HttpHeaders headers = new HttpHeaders();
@@ -1166,7 +1179,7 @@ public class CceTransaccionController {
 	}
 	
 	
-	@GetMapping("/formAprobarMovimientosAltoValorLoteAutomatico")
+	@GetMapping("/formAprobarLoteAutomatico")
 	public String formAprobarAltoValorLoteAutomatico(CceTransaccionDto cceTransaccionDto, Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CCETRANSACCIONCONTROLLERFORMAPROBARALTOVALORLOTEAUTOMATICOI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorOperacionLoteAutomaticoBD)) {
@@ -1188,7 +1201,7 @@ public class CceTransaccionController {
 		List<BCVLBT> listaBCVLBTPorAprobar = new ArrayList<>();
 		try {
 			AprobacionesConsultasResponse aprobacionesConsultasResponse =bcvlbtService.listaTransaccionesPorAporbarAltoValorPaginacion(aprobacionesConsultasRequest, 
-					FORMAPROBARMOVIMIENTOSALTOVALORAUTOMATICO, request);
+					FORMAPROBARAUTOMATICO, request);
 			if(aprobacionesConsultasResponse != null) {
 				listaBCVLBTPorAprobar = aprobacionesConsultasResponse.getOperaciones();
 				if(listaBCVLBTPorAprobar.isEmpty()) {
@@ -1781,7 +1794,7 @@ public class CceTransaccionController {
 		try {
 			LOGGER.info(CCETRANSACCIONCONTROLLERFUNCIONAUDITORIAI);
 			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
-					CCE, accion, codRespuesta, resultado, respuesta+" CceTransaccion:[codTransaccion="+cceTransaccionDto.getCodTransaccion()+", bancoDestino="+cceTransaccionDto.getBancoDestino()+""
+					CCE, accion, codRespuesta, resultado, respuesta+" CceTransaccion:[tipoTransaccion="+cceTransaccionDto.getTipoTransaccionInt()+", bancoDestino="+cceTransaccionDto.getBancoDestino()+""
 							+ ", numeroIdentificacion="+cceTransaccionDto.getNumeroIdentificacion()+", fechaDesde="+cceTransaccionDto.getFechaDesde()+", fechaHasta="+cceTransaccionDto.getFechaHasta()+"]", request.getRemoteAddr());
 			LOGGER.info(CCETRANSACCIONCONTROLLERFUNCIONAUDITORIAF);
 		} catch (Exception e) {

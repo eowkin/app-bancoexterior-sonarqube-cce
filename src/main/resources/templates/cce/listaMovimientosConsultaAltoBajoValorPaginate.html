@@ -32,7 +32,7 @@
 		            <i class="fa fa-align-justify" aria-hidden="true"></i> Listado de Movimientos Consulta - [[${seleccion}]]
 		            <div class="my-2 text-right">
 		              <a class="btn btn-success" th:href="@{/ccetransacciones/export/all}" title="Exportar Excel" role="button">Exportar Excel</a>	
-		              <a class="btn btn-primary" th:href="@{/ccetransacciones/formConsultaMovimientosConsultaAltoBajoValor}" title="Consulta de Movimientos" role="button">Consulta de Movimientos</a>
+		              <a class="btn btn-primary" th:href="@{/ccetransacciones/formConsultaMovimientos}" title="Consulta de Movimientos" role="button">Consulta de Movimientos</a>
 		            </div>
 		          </div><!--/.card-header-->
 		          
@@ -68,50 +68,18 @@
 		                  <td th:if="${transaccion.tipoTransaccion == '803'}">Interbancaria ONT</td>
 		                  <td th:if="${transaccion.tipoTransaccion == '804'}">Intrabancaria ONT</td>
 		                  <td th:if="${transaccion.tipoTransaccion == '040'}">Crédito Inmediato</td>
-		                  <td th:if="${transaccion.codTransaccion == '5727'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5714'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5718'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9024'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9025'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5745'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5746'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5783'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5797'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5793'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5723'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9733'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9740'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9741'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5760'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5759'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5724'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9734'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9742'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9743'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5728'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9738'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5727'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5714'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5718'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9024'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9025'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5745'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5746'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5783'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5797'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5793'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5723'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9733'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9740'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9741'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5760'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5759'}"  th:text="${transaccion.cuentaDestino}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5724'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9734'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9742'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9743'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '5728'}"  th:text="${transaccion.cuentaOrigen}"></td>
-		                  <td th:if="${transaccion.codTransaccion == '9738'}"  th:text="${transaccion.cuentaOrigen}"></td>
+		                  <td th:if="${transaccion.envio}">
+		                  	<span th:text="${transaccion.cuentaOrigen}"></span>
+		                  </td>
+		                  <td th:unless="${transaccion.envio}">
+		                  	<span th:text="${transaccion.cuentaDestino}"></span>
+		                  </td>
+		                  <td th:if="${transaccion.envio}">
+		                  	<span th:text="${transaccion.cuentaDestino}"></span>
+		                  </td>
+		                  <td th:unless="${transaccion.envio}">
+		                  	<span th:text="${transaccion.cuentaOrigen}"></span>
+		                  </td>
 		                  <td th:text="${transaccion.montoString}"></td>
 		                  <td>
 			                	<span class="badge badge-success" th:if="${transaccion.estadobcv == 'ACCP'}">Aprobada</span>
@@ -121,7 +89,7 @@
 			              
 			              <td th:text="${#dates.format(transaccion.fechaModificacion, 'dd-MM-yyyy')}"></td>
 		                  <td>
-		                  	<a  class="btn btn-info" th:href="@{/ccetransacciones/detalleMovimiento (endtoendId=${transaccion.endtoendId}, page=${listaTransacciones.number}, codTransaccion=${codTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Ver limites."><i class="fa fa-search" aria-hidden="true"></i></a>
+		                  	<a  class="btn btn-info" th:href="@{/ccetransacciones/detalleMovimiento (endtoendId=${transaccion.endtoendId}, page=${listaTransacciones.number}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Ver limites."><i class="fa fa-search" aria-hidden="true"></i></a>
 		                  </td>
 		                </tr>
 		              </tbody>
@@ -129,13 +97,13 @@
 		            <nav th:if="${listaTransacciones.totalPages > 0}" aria-label="Page navigation example" > 
 		            	<ul class="pagination justify-content-center">         
 		            		<li class="page-item" th:classappend="${listaTransacciones.number == 0 ? 'disabled' : ''}">
-		            			<a th:href="@{/ccetransacciones/consultaMovimientosAltoBajoValorPageable(page=${listaTransacciones.number - 1}, codTransaccion=${codTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Anterior</a>
+		            			<a th:href="@{/ccetransacciones/consultaMovimientosPage(page=${listaTransacciones.number - 1}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Anterior</a>
 		            		</li> 
 		            		<li class="page-item">
 								<a class="page-link"  th:text="${'Pagina '+ (listaTransacciones.number + 1) + ' - '+ (listaTransacciones.totalPages)}" th:title="${'Page '+ listaTransacciones.number}" data-toggle="tooltip"></a>
 							</li>
 		            		<li class="page-item" th:classappend="${listaTransacciones.number == (listaTransacciones.totalPages - 1) ? 'disabled' : ''}">
-		            			<a th:href="@{/ccetransacciones/consultaMovimientosAltoBajoValorPageable(page=${listaTransacciones.number + 1}, codTransaccion=${codTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Siguiente</a>
+		            			<a th:href="@{/ccetransacciones/consultaMovimientosPage(page=${listaTransacciones.number + 1}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Siguiente</a>
 		            		</li>  
 		            	</ul> 
 		            </nav> 

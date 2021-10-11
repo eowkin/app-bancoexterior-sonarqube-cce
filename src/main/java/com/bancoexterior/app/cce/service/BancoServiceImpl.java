@@ -79,11 +79,8 @@ public class BancoServiceImpl implements IBancoService{
 		String bancoRequestJSON;
 		bancoRequestJSON = new Gson().toJson(bancoRequest);
 		wsrequest.setBody(bancoRequestJSON);
-		LOGGER.info(bancoRequestJSON);
 		wsrequest.setUrl(urlConsulta);
-		LOGGER.info(urlConsulta);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(BANCOSERVICELISTABANCOSF);
@@ -149,11 +146,8 @@ public class BancoServiceImpl implements IBancoService{
 		String bancoRequestJSON;
 		bancoRequestJSON = new Gson().toJson(bancoRequest);
 		wsrequest.setBody(bancoRequestJSON);
-		LOGGER.info(bancoRequestJSON);
 		wsrequest.setUrl(urlConsultaBuscarBanco);
-		LOGGER.info(urlConsultaBuscarBanco);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(BANCOSERVICEBUSCARBANCOSF);

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import com.bancoexterior.app.cce.dto.CceTransaccionDto;
 import com.bancoexterior.app.cce.model.CceTransaccion;
 import com.bancoexterior.app.cce.repository.ICceTransaccionRepository;
@@ -46,13 +44,10 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	@Autowired
 	private Mapper mapper;
 	
+	
 	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI = "[==== INICIO ConsultaMovimientosConFechasPage CceTransaccion Consultas - Service ====]";
 	
 	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF = "[==== FIN ConsultaMovimientosConFechasPage CceTransaccion Consultas - Service ====]";
-	
-	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASI = "[==== INICIO ConsultaMovimientosConFechas CceTransaccion Consultas - Service ====]";
-	
-	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASF = "[==== FIN ConsultaMovimientosConFechas CceTransaccion Consultas - Service ====]";
 	
 	private static final String CCETRANSACCIONSERVICEFINDBYENDTOENDIDI = "[==== INICIO FindByEndtoendId CceTransaccion Consultas - Service ====]";
 	
@@ -68,80 +63,24 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	
 	public static final String NUMEROFORMAT                       = "#,##0.00";
 	
-	@Override
-	public List<CceTransaccionDto> consultar() {
-		List<CceTransaccion> listaCceTransacciones = repo.findAll();
-		List<CceTransaccionDto> listaCceTransaccionesDto = new ArrayList<>();
-		for (CceTransaccion cceTransaccion : listaCceTransacciones) {
-			CceTransaccionDto cceTransaccionDto = mapper.map(cceTransaccion, CceTransaccionDto.class);
-			listaCceTransaccionesDto.add(cceTransaccionDto);
-		}
-		return listaCceTransaccionesDto;
-	}
-
-	@Override
-	public List<CceTransaccionDto> findByCodTransaccion(String codTransaccion) {
-		List<CceTransaccion> listaCceTransacciones = repo.findByCodTransaccion(codTransaccion);
-		List<CceTransaccionDto> listaCceTransaccionesDto = new ArrayList<>();
-		for (CceTransaccion cceTransaccion : listaCceTransacciones) {
-			CceTransaccionDto cceTransaccionDto = mapper.map(cceTransaccion, CceTransaccionDto.class);
-			listaCceTransaccionesDto.add(cceTransaccionDto);
-		}
-		return listaCceTransaccionesDto;
-	}
-
 	
-
+		
 	@Override
-	public List<CceTransaccionDto> consultaMovimientosConFechas(String codTransaccion, String bancoDestino,
-			String numeroIdentificacion, String fechaDesde, String fechaHasta) {
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASI);
-		
-		fechaDesde = fechaDesde +HORADESDE;
-		fechaHasta = fechaHasta +HORAHASTA;
-		
-		List<CceTransaccion> listaCceTransacciones = repo.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta);
-		List<CceTransaccionDto> listaCceTransaccionesDto = new ArrayList<>();
-		for (CceTransaccion cceTransaccion : listaCceTransacciones) {
-			CceTransaccionDto cceTransaccionDto = mapper.map(cceTransaccion, CceTransaccionDto.class);
-			listaCceTransaccionesDto.add(cceTransaccionDto);
+	public CceTransaccionDto findByEndtoendId(String endtoendId) {
+		LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDI);
+		CceTransaccion cceTransaccion = repo.getTransaccionByEndToEndId(endtoendId);
+		if(cceTransaccion != null) {
+			LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDF);
+			return mapper.map(cceTransaccion, CceTransaccionDto.class);
 		}
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASF);
-		return listaCceTransaccionesDto;
-	}
-
-	@Override
-	public List<CceTransaccionDto> consultaMovimientosConFechasPrueba(String fechaDesde, String fechaHasta) {
-		fechaDesde = fechaDesde +HORADESDE;
-		fechaHasta = fechaHasta +HORAHASTA;
-		
-		List<CceTransaccion> listaCceTransacciones = repo.consultaMovimientosConFechasPrueba(fechaDesde, fechaHasta);
-		List<CceTransaccionDto> listaCceTransaccionesDto = new ArrayList<>();
-		for (CceTransaccion cceTransaccion : listaCceTransacciones) {
-			CceTransaccionDto cceTransaccionDto = mapper.map(cceTransaccion, CceTransaccionDto.class);
-			listaCceTransaccionesDto.add(cceTransaccionDto);
-		}
-		return listaCceTransaccionesDto;
-	}
-
-	@Override
-	public Page<CceTransaccion> consultar(Pageable page) {
-		return repo.findAll(page);
-		
-	}
-
-	@Override
-	public Page<CceTransaccion> consultaMovimientosConFechas(String codTransaccion, String bancoDestino,
-			String numeroIdentificacion, String fechaDesde, String fechaHasta, Pageable page) {
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
-		fechaDesde = fechaDesde +HORADESDE;
-		fechaHasta = fechaHasta +HORAHASTA;
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);
-		return repo.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, page); 
+		LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDF);
+		return null;
 	}
 	
+	
+	
 	@Override
-	public Page<CceTransaccion> consultaMovimientosConFechasPage(String codTransaccion, String bancoDestino,
+	public Page<CceTransaccion> consultaMovimientosConFechasPageFinal(int tipoTransaccion, String bancoDestino,
 			String numeroIdentificacion, String fechaDesde, String fechaHasta, int page) {
 		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
 		fechaDesde = fechaDesde +HORADESDE;
@@ -151,70 +90,19 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 
 		Sort sort = Sort.by("fecha_modificacion").ascending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-		LOGGER.info(codTransaccion.equals(""));
+		LOGGER.info(tipoTransaccion);
 		
-		if(codTransaccion.equals("")) {
-			LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-			return repo.consultaMovimientosConFechas(codTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
-		}else {
-			if(codTransaccion.equals("5723")) {
-				LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-				return repo.consultaMovimientosCreditoInmediato(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
-			}else {
-				if(codTransaccion.equals("5724")) {
-					LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-					return repo.consultaMovimientosCreditoInmediatoRecibido(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
-				}else {
-					if(codTransaccion.equals("5727")) {
-						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-						return repo.consultaMovimientosLbtrEnviado(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
-					}else {
-						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-						return repo.consultaMovimientosLbtrRecibido(bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
-					}
-					
-				}
-				
-			}
-			
-		}
+		
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+		return repo.consultaMovimientosFinal(tipoTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
 		
 		
 		
 	}
-
 	
 
 	@Override
-	public CceTransaccionDto findByEndtoendId(String endtoendId) {
-		LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDI);
-		CceTransaccion cceTransaccion = repo.findById(endtoendId).orElse(null);
-		if(cceTransaccion != null) {
-			LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDF);
-			return mapper.map(cceTransaccion, CceTransaccionDto.class);
-		}
-		LOGGER.info(CCETRANSACCIONSERVICEFINDBYENDTOENDIDF);
-		return null;
-	}
-
-	@Override
-	public List<CceTransaccionDto> consultaMovimientosPorAprobarAltoValor() {
-		List<CceTransaccionDto> listaMovimientosPorAprobarAltoValor = new ArrayList<>();
-		CceTransaccionDto cceTransaccion1 = new CceTransaccionDto();
-		cceTransaccion1.setEndtoendId("00012021061704035900172704");
-		cceTransaccion1.setReferencia("00477749");
-		cceTransaccion1.setCuentaOrigen("01150081131002918355");
-		cceTransaccion1.setCuentaDestino("01740111431114240037");
-		cceTransaccion1.setMonto(new BigDecimal(1500000000));
-		cceTransaccion1.setFechaModificacion(new Date());
-		listaMovimientosPorAprobarAltoValor.add(cceTransaccion1);
-		
-		
-		return listaMovimientosPorAprobarAltoValor;
-	}
-
-	@Override
-	public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(String codTransaccionExcel, String bancoDestinoExcel,
+	public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(int tipoTransaccionExcel, String bancoDestinoExcel,
 			String numeroIdentificacionExcel, String fechaDesdeExcel, String fechaHastaExcel, int page) {
 		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
 		fechaDesdeExcel = fechaDesdeExcel +HORADESDE;
@@ -224,37 +112,13 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 
 		Sort sort = Sort.by("fecha_modificacion").ascending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-		LOGGER.info(codTransaccionExcel.equals(""));
 		
-		if(codTransaccionExcel.equals("")) {
-			LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-			return repo.consultaMovimientosConFechas(codTransaccionExcel, bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
-		}else {
-			if(codTransaccionExcel.equals("5723")) {
-				LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-				return repo.consultaMovimientosCreditoInmediato(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
-			}else {
-				if(codTransaccionExcel.equals("5724")) {
-					LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-					return repo.consultaMovimientosCreditoInmediatoRecibido(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
-				}else {
-					if(codTransaccionExcel.equals("5727")) {
-						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-						return repo.consultaMovimientosLbtrEnviado(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
-					}else {
-						LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
-						return repo.consultaMovimientosLbtrRecibido(bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
-					}
-					
-				}
-				
-			}
-			
-		}
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+		return repo.consultaMovimientosFinal(tipoTransaccionExcel, bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
 	}
 
 	@Override
-	public ByteArrayInputStream exportAllData(List<CceTransaccionDto> listaTransaccionesDto) throws IOException {
+	public ByteArrayInputStream exportAllData(List<CceTransaccion> listaTransacciones) throws IOException {
 		String[] columns = { "Referencia BCV", "Referencia IBS", "Tipo Transaccion", "Cta. Ordenante", "Cta. Beneficiario", "Monto", "Estado", "Corte Liquidacion", "Fecha Liquidacion BCV" };
 
 		XSSFSheet sheet;
@@ -286,35 +150,36 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	        font2.setFontHeight(14);
 	        style2.setFont(font2);
 	       
-			for (CceTransaccionDto cceTransaccionDto : listaTransaccionesDto) {
+			for (CceTransaccion cceTransaccion : listaTransacciones) {
+				
 				sheet.autoSizeColumn(initRow);
 				row = sheet.createRow(initRow);
 				Cell cell = row.createCell(0);
-				cell.setCellValue(cceTransaccionDto.getEndtoendId());
+				cell.setCellValue(cceTransaccion.getEndtoendId());
 				cell.setCellStyle(style2);
 				Cell cell1 = row.createCell(1);
-				cell1.setCellValue(cceTransaccionDto.getReferencia());
+				cell1.setCellValue(cceTransaccion.getReferencia());
 				cell1.setCellStyle(style2);
 				Cell cell2 = row.createCell(2);
-				cell2.setCellValue(tipoTransaccion(cceTransaccionDto.getTipoTransaccion()));
+				cell2.setCellValue(tipoTransaccion(cceTransaccion.getTipoTransaccion()));
 				cell2.setCellStyle(style2);
 				Cell cell3 = row.createCell(3);
-				cell3.setCellValue(cuentaOrdenante(cceTransaccionDto));
+				cell3.setCellValue(cuentaOrdenante(cceTransaccion));
 				cell3.setCellStyle(style2);
 				Cell cell4 = row.createCell(4);
-				cell4.setCellValue(cuentaBeneficiario(cceTransaccionDto));
+				cell4.setCellValue(cuentaBeneficiario(cceTransaccion));
 				cell4.setCellStyle(style2);
 				Cell cell5 = row.createCell(5);
-				cell5.setCellValue(formatNumber(cceTransaccionDto.getMonto()));
+				cell5.setCellValue(formatNumber(cceTransaccion.getMonto()));
 				cell5.setCellStyle(style2);
 				Cell cell6 = row.createCell(6);
-				cell6.setCellValue(estado(cceTransaccionDto.getEstadobcv()));
+				cell6.setCellValue(estado(cceTransaccion.getEstadobcv()));
 				cell6.setCellStyle(style2);
 				Cell cell7 = row.createCell(7);
-				cell7.setCellValue(getCorteLiquidacion(cceTransaccionDto.getCorteLiquidacion()));
+				cell7.setCellValue(getCorteLiquidacion(cceTransaccion.getCorteLiquidacion()));
 				cell7.setCellStyle(style2);
 				Cell cell8 = row.createCell(8);
-				cell8.setCellValue(getFechaLiquidaBcv(cceTransaccionDto.getFechaLiquidaBcv()));
+				cell8.setCellValue(getFechaLiquidaBcv(cceTransaccion.getFechaLiquidaBcv()));
 				cell8.setCellStyle(style2);
 				initRow++;
 			}
@@ -352,26 +217,24 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		return tipoTransaccion;
 	}
      
-	public String cuentaOrdenante(CceTransaccionDto cceTransaccionDto) {
+	public String cuentaOrdenante(CceTransaccion cceTransaccion) {
 		String cuentaOrdenante = "";
-		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
-				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
-			cuentaOrdenante = cceTransaccionDto.getCuentaDestino();
+		if(cceTransaccion.isEnvio()) {
+			cuentaOrdenante = cceTransaccion.getCuentaOrigen();
 		}else {
-			cuentaOrdenante = cceTransaccionDto.getCuentaOrigen();
+			cuentaOrdenante = cceTransaccion.getCuentaDestino();
 		}
 		
 		
 		return cuentaOrdenante;
 	}
 	
-	public String cuentaBeneficiario(CceTransaccionDto cceTransaccionDto) {
+	public String cuentaBeneficiario(CceTransaccion cceTransaccion) {
 		String cuentaBeneficiario = "";
-		if(cceTransaccionDto.getCodTransaccion().equals("5724") || cceTransaccionDto.getCodTransaccion().equals("9734") || cceTransaccionDto.getCodTransaccion().equals("9742") || cceTransaccionDto.getCodTransaccion().equals("9743") 
-				|| cceTransaccionDto.getCodTransaccion().equals("5728") || cceTransaccionDto.getCodTransaccion().equals("9738")) {
-			cuentaBeneficiario = cceTransaccionDto.getCuentaOrigen();
+		if(cceTransaccion.isEnvio()) {
+			cuentaBeneficiario = cceTransaccion.getCuentaDestino();	
 		}else {
-			cuentaBeneficiario = cceTransaccionDto.getCuentaDestino();
+			cuentaBeneficiario = cceTransaccion.getCuentaOrigen();
 		}
 		
 		
@@ -426,5 +289,16 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
          return df.format(numero);
         
     }
+
+
+
+	@Override
+	public int countTransaccionByCodTransaccion(String codTransaccion) {
+		return repo.countTransaccionByCodTransaccion(codTransaccion);
+	}
+
+	
+
+	
 
 }

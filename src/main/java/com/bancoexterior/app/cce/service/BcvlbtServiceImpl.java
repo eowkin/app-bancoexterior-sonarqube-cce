@@ -202,7 +202,9 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		wsrequest.setBody(fiToFiCustomerCreditTransferJSON);
 		LOGGER.info(fiToFiCustomerCreditTransferJSON);
 		wsrequest.setUrl(url);	
+		LOGGER.info(url);
 		retorno = wsService.post(wsrequest);
+		LOGGER.info(retorno);
 		return retorno;
 	}
 
