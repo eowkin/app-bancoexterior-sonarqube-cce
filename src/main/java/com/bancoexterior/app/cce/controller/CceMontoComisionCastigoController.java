@@ -93,7 +93,7 @@ public class CceMontoComisionCastigoController {
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
 	@GetMapping("/index")
-	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String index(Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERINDEXI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -114,7 +114,7 @@ public class CceMontoComisionCastigoController {
 	}
 	
 	@GetMapping("/historial")
-	public String historial(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String historial(Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERHISTORIALI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);

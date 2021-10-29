@@ -107,14 +107,14 @@ public class CceCodigosTransaccionController {
 	
 	private static final String URLFORMCODIGOTRANSACCION = "cce/codigosTransaccion/formCodigoTransaccion";
 	
-	private static final String URLLISTACODIGOTRANSACCION = "cce/codigosTransaccion/listacodigosTransaccion";
+	private static final String URLLISTACODIGOTRANSACCION = "cce/codigosTransaccion/listaCodigosTransaccion";
 	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
 	private static final String MENSAJE = "mensaje";
 	
 	@GetMapping("/index")
-	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String index(Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERINDEXI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -146,10 +146,6 @@ public class CceCodigosTransaccionController {
 	
 	
 		List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-		for (CceTipoTransaccion cceTipoTransaccion : listaTipoTransaccion) {
-			LOGGER.info(cceTipoTransaccion);
-		}
-		
 		model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
 		guardarAuditoria("formCodigoTransaccion", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERFORMF);
@@ -158,13 +154,14 @@ public class CceCodigosTransaccionController {
 	}
 	
 	@PostMapping("/save")
-	public String save(Model model, CceCodigosTransaccionDto cceCodigosTransaccionDto, 
+	public String save(Model model, RedirectAttributes redirectAttributes, CceCodigosTransaccionDto cceCodigosTransaccionDto, 
 			HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
+		
 		
 		if(cceCodigosTransaccionDto.getIdTipo() == 0) {
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
@@ -178,6 +175,7 @@ public class CceCodigosTransaccionController {
 		CceCodigosTransaccionDto cceCodigosTransaccionDtoBuscar = service.codigoTransaccionById(cceCodigosTransaccionDto.getCodTransaccion());
 		if(cceCodigosTransaccionDtoBuscar == null) {
 			service.crearCodigoTransaccion(cceCodigosTransaccionDto.getCodTransaccion(), cceCodigosTransaccionDto.getDescripcion(), cceCodigosTransaccionDto.getIdTipo());
+			redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
 			guardarAuditoriaCodigoTransaccion("save", true, "0000", MENSAJEOPERACIONEXITOSA, cceCodigosTransaccionDto, request);
 			LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEF);
 			return REDIRECTINDEX;
@@ -201,7 +199,6 @@ public class CceCodigosTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
-		
 		CceCodigosTransaccionDto cceCodigosTransaccionDtoEdit = service.codigoTransaccionById(codTransaccion);
 		if(cceCodigosTransaccionDtoEdit != null) {
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
@@ -231,6 +228,7 @@ public class CceCodigosTransaccionController {
 			return URLNOPERMISO;
 		}
 		
+		
 		service.actualizarCodigoTransaccion(cceCodigosTransaccionDto.getCodTransaccion(), cceCodigosTransaccionDto.getDescripcion(), cceCodigosTransaccionDto.getIdTipo());
 		redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
 		guardarAuditoriaCodigoTransaccion("guardar", true, "0000", MENSAJEOPERACIONEXITOSA, cceCodigosTransaccionDto, request);
@@ -246,7 +244,6 @@ public class CceCodigosTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
-		
 		int cantidad = cceTransaccionService.countTransaccionByCodTransaccion(codTransaccion);
 		
 		if(cantidad == 0) {

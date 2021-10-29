@@ -58,6 +58,7 @@ import com.bancoexterior.app.cce.model.ParamIdentificacion;
 import com.bancoexterior.app.cce.model.PmtInfObject;
 import com.bancoexterior.app.cce.service.IBancoService;
 import com.bancoexterior.app.cce.service.IBcvlbtService;
+import com.bancoexterior.app.cce.service.ICceCuentasUnicasBcvService;
 import com.bancoexterior.app.cce.service.ICceMontoMaximoAproAutoService;
 import com.bancoexterior.app.cce.service.ICceTipoTransaccionService;
 import com.bancoexterior.app.cce.service.ICceTransaccionService;
@@ -107,6 +108,8 @@ public class CceTransaccionController {
 	@Autowired
 	private ICceTipoTransaccionService tipoTransaccionService;
 	
+	@Autowired
+	private ICceCuentasUnicasBcvService cceCuentasUnicasBcvService;
 	
 	private static final String LISTATRANSACCIONES = "listaTransacciones";
 	
@@ -279,6 +282,10 @@ public class CceTransaccionController {
 	private static final String DESELECCIONARUNAAPROBAROPERACIONES = "deseleccionarUnaAprobarOperaciones";
 	
 	private static final String PROCESARCONSULTAOPERACIONESAPROBAR = "procesarConsultaOperacionesAprobar";
+		
+	private static final String PROCESARAPROBARLOTEAUTOMATICO = "procesarAprobarLoteAutomatico";
+	
+	private static final String PROCESARAPROBARLOTESELECCION = "procesarAprobarLoteSeleccion";
 	
 	@GetMapping("/cargarLoader")
 	public String cargarLoaderPaginado() {
@@ -353,8 +360,9 @@ public class CceTransaccionController {
 				
 				List<CceTransaccion> listaTransaccionesExcel = listaTransaccionesExcelPageable.getContent();
 				
+				List<CceTransaccionDto> listaTransaccionesExcelDto = getListaTransaccionesDto(listaTransaccionesExcel);
+				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesExcelDto);
 				
-				httpSession.setAttribute(LISTATRANSACCIONESEXCEL, listaTransaccionesExcel);
 				
 				model.addAttribute(LISTATRANSACCIONES, listaTransacciones);
 				model.addAttribute(TIPOTRANSACCION, cceTransaccionDto.getTipoTransaccionInt());
@@ -573,8 +581,6 @@ public class CceTransaccionController {
 				filtros.setMontoDesde(cceTransaccionDto.getMontoDesde());
 				filtros.setMontoHasta(cceTransaccionDto.getMontoHasta());
 			}else {
-				LOGGER.info(new BigDecimal("0.01"));
-				LOGGER.info(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")));
 				filtros.setMontoDesde(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceMontoMaximoAproAuto.getMonto().add(new BigDecimal("0.01")))));
 				filtros.setMontoHasta(montoTopeMaximoAproAuto);
 			}
@@ -1065,7 +1071,7 @@ public class CceTransaccionController {
 	
 	@GetMapping("/export/all")
 	public ResponseEntity<InputStreamResource> exportAllData(HttpSession httpSession) throws IOException {
-		List<CceTransaccion> listaTransacciones =(List<CceTransaccion>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
+		List<CceTransaccionDto> listaTransacciones =(List<CceTransaccionDto>)httpSession.getAttribute(LISTATRANSACCIONESEXCEL);
 		ByteArrayInputStream stream = service.exportAllData(listaTransacciones);
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
@@ -1252,8 +1258,8 @@ public class CceTransaccionController {
 			
 			
 			try {
-				Resultado resultadoAprobarResponse = procesarAprobarAltoValor(bcvlbt, "procesarAprobarAltoValorLoteAutomatico", request);
-				listaAprobado.add(aprobarActualizar(resultadoAprobarResponse, bcvlbt, "procesarAprobarAltoValorLoteAutomatico", request));
+				Resultado resultadoAprobarResponse = procesarAprobarAltoValor(bcvlbt, PROCESARAPROBARLOTEAUTOMATICO, request);
+				listaAprobado.add(aprobarActualizar(resultadoAprobarResponse, bcvlbt, PROCESARAPROBARLOTEAUTOMATICO, request));
 			} catch (CustomException e) {
 				LOGGER.error(e.getMessage());
 				String valor = transaccion +" -> "+e.getMessage();
@@ -1286,8 +1292,8 @@ public class CceTransaccionController {
 			String transaccion = "Transaccion referencia: "+bcvlbt.getReferencia();  
 			
 			try {
-				Resultado resultadoAprobarResponse = procesarAprobarAltoValor(bcvlbt, "procesarAprobarAltoValorLoteSeleccion", request);
-				listaAprobado.add(aprobarActualizar(resultadoAprobarResponse, bcvlbt, "procesarAprobarAltoValorLoteSeleccion", request));
+				Resultado resultadoAprobarResponse = procesarAprobarAltoValor(bcvlbt, PROCESARAPROBARLOTESELECCION, request);
+				listaAprobado.add(aprobarActualizar(resultadoAprobarResponse, bcvlbt, PROCESARAPROBARLOTESELECCION, request));
 			} catch (CustomException e) {
 				LOGGER.error(e.getMessage());
 				String valor = transaccion +" -> "+e.getMessage();
@@ -1330,6 +1336,7 @@ public class CceTransaccionController {
 	
 	public String getStatus(String codigo) {
 		String status;
+		LOGGER.info("codigo: "+codigo);
 		if(codigo.equals("ACCP")) {
 			status = "PA";
 		}else {
@@ -1339,6 +1346,7 @@ public class CceTransaccionController {
 				status = "PP";
 			}
 		}
+		LOGGER.info("status: "+status);
 		return status;
 	}
 	
@@ -1360,6 +1368,14 @@ public class CceTransaccionController {
 	}
 	
 	public Resultado procesarAprobarAltoValor(BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
+		
+		LOGGER.info("bcvlbt: "+bcvlbt);
+		
+		
+		LOGGER.info("bcvlbt.getBancoReceptor(): "+bcvlbt.getBancoReceptor());
+		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoReceptor()));
+		LOGGER.info("bcvlbt.getBancoEmisor(): "+bcvlbt.getBancoEmisor());
+		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoEmisor()));
 		
 		FiToFiCustomerCreditTransferRequest fiToFiCustomerCreditTransferRequest = new FiToFiCustomerCreditTransferRequest(); 
 		
@@ -1412,7 +1428,9 @@ public class CceTransaccionController {
 		
 		Cuenta dbtrAgtAcct = new Cuenta();
 		dbtrAgtAcct.setTp("CNTA");
-		dbtrAgtAcct.setId(bcvlbt.getNroCuentaDestino());
+		dbtrAgtAcct.setId(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoEmisor()).getCuenta());
+		//dbtrAgtAcct.setId("00010001360002000115");
+		//dbtrAgtAcct.setId(bcvlbt.getNroCuentaDestino());
 		pmtInfObject.setDbtrAgtAcct(dbtrAgtAcct);
 		
 		Identificacion cdtr = new Identificacion();
@@ -1423,12 +1441,13 @@ public class CceTransaccionController {
 		
 		Cuenta cdtrAcct = new Cuenta();
 		cdtrAcct.setTp("CNTA");
-		cdtrAcct.setId(libreriaUtil.getIdCdtrAcct());
+		cdtrAcct.setId(bcvlbt.getNroCuentaDestino());
+		//cdtrAcct.setId(libreriaUtil.getIdCdtrAcct());
 		pmtInfObject.setCdtrAcct(cdtrAcct);
 		
 		Cuenta cdtrAgtAcct = new Cuenta();
 		cdtrAgtAcct.setTp("CNTA");
-		cdtrAgtAcct.setId(libreriaUtil.getIdCdtrAgtAcct());
+		cdtrAgtAcct.setId(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoReceptor()).getCuenta());
 		pmtInfObject.setCdtrAgtAcct(cdtrAgtAcct);
 		
 		pmtInfObject.setRmtInf(libreriaUtil.getRmtInf());
@@ -1467,8 +1486,6 @@ public class CceTransaccionController {
 		CceTransaccionDto cceTransaccionDto = new CceTransaccionDto();
 		AprobacionesConsultasRequest aprobacionesConsultasRequest = getAprobacionesConsultasRequest(request);
 		CceMontoMaximoAproAuto cceMontoMaximoAproAuto = montoMaximoAproAutoService.buscarMontoMaximoAproAutoActual();
-		LOGGER.info(cceMontoMaximoAproAuto);
-		LOGGER.info(montoTopeMaximoAproAuto);
 		
 		aprobacionesConsultasRequest.setNumeroPagina(1);   
 		aprobacionesConsultasRequest.setTamanoPagina(2147483647);
@@ -1549,8 +1566,7 @@ public class CceTransaccionController {
     
 	public String getFechaDiaMesAno(String fecha) {
 		String[] arrOfFecha = fecha.split("-");
-		for (String a: arrOfFecha)
-			LOGGER.info(a);
+		
 		String ano = arrOfFecha[0];
 		String mes = arrOfFecha[1];
 		String dia = arrOfFecha[2];
@@ -1577,7 +1593,6 @@ public class CceTransaccionController {
     
     public String convetirFecha(String fechaTransaccion) {
     	if(fechaTransaccion != null) {
-			LOGGER.info(fechaTransaccion);
 			return fechaTransaccion.substring(0,19);
 		}else {
 			return fechaTransaccion;
@@ -1675,11 +1690,9 @@ public class CceTransaccionController {
 		
 		
 		boolean encontrado = true;
-		LOGGER.info("Recorrer Collection con Iterator:");
-        Iterator<BCVLBT> it = listaTransacciones.iterator();
+		Iterator<BCVLBT> it = listaTransacciones.iterator();
         while(it.hasNext() && encontrado) {
         	BCVLBT bcvlbt = it.next();
-        	LOGGER.info(bcvlbt.getReferencia());
         	if(!bcvlbt.isSeleccionado()) {
         		encontrado = false;
         	}

@@ -135,11 +135,14 @@
 		          <div class="card-footer">
 		        	<div class="card-footer">
 			      	 
-			         <a class="btn btn-primary" th:href="@{/ccetransacciones/consultaMovimientosPage(page=${page}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" title="Volver a lista Movimientos" role="button">Volver a lista Movimientos</a>
+			         <a class="do-request btn btn-primary" th:href="@{/ccetransacciones/consultaMovimientosPage(page=${page}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" title="Volver a lista Movimientos" role="button">Volver a lista Movimientos</a>
 			         
 			      </div>
 		      	  </div>
 		        </form>
+		        <div id="loading-screen" style="display:none">
+    					<img alt="logo" th:src="@{/img/spinning-circles.svg}"/>
+			  	</div>
 		      </div>
 		      
 		    </div>
@@ -162,5 +165,6 @@
     <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
   </body>
 </html>

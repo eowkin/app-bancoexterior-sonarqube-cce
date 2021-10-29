@@ -21,7 +21,7 @@ public interface ICceTransaccionService {
     public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(int tipoTransaccion, String bancoDestino, String numeroIdentificacion, 
 			String fechaDesde, String fechaHasta, int page);
     
-    public ByteArrayInputStream exportAllData(List<CceTransaccion> listaTransaccionesDto) throws IOException;
+    public ByteArrayInputStream exportAllData(List<CceTransaccionDto> listaTransaccionesDto) throws IOException;
     
     public int countTransaccionByCodTransaccion(String codTransaccion);
 }

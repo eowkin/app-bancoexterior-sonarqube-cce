@@ -39,7 +39,7 @@ public class LibreriaUtil {
  
     public static final String CHANNEL = "0005"; 
     
-    public static final String IDCDTRACCTGENERICO = "00010001380002100732";
+    public static final String IDCDTRACCTGENERICO = "00010001300003000174";
 
     public static final String VALORRMTINF = "PRUEBA  CASO 3 LBTR 27/04/2 021";
     
@@ -430,13 +430,10 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
 					return true;
 				}else {
 					LOGGER.info("minutos distintos");
-					LOGGER.info(minutoDesdeInt < minutoHastaInt);
 					return minutoDesdeInt < minutoHastaInt;
 				}
 			}else {
 				LOGGER.info("horas distintos");
-				LOGGER.info(hDesdeInt);
-				LOGGER.info(hHastaInt);
 				return hDesdeInt < hHastaInt;					
 			}
 		}

@@ -62,10 +62,10 @@
 			                <td th:text="${codigosTransaccion.descripcion}"></td>
 			                <td th:text="${codigosTransaccion.nombretipo}"></td>
 			                <td>
-			               		<a  class="btn btn-primary" th:href="@{/codigoTransaccion/edit(codTransaccion=${codigosTransaccion.codTransaccion}) }" role="button" title="Editar el registro."><i class="fa fa-pencil" aria-hidden="true"></i></a>
+			               		<a  class="btn btn-primary" th:href="@{/codigoTransaccion/edit(codTransaccion=${codigosTransaccion.codTransaccion})}" role="button" title="Editar el registro."><i class="fa fa-pencil" aria-hidden="true"></i></a>
 		                  	</td>
 			                <td>
-		                  	<a  onclick="return confirm('¿Estas seguro de eliminar el codigo seleccionado?')"  class="btn btn-danger" th:href="@{/codigoTransaccion/eliminar(codTransaccion=${codigosTransaccion.codTransaccion}) }" role="button" title="Eliminar el registro."><i class="fa fa-times" aria-hidden="true"></i></a>
+		                  	<a  onclick="return confirm('¿Estas seguro de eliminar el codigo seleccionado?')"  class="btn btn-danger" th:href="@{/codigoTransaccion/eliminar(codTransaccion=${codigosTransaccion.codTransaccion})}" role="button" title="Eliminar el registro."><i class="fa fa-times" aria-hidden="true"></i></a>
 		                  </td>
 			              </tr>
 			            </tbody>

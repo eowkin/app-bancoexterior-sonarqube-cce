@@ -189,7 +189,6 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String aprobacionesConsultasJSON;
 		aprobacionesConsultasJSON = new Gson().toJson(aprobacionesConsultasRequest);
 		wsrequest.setBody(aprobacionesConsultasJSON);
-		LOGGER.info(aprobacionesConsultasJSON);
 		wsrequest.setUrl(url);	
 		retorno = wsService.post(wsrequest);
 		return retorno;
@@ -200,11 +199,8 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String fiToFiCustomerCreditTransferJSON;
 		fiToFiCustomerCreditTransferJSON = new Gson().toJson(fiToFiCustomerCreditTransferRequest);
 		wsrequest.setBody(fiToFiCustomerCreditTransferJSON);
-		LOGGER.info(fiToFiCustomerCreditTransferJSON);
 		wsrequest.setUrl(url);	
-		LOGGER.info(url);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info(retorno);
 		return retorno;
 	}
 
@@ -216,7 +212,6 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost( wsrequest, aprobacionesConsultasRequest, urlConsulta);
-		LOGGER.info(retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICELISTALISTATRANSACCIONESPORAPROBARF);
@@ -295,8 +290,9 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		LOGGER.info(BCVLBTSERVICEPORAPROBARTRANSACCIONESI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
+		LOGGER.info("fiToFiCustomerCreditTransferRequest: "+fiToFiCustomerCreditTransferRequest);
 		retorno = getRetornoAprobarPost( wsrequest, fiToFiCustomerCreditTransferRequest, urlAprobacion);
-		LOGGER.info(retorno);
+		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200 || retorno.getStatus() == 202) {
 				LOGGER.info(BCVLBTSERVICEPORAPROBARTRANSACCIONESF);
@@ -362,7 +358,6 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String aprobacionJSON;
 		aprobacionJSON = new Gson().toJson(aprobacionRequest);
 		wsrequest.setBody(aprobacionJSON);
-		LOGGER.info(aprobacionJSON);
 		wsrequest.setUrl(url);	
 		retorno = wsService.put(wsrequest);
 		return retorno;
@@ -375,8 +370,9 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		LOGGER.info(BCVLBTSERVICEPORAPROBARACTUALIZARTRANSACCIONESI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
+		LOGGER.info("aprobacionRequest: "+aprobacionRequest);
 		retorno = getRetornoAprobarPut( wsrequest, aprobacionRequest, urlAprobacionActualizar);
-		LOGGER.info(retorno);
+		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICEPORAPROBARACTUALIZARTRANSACCIONESF);

@@ -45,9 +45,17 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	private Mapper mapper;
 	
 	
-	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI = "[==== INICIO ConsultaMovimientosConFechasPage CceTransaccion Consultas - Service ====]";
+	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI = "[==== INICIO ConsultaMovimientosConFechasPageFinal CceTransaccion Consultas - Service ====]";
 	
-	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF = "[==== FIN ConsultaMovimientosConFechasPage CceTransaccion Consultas - Service ====]";
+	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF = "[==== FIN ConsultaMovimientosConFechasPageFinal CceTransaccion Consultas - Service ====]";
+	
+	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEEXCELI = "[==== INICIO ConsultaMovimientosConFechasPageExcel CceTransaccion Consultas - Service ====]";
+	
+	private static final String CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEEXCELF = "[==== FIN ConsultaMovimientosConFechasPageExcel CceTransaccion Consultas - Service ====]";
+	
+	private static final String CCETRANSACCIONSERVICEEXPORTALLDATAI = "[==== INICIO ExportAllData CceTransaccion Consultas - Service ====]";
+	
+	private static final String CCETRANSACCIONSERVICEEXPORTALLDATAF = "[==== FIN ExportAllData CceTransaccion Consultas - Service ====]";
 	
 	private static final String CCETRANSACCIONSERVICEFINDBYENDTOENDIDI = "[==== INICIO FindByEndtoendId CceTransaccion Consultas - Service ====]";
 	
@@ -90,9 +98,6 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 
 		Sort sort = Sort.by("fecha_modificacion").ascending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-		LOGGER.info(tipoTransaccion);
-		
-		
 		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
 		return repo.consultaMovimientosFinal(tipoTransaccion, bancoDestino, numeroIdentificacion, fechaDesde, fechaHasta, pageable);
 		
@@ -104,7 +109,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	@Override
 	public Page<CceTransaccion> consultaMovimientosConFechasPageExcel(int tipoTransaccionExcel, String bancoDestinoExcel,
 			String numeroIdentificacionExcel, String fechaDesdeExcel, String fechaHastaExcel, int page) {
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEI);
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEEXCELI);
 		fechaDesdeExcel = fechaDesdeExcel +HORADESDE;
 		fechaHastaExcel = fechaHastaExcel +HORAHASTA;
 		int pageNumber = page;
@@ -113,12 +118,13 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		Sort sort = Sort.by("fecha_modificacion").ascending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		
-		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEF);	
+		LOGGER.info(CCETRANSACCIONSERVICECONSULTAMOVIMIENTOSCONFECHASPAGEEXCELF);	
 		return repo.consultaMovimientosFinal(tipoTransaccionExcel, bancoDestinoExcel, numeroIdentificacionExcel, fechaDesdeExcel, fechaHastaExcel, pageable);
 	}
 
 	@Override
-	public ByteArrayInputStream exportAllData(List<CceTransaccion> listaTransacciones) throws IOException {
+	public ByteArrayInputStream exportAllData(List<CceTransaccionDto> listaTransacciones) throws IOException {
+		LOGGER.info(CCETRANSACCIONSERVICEEXPORTALLDATAI);
 		String[] columns = { "Referencia BCV", "Referencia IBS", "Tipo Transaccion", "Cta. Ordenante", "Cta. Beneficiario", "Monto", "Estado", "Corte Liquidacion", "Fecha Liquidacion BCV" };
 
 		XSSFSheet sheet;
@@ -150,7 +156,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	        font2.setFontHeight(14);
 	        style2.setFont(font2);
 	       
-			for (CceTransaccion cceTransaccion : listaTransacciones) {
+			for (CceTransaccionDto cceTransaccion : listaTransacciones) {
 				
 				sheet.autoSizeColumn(initRow);
 				row = sheet.createRow(initRow);
@@ -185,7 +191,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 			}
 
 			workbookCce.write(stream);
-			
+			LOGGER.info(CCETRANSACCIONSERVICEEXPORTALLDATAF);
 			return new ByteArrayInputStream(stream.toByteArray());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -217,7 +223,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		return tipoTransaccion;
 	}
      
-	public String cuentaOrdenante(CceTransaccion cceTransaccion) {
+	public String cuentaOrdenante(CceTransaccionDto cceTransaccion) {
 		String cuentaOrdenante = "";
 		if(cceTransaccion.isEnvio()) {
 			cuentaOrdenante = cceTransaccion.getCuentaOrigen();
@@ -229,7 +235,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 		return cuentaOrdenante;
 	}
 	
-	public String cuentaBeneficiario(CceTransaccion cceTransaccion) {
+	public String cuentaBeneficiario(CceTransaccionDto cceTransaccion) {
 		String cuentaBeneficiario = "";
 		if(cceTransaccion.isEnvio()) {
 			cuentaBeneficiario = cceTransaccion.getCuentaDestino();	

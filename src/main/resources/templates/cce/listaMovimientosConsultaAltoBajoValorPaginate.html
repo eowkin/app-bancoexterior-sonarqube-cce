@@ -32,7 +32,7 @@
 		            <i class="fa fa-align-justify" aria-hidden="true"></i> Listado de Movimientos Consulta - [[${seleccion}]]
 		            <div class="my-2 text-right">
 		              <a class="btn btn-success" th:href="@{/ccetransacciones/export/all}" title="Exportar Excel" role="button">Exportar Excel</a>	
-		              <a class="btn btn-primary" th:href="@{/ccetransacciones/formConsultaMovimientos}" title="Consulta de Movimientos" role="button">Consulta de Movimientos</a>
+		              <a class="do-request btn btn-primary" th:href="@{/ccetransacciones/formConsultaMovimientos}" title="Consulta de Movimientos" role="button">Consulta de Movimientos</a>
 		            </div>
 		          </div><!--/.card-header-->
 		          
@@ -89,11 +89,15 @@
 			              
 			              <td th:text="${#dates.format(transaccion.fechaModificacion, 'dd-MM-yyyy')}"></td>
 		                  <td>
-		                  	<a  class="btn btn-info" th:href="@{/ccetransacciones/detalleMovimiento (endtoendId=${transaccion.endtoendId}, page=${listaTransacciones.number}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Ver limites."><i class="fa fa-search" aria-hidden="true"></i></a>
+		                  	<a  class="do-request btn btn-info" th:href="@{/ccetransacciones/detalleMovimiento (endtoendId=${transaccion.endtoendId}, page=${listaTransacciones.number}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Ver limites."><i class="fa fa-search" aria-hidden="true"></i></a>
 		                  </td>
 		                </tr>
 		              </tbody>
 		            </table>
+		            
+		            <div id="loading-screen" style="display:none">
+    					<img  th:src="@{/img/spinning-circles.svg}"/>
+			  		</div>
 		            <nav th:if="${listaTransacciones.totalPages > 0}" aria-label="Page navigation example" > 
 		            	<ul class="pagination justify-content-center">         
 		            		<li class="page-item" th:classappend="${listaTransacciones.number == 0 ? 'disabled' : ''}">
@@ -134,5 +138,6 @@
     <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
   </body>
 </html>

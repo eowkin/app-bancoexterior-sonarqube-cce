@@ -43,16 +43,5 @@ public class CceCodigosTransaccion{
 	@Transient
 	private CceTipoTransaccion cceTipoTransaccion;
 	
-	//@ManyToOne(fetch = FetchType.EAGER)
-	//@JoinColumn(name = "id_tipo")
-	//private CceTipoTransaccion tipoTransaccion;
-
-
-	
-
-	
-	
-	
-	
 	
 }
