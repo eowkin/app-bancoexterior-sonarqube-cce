@@ -1,11 +1,13 @@
 package com.bancoexterior.app.cce.controller;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,7 +148,7 @@ public class CceMontoMinimoComisionController {
 		CceMontoMinimoComisionDto cceMontoMinimoComisionEdit = service.findById(id);
 		
 		if(cceMontoMinimoComisionEdit != null) {
-			cceMontoMinimoComisionEdit.setMonto(cceMontoMinimoComisionEdit.getMonto().setScale(2, RoundingMode.HALF_UP));
+			cceMontoMinimoComisionEdit.setMontoString(cceMontoMinimoComisionEdit.getMonto().setScale(2, RoundingMode.HALF_UP).toString());
 			model.addAttribute("cceMontoMinimoComisionDto", cceMontoMinimoComisionEdit);
 			guardarAuditoriaId("edit", true, "0000",  MENSAJEOPERACIONEXITOSA, id, request);
 			LOGGER.info(MONTOMINIMOCOMISIONCONTROLLEREDITF);
@@ -161,7 +163,7 @@ public class CceMontoMinimoComisionController {
 	}	
 	
 	@PostMapping("/guardar")
-	public String guardar(CceMontoMinimoComisionDto cceMontoMinimoComisionDto, BindingResult result,
+	public String guardar(@Valid CceMontoMinimoComisionDto cceMontoMinimoComisionDto, BindingResult result,
 			RedirectAttributes redirectAttributes, Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
@@ -174,7 +176,7 @@ public class CceMontoMinimoComisionController {
 			return "cce/comisionMinima/formEditMontoComisionMinima";
 		}
 		
-		
+		cceMontoMinimoComisionDto.setMonto(new BigDecimal(cceMontoMinimoComisionDto.getMontoString()).setScale(2, RoundingMode.HALF_UP));
 		service.updateMontoMinimoComision(cceMontoMinimoComisionDto.getMonto().setScale(2, RoundingMode.HALF_UP), SecurityContextHolder.getContext().getAuthentication().getName(),
 				cceMontoMinimoComisionDto.getTipoCliente(), cceMontoMinimoComisionDto.getId());
 		redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
@@ -187,7 +189,7 @@ public class CceMontoMinimoComisionController {
 		List<String> listaError = new ArrayList<>();
 		for (ObjectError error : result.getAllErrors()) {
 			LOGGER.info(error.getDefaultMessage());
-			listaError.add("Los valores de los montos debe ser numerico");
+			listaError.add(error.getDefaultMessage());
 		}
 		model.addAttribute(LISTAERROR, listaError);
 		return model;

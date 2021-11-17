@@ -1,9 +1,11 @@
 package com.bancoexterior.app.cce.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -102,6 +106,8 @@ public class CceTipoTransaccionController {
 	
 	private static final String MENSAJEERRORELIMINAR = "No se puede eliminar el tipo de transaccion ya que tiene codigos de transaccion asociadas.";
 	
+	private static final String LISTAERROR = "listaError";
+	
 	@GetMapping("/index")
 	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(TIPOTRANSACCIONCONTROLLERINDEXI);
@@ -139,12 +145,22 @@ public class CceTipoTransaccionController {
 	
 	
 	@PostMapping("/save")
-	public String save(Model model, CceTipoTransaccionDto cceTipoTransaccionDto, 
-			HttpSession httpSession, HttpServletRequest request) {
-		LOGGER.info(TIPOTRANSACCIONCONTROLLERSAVEI);
+	public String save(@Valid CceTipoTransaccionDto cceTipoTransaccionDto, BindingResult result, 
+			Model model, HttpSession httpSession, HttpServletRequest request) {
+		LOGGER.info(TIPOTRANSACCIONCONTROLLERSAVEI); 
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
+		}
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			model.addAttribute(LISTAERROR, listaError);
+			return URLFORMTIPOTRANSACCION;
 		}
 		
 		LOGGER.info(cceTipoTransaccionDto.getDescripcion());
@@ -182,12 +198,22 @@ public class CceTipoTransaccionController {
 	}
 	
 	@PostMapping("/guardar")
-	public String guardar(Model model, CceTipoTransaccionDto cceTipoTransaccionDto, RedirectAttributes redirectAttributes,
-			HttpSession httpSession, HttpServletRequest request) {
+	public String guardar(@Valid CceTipoTransaccionDto cceTipoTransaccionDto, BindingResult result, 
+			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(TIPOTRANSACCIONCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
+		}
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			model.addAttribute(LISTAERROR, listaError);
+			return URLFORMTIPOTRANSACCIONEDIT;
 		}
 		
 		service.save(cceTipoTransaccionDto);

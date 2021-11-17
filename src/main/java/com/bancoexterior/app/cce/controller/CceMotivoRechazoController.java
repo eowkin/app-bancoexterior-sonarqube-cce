@@ -1,10 +1,12 @@
 package com.bancoexterior.app.cce.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,6 +73,12 @@ public class CceMotivoRechazoController {
 	
 	private static final String MOTIVORECHAZOCONTROLLERGUARDARF = "[==== FIN Guardar MotivoRechazo - Controller ====]";
 	
+	private static final String URLFORMMOTIVORECHAZO = "cce/motivoRechazo/formMotivoRechazo";
+	
+	private static final String URLFORMEDITMOTIVORECHAZO = "cce/motivoRechazo/formEditMotivoRechazo";
+	
+	private static final String URLINDEX = "cce/motivoRechazo/listaMotivoRechazo";
+	
 	private static final String REDIRECTINDEX = "redirect:/motivoRechazo/index";
 	
 	private static final String MOTIVORECHAZOCONTROLLEREDITI = "[==== INICIO Edit MotivoRechazo - Controller ====]";
@@ -87,6 +97,11 @@ public class CceMotivoRechazoController {
 	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
+	private static final String LISTAERROR = "listaError";
+	
+	private static final String DESCRIPCION = "descripcion";
+	
+	
 	@GetMapping("/index")
 	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MOTIVORECHAZOCONTROLLERINDEXI);
@@ -103,7 +118,7 @@ public class CceMotivoRechazoController {
 		model.addAttribute("listaCceMotivoRechazo", listaCceMotivoRechazo); 
 		guardarAuditoria("index", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 		LOGGER.info(MOTIVORECHAZOCONTROLLERINDEXF);
-		return "cce/motivoRechazo/listaMotivoRechazo";
+		return URLINDEX;
 	}	
 	
 	@GetMapping("/formMotivoRechazo")
@@ -115,20 +130,33 @@ public class CceMotivoRechazoController {
 			return URLNOPERMISO;
 		}
 		
+		
+		
 		cceMotivoRechazoDto.setAplicaComisionCastigo("N");
 		guardarAuditoria("formMotivoRechazo", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 		LOGGER.info(MOTIVORECHAZOCONTROLLERFORMF);
-		return "cce/motivoRechazo/formMotivoRechazo";
+		return URLFORMMOTIVORECHAZO;
 		
 	}
 	
 	@PostMapping("/save")
-	public String save(Model model, CceMotivoRechazoDto cceMotivoRechazoDto, 
-			HttpSession httpSession, HttpServletRequest request) {
+	public String save(@Valid  CceMotivoRechazoDto cceMotivoRechazoDto, BindingResult result,
+			Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
+		}
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			model.addAttribute(LISTAERROR, listaError);
+			model.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
+			return URLFORMMOTIVORECHAZO;
 		}
 		
 		CceMotivoRechazoDto cceMotivoRechazoDtoBuscar = service.findById(cceMotivoRechazoDto.getCodigo());
@@ -139,11 +167,11 @@ public class CceMotivoRechazoController {
 			LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEF);
 			return REDIRECTINDEX;
 		}else {
-			model.addAttribute("descripcion", cceMotivoRechazoDto.getDescripcion());
+			model.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
 			model.addAttribute(MENSAJEERROR, MENSAJECODIGOEXISTE);
 			guardarAuditoriaMotivoRechazo("save", false, "0001", MENSAJECODIGOEXISTE, cceMotivoRechazoDto, request);
 			LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEF);
-			return "cce/motivoRechazo/formMotivoRechazo";
+			return URLFORMMOTIVORECHAZO;
 		}
 		
 		
@@ -160,10 +188,10 @@ public class CceMotivoRechazoController {
 		CceMotivoRechazoDto cceMotivoRechazoEdit = service.findById(codigo);
 		if(cceMotivoRechazoEdit != null) {
 			model.addAttribute("cceMotivoRechazoDto", cceMotivoRechazoEdit);
-			model.addAttribute("descripcion", cceMotivoRechazoEdit.getDescripcion());
+			model.addAttribute(DESCRIPCION, cceMotivoRechazoEdit.getDescripcion());
 			guardarAuditoriaId("edit", true, "0000",  MENSAJEOPERACIONEXITOSA, codigo, request);
 			LOGGER.info(MOTIVORECHAZOCONTROLLEREDITF);
-			return "cce/motivoRechazo/formEditMotivoRechazo";
+			return URLFORMEDITMOTIVORECHAZO;
 		}else {
 			redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
 			guardarAuditoriaId("edit", false, "0001",  MENSAJEOPERACIONFALLIDA+MENSAJECONSULTANOARROJORESULTADOS, codigo, request);
@@ -173,12 +201,23 @@ public class CceMotivoRechazoController {
 	}
 	
 	@PostMapping("/guardar")
-	public String guardar(Model model, CceMotivoRechazoDto cceMotivoRechazoDto, RedirectAttributes redirectAttributes,
-			HttpSession httpSession, HttpServletRequest request) {
+	public String guardar(@Valid  CceMotivoRechazoDto cceMotivoRechazoDto, BindingResult result, 
+			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MOTIVORECHAZOCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
+		}
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			model.addAttribute(LISTAERROR, listaError);
+			model.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
+			return URLFORMEDITMOTIVORECHAZO;
 		}
 		
 		service.updateMotivoRechazo(cceMotivoRechazoDto.getDescripcion(), cceMotivoRechazoDto.getAplicaComisionCastigo(), cceMotivoRechazoDto.getCodigo());

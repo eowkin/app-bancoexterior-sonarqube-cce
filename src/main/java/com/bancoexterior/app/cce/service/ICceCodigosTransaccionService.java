@@ -11,6 +11,8 @@ public interface ICceCodigosTransaccionService {
 
 	public List<CceCodigosTransaccion> consultarTodosCodigosConTipo();
 	
+	public List<CceCodigosTransaccion> consultarTodosCodigosConTipo(int idTipo);
+	
 	public CceCodigosTransaccionDto findById(String codTransaccion);
 	
 	public CceCodigosTransaccionDto codigoTransaccionById(String codTransaccion);

@@ -14,13 +14,24 @@ import com.bancoexterior.app.cce.model.CceCodigosTransaccion;
 @Repository
 public interface ICceCodigosTransaccionRepository extends JpaRepository<CceCodigosTransaccion, String>{
 
-	public static final String SELECTCCECODIGOSTRANSACCIONANDTIPOTRANSACCION="SELECT cod_transaccion, t.descripcion, id_tipo, t2.id, t2.descripcion as nombretipo "
-			+ "FROM cce.codigos_transaccion t, cce.tipo_transaccion t2 "
+	public static final String SELECTCCECODIGOSTRANSACCIONANDTIPOTRANSACCION="SELECT cod_transaccion, t.descripcion,"
+			+ " id_tipo, t2.id, t2.descripcion as nombretipo "
+			+ "FROM cce.codigos_transaccion t,"
+			+ " cce.tipo_transaccion t2 "
 			+ "where t.id_tipo = t2.id";
 	
 	@Query(value = SELECTCCECODIGOSTRANSACCIONANDTIPOTRANSACCION,
 		    nativeQuery = true)
 	public List<CceCodigosTransaccion> consultarTodosCodigosConTipo();
+	
+	public static final String SELECTCCECODIGOSTRANSACCIONPORTIPOTRANSACCION="SELECT cod_transaccion, t.descripcion, id_tipo, t2.id, t2.descripcion as nombretipo "
+			+ "FROM cce.codigos_transaccion t, cce.tipo_transaccion t2 "
+			+ "where t.id_tipo = t2.id and t.id_tipo = ?1";
+	
+	@Query(value = SELECTCCECODIGOSTRANSACCIONPORTIPOTRANSACCION,
+		    nativeQuery = true)
+	public List<CceCodigosTransaccion> consultarTodosCodigosConTipo(int idTipo);
+	
 	
 	public static final String SELECTCCECODIGOSTRANSACCIONBYID="SELECT cod_transaccion, t.descripcion, id_tipo, t2.id, t2.descripcion as nombretipo "
 			+ "FROM cce.codigos_transaccion t, cce.tipo_transaccion t2 "

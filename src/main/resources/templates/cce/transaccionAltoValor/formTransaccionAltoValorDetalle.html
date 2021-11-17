@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.1.12
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4" lang="en">
+  <head th:insert="fragments/head :: head">
+    
+  </head>
+  <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <header class="app-header navbar" th:insert="fragments/header :: header">
+       
+      
+    </header>
+    <div class="app-body">
+      <div class="sidebar" th:insert="fragments/menu :: menu-principal">
+      
+    </div>
+      <main class="main">
+        <!-- Breadcrumb-->
+        <ol class="breadcrumb">
+      		<li class="breadcrumb-item" th:each="uri : ${arrUri}" th:text="${uri}">Home</li>
+      	</ol>
+        <div class="container-fluid">
+          <div class="animated fadeIn">
+			    <div class="card">
+			      <div class="card-header">
+			        <strong>Detalle Transaccion Alto Valor</strong>
+			      </div>
+			      <div class="card-body">
+			      		<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
+		            		Ocurrio los siguientes errores:
+		            		<ul>
+		            			<li th:text="${mensajeError}"></li>
+		            		</ul>
+		            	</div>
+			        <form  th:action = "@{/cceTransaccionManual/save}"  method="post"  th:object="${cceLbtrTransaccionDto}" id="fmrDatos">
+			        	<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+		            		Por favor corrija los siguientes errores:
+		            		<ul>
+		            			<li th:each="error : ${listaError}"  th:text="${error}"></li>
+		            		</ul>
+		            	</div>
+			        	
+			        	<input type="hidden" th:field="*{idemEmisor}">
+			        	<input type="hidden" th:field="*{nomEmisor}">
+		            	<div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="idemEmisor">Id. Ordenante:</label>
+				            <div class="col-sm-4">
+				              <input type="text"  class="form-control" th:field="*{idemEmisor}" id="idemEmisor" name="idemEmisor" maxlength="35" disabled>
+				            </div>
+				            <label class="col-sm-2 col-form-label" for="nomEmisor">Nombre Ordenante:</label>
+				            <div class="col-sm-4">
+				            	<input type="text" class="form-control" th:field="*{nomEmisor}" id="nomEmisor" name="nomEmisor" maxlength="140"disabled>
+							</div>				         
+				        </div>
+				        
+				        <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="cuentaEmisor">Cuenta Ordenante:</label>
+				            <div class="col-sm-4">
+				              <input type="text"  class="form-control" th:field="*{cuentaEmisor}" id="cuentaEmisor" name="cuentaEmisor" maxlength="35" disabled>
+				            </div>				        
+				        </div>
+		            	
+		            	<div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="idemReceptor">Id. Beneficiario:</label>
+				            <div class="col-sm-4">
+				              <input type="text"  class="form-control" th:field="*{idemReceptor}" id="idemReceptor" name="idemReceptor" maxlength="35" disabled>
+				            </div>
+				            <label class="col-sm-2 col-form-label" for="nomReceptor">Nombre Beneficiario:</label>
+				            <div class="col-sm-4">
+				            	<input type="text" class="form-control" th:field="*{nomReceptor}" id="nomReceptor" name="nomReceptor" maxlength="140" disabled>
+							</div>				        
+				        </div>
+		            	<div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="cuentaReceptor">Cuenta Beneficiario:</label>
+				            <div class="col-sm-4">
+				              <input type="text"  class="form-control" th:field="*{cuentaReceptor}" id="cuentaReceptor" name="cuentaReceptor" maxlength="20" disabled>
+				            </div>				        
+				        </div>
+				        
+				        <input type="hidden" th:field="*{bancoEmisor}">
+			        	<input type="hidden" th:field="*{cuentaUnicaEmisor}">
+			        	<div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="bancoEmisor">Banco Emisor:</label>
+				            <div class="col-sm-4">
+				            	<input type="text"  class="form-control" th:field="*{bancoEmisor}" id="bancoEmisor" name="bancoEmisor" maxlength="35" disabled>
+				            </div>
+				            <label class="col-sm-2 col-form-label" for="cuentaUnicaEmisor">Cuenta Bcv Emisor:</label>
+				            <div class="col-sm-4">
+				            	<input type="text" class="form-control" th:field="*{cuentaUnicaEmisor}" id="cuentaBcvEmisor" name="cuentaBcvEmisor" maxlength="20" disabled>
+							</div>				        
+				        </div>
+				        
+				        <input type="hidden" th:field="*{cuentaUnicaReceptor}" id="cuentaBcvReceptorHidden">
+				        <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="bancoReceptor">Banco Receptor:</label>
+				            <div class="col-sm-4">
+				            	<input type="text"  class="form-control" th:field="*{bancoReceptor}" id="bancoReceptor" name="bancoReceptor" maxlength="35" disabled>
+				            </div>
+				            <label class="col-sm-2 col-form-label" for="bancoDestino">Cuenta Bcv Receptor:</label>
+				            <div class="col-sm-4">
+				            	<input type="text" class="form-control" th:field="*{cuentaUnicaReceptor}" id="cuentaBcvReceptor" name="cuentaBcvReceptor" maxlength="20" disabled>
+							</div>				        
+				        </div>
+				        
+				        <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="fechaValorString">Fecha Valor:</label>
+				            <div class="col-sm-4">
+				              <input type="text" class="form-control" th:field="*{fechaValorString}" id="fechaValorString" name="fechaValorString" maxlength="3" disabled>
+				            </div>				        
+				        </div>
+				        
+				        <input type="hidden" th:field="*{moneda}">
+				         <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="moneda">Moneda:</label>
+				            <div class="col-sm-4">
+				              <input type="text" class="form-control" th:field="*{moneda}" id="moneda" name="moneda" maxlength="3" disabled>
+				            </div>				        
+				        </div>
+				        
+				        <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="montoString">Monto:</label>
+				            <div class="col-sm-4">
+				              <input type="text" class="form-control" th:field="*{montoString}" id="montoString" name="montoString" disabled>
+				            </div>				        
+				        </div>
+			            
+			            <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="subProducto">Sub Producto:</label>
+				            <div class="col-sm-4">
+				              <input type="text" class="form-control" th:field="*{subProducto}" id="subProducto" name="subProducto" disabled>
+				            </div>				        
+				        </div>	
+			            
+			            <input type="hidden" th:field="*{codTransaccion}">
+			            <div class="form-group row">
+				            <label class="col-sm-2 col-form-label" for="codTransaccion">Cod. Transaccion:</label>
+				            <div class="col-sm-4">
+				              <input type="text" class="form-control" th:field="*{codTransaccion}" id="codTransaccion" name="codTransaccion" disabled>
+				            </div>				        
+				        </div>	
+			            
+			            <div class="form-group row">
+			          		<label class="col-sm-2 col-form-label" for="descripcion">Descripcion:</label>
+			            	<div class="col-sm-6">
+			            	<textarea class="form-control" id="descripcion" rows="5"
+                             	 name="descripcion"
+                             	 placeholder="Description" th:text="${descripcion}"
+                             	 disabled>[[${descripcion}]]</textarea>
+			            </div>
+			            </div>	
+			            
+			          </div>
+			          <div class="card-footer">
+			          	<a class="do-request btn btn-primary" th:href="@{/cceTransaccionManual/consultaPage(page=${page})}" title="Volver a lista Transacciones" role="button">Volver a lista Transacciones</a>
+			      	  </div>
+			        </form>
+			        <div id="loading-screen" style="display:none">
+    					<img  alt="logo" th:src="@{/img/spinning-circles.svg}"/>
+			  		</div>
+			      </div>
+			      
+			    </div>
+			  </div><!--/.col-->
+        </div>
+      </main>
+      
+    </div>
+   <footer class="app-footer" th:insert="fragments/footer :: pie-pagina">
+    
+  </footer>
+    <!-- CoreUI and necessary plugins-->
+    <script th:src="@{/node_modules/jquery/dist/jquery.min.js}"></script>
+    <script th:src="@{/node_modules/popper.js/dist/umd/popper.min.js}"></script>
+    <script th:src="@{/node_modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <script th:src="@{/node_modules/pace-progress/pace.min.js}"></script>
+    <script th:src="@{/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js}"></script>
+    <script th:src="@{/node_modules/@coreui/coreui/dist/js/coreui.min.js}"></script>
+    <!-- Plugins and scripts required by this view-->
+    <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
+    <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+  </body>
+</html>

@@ -82,4 +82,9 @@ public class CceCodigosTransaccionServiceImpl implements ICceCodigosTransaccionS
 		return repo.countCodigoTransaccionByTipo(idTipo);
 	}
 
+	@Override
+	public List<CceCodigosTransaccion> consultarTodosCodigosConTipo(int idTipo) {
+		return repo.consultarTodosCodigosConTipo(idTipo);
+	}
+
 }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+* CoreUI - Free Bootstrap Admin Template
+* @version v2.1.12
+* @link https://coreui.io
+* Copyright (c) 2018 creativeLabs Łukasz Holeczek
+* Licensed under MIT (https://coreui.io/license)
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4" lang="en">
+  <head th:insert="fragments/head :: head">
+    
+  </head>
+  <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <header class="app-header navbar" th:insert="fragments/header :: header">
+    </header>
+    <div class="app-body">
+      <div class="sidebar" th:insert="fragments/menu :: menu-principal">
+      
+    </div>
+      <main class="main">
+        <!-- Breadcrumb-->
+        <ol class="breadcrumb">
+      		<li class="breadcrumb-item" th:each="uri : ${arrUri}" th:text="${uri}">Home</li>
+      	</ol>
+        <div class="container-fluid">
+          <div class="animated fadeIn">
+		    <div class="row">
+		      <div class="col-lg-1-12">
+		        <div class="card">
+		          <div class="card-header">
+		            <i class="fa fa-align-justify" aria-hidden="true"></i> Aprobar Transaccion Alto Valor Manual
+		            <div class="my-2 text-right">
+		              
+		            </div>
+		          </div><!--/.card-header-->
+		          
+		          <div class="card-body">
+		          	<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
+		            		Ocurrio los siguientes errores:
+		            		<ul>
+		            			<li th:text="${mensajeError}"></li>
+		            		</ul>
+		            	</div>
+	          	
+	          			<div th:if="${mensaje != null}" class="alert alert-success" th:text="${mensaje}" role="alert"></div>
+		            <table class="table">
+		              <thead>
+		                <tr>
+		                  <th scope="col">Id. Ordenante</th>
+		                  <th scope="col">Cta. Ordenante</th>
+		                  <th scope="col">Cta. Beneficiario</th>
+		                  <th scope="col">Monto</th>
+		                  <th scope="col">Fecha Valor</th>
+		                  <th scope="col">Status</th>
+		                  <th scope="col">Aprobar</th>
+			              <th scope="col">Rechazar</th>
+			              
+		                </tr>
+		              </thead>
+		              <tbody>
+		                <tr th:each = "cceLbtrTransaccion: ${listaCceLbtrTransaccion}">
+		                  <td th:text="${cceLbtrTransaccion.idemEmisor}"></td>
+		                  <td th:text="${cceLbtrTransaccion.cuentaEmisor}"></td>
+		                  <td th:text="${cceLbtrTransaccion.cuentaReceptor}"></td>
+		                  <td th:text="${cceLbtrTransaccion.montoString}"></td>
+		                  <td th:text="${#dates.format(cceLbtrTransaccion.fechaValor, 'dd-MM-yyyy')}"></td>
+		                  <td>
+			                	<span class="badge badge-success" th:if="${cceLbtrTransaccion.status == 'ACCP'}">Aprobada</span>
+			                	<span class="badge badge-danger" th:if="${cceLbtrTransaccion.status == 'RT' }">Rechazo Tecnico</span>
+			                	<span class="badge badge-danger" th:if="${cceLbtrTransaccion.status == 'RC' }">Rechazo Core</span>
+			                	<span class="badge badge-danger" th:if="${cceLbtrTransaccion.status == 'I' }">Por Aprobar</span>
+			              </td>
+		                  
+			              
+		                  <td>
+			                   <a  class="do-request btn btn-success" th:href="@{/cceTransaccionManual/detalleAprobar(id=${cceLbtrTransaccion.id}, page=${listaCceLbtrTransaccion.number}, bancoReceptor=${bancoReceptor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Aprobar Solicitud."><i class="fa fa-check" aria-hidden="true"></i></a>
+			              </td>
+			              <td>
+			                   <a  class="do-request btn btn-danger" th:href="@{/cceTransaccionManual/detalleRechazar(id=${cceLbtrTransaccion.id}, page=${listaCceLbtrTransaccion.number}, bancoReceptor=${bancoReceptor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta}) }" role="button" title="Rechazar Solicitud."><i class="fa fa-times" aria-hidden="true"></i></a>
+			              </td>	
+			              
+		                </tr>
+		              </tbody>
+		            </table>
+		            
+		            <div id="loading-screen" style="display:none">
+    					<img  th:src="@{/img/spinning-circles.svg}"/>
+			  		</div>
+		            <nav th:if="${listaCceLbtrTransaccion.totalPages > 0}" aria-label="Page navigation example" > 
+		            	<ul class="pagination justify-content-center">         
+		            		<li class="page-item" th:classappend="${listaCceLbtrTransaccion.number == 0 ? 'disabled' : ''}">
+		            			<a th:href="@{/cceTransaccionManual/consultaPageAprobar(page=${listaCceLbtrTransaccion.number - 1}, bancoReceptor=${bancoReceptor},fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Anterior</a>
+		            		</li> 
+		            		<li class="page-item">
+								<a class="page-link"  th:text="${'Pagina '+ (listaCceLbtrTransaccion.number + 1) + ' - '+ (listaCceLbtrTransaccion.totalPages)}" th:title="${'Page '+ listaCceLbtrTransaccion.number}" data-toggle="tooltip"></a>
+							</li>
+		            		<li class="page-item" th:classappend="${listaCceLbtrTransaccion.number == (listaCceLbtrTransaccion.totalPages - 1) ? 'disabled' : ''}">
+		            			<a th:href="@{/cceTransaccionManual/consultaPageAprobar(page=${listaCceLbtrTransaccion.number + 1}, bancoReceptor=${bancoReceptor}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" class="page-link">Siguiente</a>
+		            		</li>  
+		            	</ul> 
+		            </nav> 
+		      
+				
+					
+					
+		          </div><!--/.card-body-->
+		        </div><!--/.card-->
+		      </div><!--/.col-lg-1-12-->
+		    </div><!--/.row-->    
+		  </div><!--/.animated fadeIn-->
+        </div>
+      </main>
+      
+    </div>
+   <footer class="app-footer" th:insert="fragments/footer :: pie-pagina">
+    
+  </footer>
+    <!-- CoreUI and necessary plugins-->
+    <script th:src="@{/node_modules/jquery/dist/jquery.min.js}"></script>
+    <script th:src="@{/node_modules/popper.js/dist/umd/popper.min.js}"></script>
+    <script th:src="@{/node_modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <script th:src="@{/node_modules/pace-progress/pace.min.js}"></script>
+    <script th:src="@{/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js}"></script>
+    <script th:src="@{/node_modules/@coreui/coreui/dist/js/coreui.min.js}"></script>
+    <!-- Plugins and scripts required by this view-->
+    <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
+    <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+  </body>
+</html>

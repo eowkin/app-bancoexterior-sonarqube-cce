@@ -16,6 +16,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.bancoexterior.app.cce.model.BCVLBT;
@@ -40,8 +41,9 @@ public class LibreriaUtil {
     public static final String CHANNEL = "0005"; 
     
     public static final String IDCDTRACCTGENERICO = "00010001300003000174";
-
-    public static final String VALORRMTINF = "PRUEBA  CASO 3 LBTR 27/04/2 021";
+    
+    @Value("${trasaccionesAprobarMicroservicio.rmtinf}")
+    private String valorRmtinf;
     
 	public String obtenerIdSesion() {
 		LocalDateTime ahora = LocalDateTime.now();
@@ -217,7 +219,7 @@ public class LibreriaUtil {
     }
     
     public String getRmtInf() {
-        return VALORRMTINF;
+        return valorRmtinf;
 
     }
     
@@ -259,6 +261,22 @@ public class LibreriaUtil {
     				bld.append("0");
 				}
     			return bld.toString() + referencia;
+    		}else {
+    			return referencia;
+    		}
+    			
+    	}
+    		
+    	
+    }
+    
+    public String getReferenciaUltimosOchoDigitos(String referencia) {
+    	
+    	if(referencia.length() == 8) {
+    		return referencia;
+    	}else {
+    		if(referencia.length() > 8) {
+    			return referencia.substring(referencia.length() - 8, referencia.length());
     		}else {
     			return referencia;
     		}
@@ -463,4 +481,39 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
 		return montoAprobarOperacionesSeleccionadas;
 	}
 	
-}
+	
+	public Date getFechaDate(String fecha) {
+		
+		SimpleDateFormat formato = new SimpleDateFormat(STRDATEFORMET);
+		
+        try {
+        	return formato.parse(fecha);  	
+        }catch (ParseException ex){
+        	LOGGER.error(ex.getMessage());
+        	return null;
+        }
+   }
+	
+	public boolean isFechaValidaDesdeHastaDate(Date fechaHoy, Date fechaValor) {
+		
+		LOGGER.info("fechaValor: "+fechaValor);
+		LOGGER.info("fechaHoy: "+fechaHoy);
+		
+		if(fechaValor.before(fechaHoy) ){
+        	LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        	return false;
+        }else{
+        	if(fechaHoy.before(fechaValor) ){
+        	    LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    return true;
+        	}else{
+        	    LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    return true;
+        	} 
+        }
+       
+	}	
+	
+	
+	
+ }

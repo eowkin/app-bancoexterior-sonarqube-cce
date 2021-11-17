@@ -1,11 +1,13 @@
 package com.bancoexterior.app.cce.controller;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -145,7 +147,7 @@ public class CceMontoComisionCastigoController {
 		CceMontoComisionCastigoDto cceMontoComisionCastigoEdit = service.findById(id);
 		
 		if(cceMontoComisionCastigoEdit != null) {
-			cceMontoComisionCastigoEdit.setMonto(cceMontoComisionCastigoEdit.getMonto().setScale(2, RoundingMode.HALF_UP));
+			cceMontoComisionCastigoEdit.setMontoString(cceMontoComisionCastigoEdit.getMonto().setScale(2, RoundingMode.HALF_UP).toString());
 			model.addAttribute("cceMontoComisionCastigoDto", cceMontoComisionCastigoEdit);
 			guardarAuditoriaId("edit", true, "0000",  MENSAJEOPERACIONEXITOSA, id, request);
 			LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLEREDITF);
@@ -164,8 +166,7 @@ public class CceMontoComisionCastigoController {
 	public Model setError(Model model, BindingResult result) {
 		List<String> listaError = new ArrayList<>();
 		for (ObjectError error : result.getAllErrors()) {
-			LOGGER.info(error.getDefaultMessage());
-			listaError.add("Los valores de los montos debe ser numerico");
+			listaError.add(error.getDefaultMessage());
 		}
 		model.addAttribute(LISTAERROR, listaError);
 		return model;
@@ -173,7 +174,7 @@ public class CceMontoComisionCastigoController {
 	
 	
 	@PostMapping("/guardar")
-	public String guardar(CceMontoComisionCastigoDto cceMontoComisionCastigoDto, BindingResult result,
+	public String guardar(@Valid  CceMontoComisionCastigoDto cceMontoComisionCastigoDto, BindingResult result,
 			RedirectAttributes redirectAttributes, Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOCOMISIONCASTIGOCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
@@ -185,6 +186,8 @@ public class CceMontoComisionCastigoController {
 			setError(model, result);
 			return "cce/comisionCastigo/formEditMontoComisionCastigo";
 		}	
+		
+		cceMontoComisionCastigoDto.setMonto(new BigDecimal(cceMontoComisionCastigoDto.getMontoString()).setScale(2, RoundingMode.HALF_UP));
 		
 		service.updateMontoCastigoTipoTransaccion(cceMontoComisionCastigoDto.getMonto().setScale(2, RoundingMode.HALF_UP), SecurityContextHolder.getContext().getAuthentication().getName(),
 				cceMontoComisionCastigoDto.getTipoCliente(), cceMontoComisionCastigoDto.getId());

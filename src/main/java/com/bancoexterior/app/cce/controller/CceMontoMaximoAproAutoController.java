@@ -1,11 +1,13 @@
 package com.bancoexterior.app.cce.controller;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -145,7 +147,7 @@ public class CceMontoMaximoAproAutoController {
 		CceMontoMaximoAproAutoDto cceMontoMaximoAproAutoEdit = service.findById(id);
 		
 		if(cceMontoMaximoAproAutoEdit != null) {
-			cceMontoMaximoAproAutoEdit.setMonto(cceMontoMaximoAproAutoEdit.getMonto().setScale(2, RoundingMode.HALF_UP));
+			cceMontoMaximoAproAutoEdit.setMontoString(cceMontoMaximoAproAutoEdit.getMonto().setScale(2, RoundingMode.HALF_UP).toString());
 			model.addAttribute("cceMontoMaximoAproAutoDto", cceMontoMaximoAproAutoEdit);
 			guardarAuditoriaId("edit", true, "0000",  MENSAJEOPERACIONEXITOSA, id, request);
 			LOGGER.info(MONTOMAXIMOAPROAUTOCONTROLLEREDITF);
@@ -161,7 +163,7 @@ public class CceMontoMaximoAproAutoController {
 	
 	
 	@PostMapping("/guardar")
-	public String guardar(CceMontoMaximoAproAutoDto cceMontoMaximoAproAutoDto, BindingResult result,
+	public String guardar(@Valid CceMontoMaximoAproAutoDto cceMontoMaximoAproAutoDto, BindingResult result,
 			RedirectAttributes redirectAttributes, Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MONTOMAXIMOAPROAUTOCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
@@ -174,12 +176,13 @@ public class CceMontoMaximoAproAutoController {
 		if (result.hasErrors()) {
 			for (ObjectError error : result.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
-				listaError.add("Los valores de los montos debe ser numerico");
+				listaError.add(error.getDefaultMessage());
 			}
 			model.addAttribute(LISTAERROR, listaError);
 			return "cce/aprobacionAutomatica/formEditMontoAprobacionAutomatica";
 		}
 		
+		cceMontoMaximoAproAutoDto.setMonto(new BigDecimal(cceMontoMaximoAproAutoDto.getMontoString()).setScale(2, RoundingMode.HALF_UP));
 		service.updateMontoMaximoAproAuto(cceMontoMaximoAproAutoDto.getMonto().setScale(2, RoundingMode.HALF_UP), SecurityContextHolder.getContext().getAuthentication().getName(), cceMontoMaximoAproAutoDto.getId());
 		redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
 		guardarAuditoriaMontoMaximoAproAuto("guardar", true, "0000", MENSAJEOPERACIONEXITOSA, cceMontoMaximoAproAutoDto, request);

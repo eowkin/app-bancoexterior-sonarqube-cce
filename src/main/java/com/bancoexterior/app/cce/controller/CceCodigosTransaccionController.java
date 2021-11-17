@@ -1,9 +1,11 @@
 package com.bancoexterior.app.cce.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +27,7 @@ import com.bancoexterior.app.cce.dto.CceCodigosTransaccionDto;
 import com.bancoexterior.app.cce.model.CceCodigosTransaccion;
 import com.bancoexterior.app.cce.model.CceTipoTransaccion;
 import com.bancoexterior.app.cce.service.ICceCodigosTransaccionService;
+import com.bancoexterior.app.cce.service.ICceLbtrTransaccionService;
 import com.bancoexterior.app.cce.service.ICceTipoTransaccionService;
 import com.bancoexterior.app.cce.service.ICceTransaccionService;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
@@ -40,6 +45,8 @@ public class CceCodigosTransaccionController {
 	@Autowired
 	private ICceTransaccionService cceTransaccionService;
 	
+	@Autowired
+	private ICceLbtrTransaccionService cceLbtrTransaccionService;
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil;
@@ -107,11 +114,15 @@ public class CceCodigosTransaccionController {
 	
 	private static final String URLFORMCODIGOTRANSACCION = "cce/codigosTransaccion/formCodigoTransaccion";
 	
+	private static final String URLFORMCODIGOTRANSACCIONEDIT = "cce/codigosTransaccion/formCodigoTransaccionEdit";
+	
 	private static final String URLLISTACODIGOTRANSACCION = "cce/codigosTransaccion/listaCodigosTransaccion";
 	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
 	private static final String MENSAJE = "mensaje";
+	
+	private static final String LISTAERROR = "listaError";
 	
 	@GetMapping("/index")
 	public String index(Model model, HttpSession httpSession, HttpServletRequest request) {
@@ -154,12 +165,25 @@ public class CceCodigosTransaccionController {
 	}
 	
 	@PostMapping("/save")
-	public String save(Model model, RedirectAttributes redirectAttributes, CceCodigosTransaccionDto cceCodigosTransaccionDto, 
-			HttpSession httpSession, HttpServletRequest request) {
+	public String save(@Valid  CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult result,
+			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
+		}
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			model.addAttribute(LISTAERROR, listaError);
+			return URLFORMCODIGOTRANSACCION;
 		}
 		
 		
@@ -207,7 +231,7 @@ public class CceCodigosTransaccionController {
 			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDtoEdit.getDescripcion());
 			guardarAuditoriaId("edit", true, "0000",  MENSAJEOPERACIONEXITOSA, codTransaccion, request);
 			LOGGER.info(CODIGOSTRANSACCIONCONTROLLEREDITF);
-			return "cce/codigosTransaccion/formCodigoTransaccionEdit";
+			return URLFORMCODIGOTRANSACCIONEDIT;
 			
 			
 		}else {
@@ -220,14 +244,36 @@ public class CceCodigosTransaccionController {
 	}	
 	
 	@PostMapping("/guardar")
-	public String guardar(Model model, CceCodigosTransaccionDto cceCodigosTransaccionDto, RedirectAttributes redirectAttributes,
-			HttpSession httpSession, HttpServletRequest request) {
+	public String guardar(@Valid CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult result, 
+			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
 		
+		
+		List<String> listaError = new ArrayList<>();
+		if (result.hasErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
+				LOGGER.info(error.getDefaultMessage());
+				listaError.add(error.getDefaultMessage());
+			}
+			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			model.addAttribute(LISTAERROR, listaError);
+			return URLFORMCODIGOTRANSACCIONEDIT;
+		}
+		
+		if(cceCodigosTransaccionDto.getIdTipo() == 0) {
+			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
+			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			model.addAttribute(MENSAJEERROR, MENSAJEERRORSELECCIONTIPO);
+			LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEF);
+			return URLFORMCODIGOTRANSACCIONEDIT;
+		}
 		
 		service.actualizarCodigoTransaccion(cceCodigosTransaccionDto.getCodTransaccion(), cceCodigosTransaccionDto.getDescripcion(), cceCodigosTransaccionDto.getIdTipo());
 		redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
@@ -246,7 +292,9 @@ public class CceCodigosTransaccionController {
 		}
 		int cantidad = cceTransaccionService.countTransaccionByCodTransaccion(codTransaccion);
 		
-		if(cantidad == 0) {
+		int cantidadLbtr = cceLbtrTransaccionService.countCodigoLbtrTransaccionByTipo(codTransaccion);
+		
+		if(cantidad == 0 && cantidadLbtr == 0) {
 			service.eliminarCodigoTransaccion(codTransaccion);
 			redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
 			guardarAuditoriaId("eliminar", true, "0000", MENSAJEOPERACIONEXITOSA, codTransaccion, request);

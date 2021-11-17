@@ -189,7 +189,9 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String aprobacionesConsultasJSON;
 		aprobacionesConsultasJSON = new Gson().toJson(aprobacionesConsultasRequest);
 		wsrequest.setBody(aprobacionesConsultasJSON);
+		LOGGER.info("aprobacionesConsultasJSON: "+aprobacionesConsultasJSON);
 		wsrequest.setUrl(url);	
+		LOGGER.info("url: "+url);
 		retorno = wsService.post(wsrequest);
 		return retorno;
 	}
@@ -212,6 +214,7 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost( wsrequest, aprobacionesConsultasRequest, urlConsulta);
+		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICELISTALISTATRANSACCIONESPORAPROBARF);
@@ -345,7 +348,11 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					CCE, accion, codRespuesta, resultado, respuesta+" BcvlbtTransaccion:[codTransaccion="+ fiToFiCustomerCreditTransferRequest.getParamIdentificacion().getCodTransaccion()+","
 					+ "idSesion="+fiToFiCustomerCreditTransferRequest.getParamIdentificacion().getIdSesion()+", idUsuario="+fiToFiCustomerCreditTransferRequest.getParamIdentificacion().getIdUsuario()+", "
-					+ "bancoReceptor="+fiToFiCustomerCreditTransferRequest.getParamIdentificacion().getBancoReceptor()+"]", request.getRemoteAddr());
+					+ "bancoReceptor="+fiToFiCustomerCreditTransferRequest.getParamIdentificacion().getBancoReceptor()+", MsgId="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getMsgId()+", "
+					+ "CreDtTm="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getCreDtTm()+", IntrBkSttlmDt="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getIntrBkSttlmDt()+", "
+					+ "LclInstrm="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getLclInstrm()+", Channel="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getChannel()+", "
+					+ "NbOfTxs="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getNbOfTxs()+", Ccy="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getCtrlSum().getCcy()+", "
+					+ "Amt="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getGrpHdr().getCtrlSum().getAmt()+", PmtInf="+fiToFiCustomerCreditTransferRequest.getSglbtr().getFIToFICstmrCdtTrfInitn().getPmtInf()+"]", request.getRemoteAddr());
 			LOGGER.info(CCETRANSACCIONSERVICEFUNCIONAUDITORIAF);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

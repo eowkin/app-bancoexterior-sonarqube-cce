@@ -187,6 +187,7 @@ public class CceTransaccionController {
 	
 	private static final String URLFORMCONSULTAROPERACIONESAPORBARALTOBAJOVALOR = "cce/formConsultarOperacionesAprobarAltoBajoValor";
 	
+	
 	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTAROPERACIONESAPROBARALTOVALORI = "[==== INICIO ProcesarConsultarOperacionesAprobarAltoValor CceTransaccion Consultas - Controller ====]";
 	
 	private static final String CCETRANSACCIONCONTROLLERPROCESARCONSULTAROPERACIONESAPROBARALTOVALORF = "[==== FIN ProcesarConsultarOperacionesAprobarAltoValor CceTransaccion Consultas - Controller ====]";
@@ -1297,7 +1298,11 @@ public class CceTransaccionController {
 			} catch (CustomException e) {
 				LOGGER.error(e.getMessage());
 				String valor = transaccion +" -> "+e.getMessage();
-				listaError.add(valor);
+				try {
+					listaError.add(aprobarActualizarError(valor, bcvlbt, PROCESARAPROBARLOTESELECCION, request));
+				} catch (CustomException e1) {
+					LOGGER.error(e.getMessage());
+				}
 			}
 			
 		}
@@ -1367,6 +1372,33 @@ public class CceTransaccionController {
 		return transaccion+ " --> " + descripcionAprobar + " --> " +descripcionActualizar;
 	}
 	
+	
+	public String aprobarActualizarError(String error, BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
+		
+		String transaccion = "Transaccion referencia: "+bcvlbt.getReferencia();
+		
+		String descripcionAprobar = error;
+		String descripcionActualizar;
+		
+		AprobacionRequest aprobacionRequest = getAprobacionRequest(request);
+		DatosAprobacion datosAprobacion = getDatosAprobacionError(bcvlbt);
+		aprobacionRequest.setDatosAprobacion(datosAprobacion);
+		
+		Resultado resultadoActualizarResponse = bcvlbtService.aporbarActualizar(aprobacionRequest, accion, request);
+		descripcionActualizar = resultadoActualizarResponse.getCodigo() + " - " + resultadoActualizarResponse.getDescripcion();
+		
+		return transaccion+ " --> " + descripcionAprobar + " --> " +descripcionActualizar;
+	}
+	
+	public DatosAprobacion getDatosAprobacionError(BCVLBT bcvlbt) {
+		DatosAprobacion datosAprobacion = new DatosAprobacion();
+		datosAprobacion.setReferencia(bcvlbt.getReferencia());
+		datosAprobacion.setNroIdEmisor(bcvlbt.getNroIdEmisor());
+		datosAprobacion.setStatus("PP");
+		
+		return datosAprobacion;
+	}
+	
 	public Resultado procesarAprobarAltoValor(BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
 		
 		LOGGER.info("bcvlbt: "+bcvlbt);
@@ -1429,8 +1461,6 @@ public class CceTransaccionController {
 		Cuenta dbtrAgtAcct = new Cuenta();
 		dbtrAgtAcct.setTp("CNTA");
 		dbtrAgtAcct.setId(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoEmisor()).getCuenta());
-		//dbtrAgtAcct.setId("00010001360002000115");
-		//dbtrAgtAcct.setId(bcvlbt.getNroCuentaDestino());
 		pmtInfObject.setDbtrAgtAcct(dbtrAgtAcct);
 		
 		Identificacion cdtr = new Identificacion();
@@ -1442,7 +1472,6 @@ public class CceTransaccionController {
 		Cuenta cdtrAcct = new Cuenta();
 		cdtrAcct.setTp("CNTA");
 		cdtrAcct.setId(bcvlbt.getNroCuentaDestino());
-		//cdtrAcct.setId(libreriaUtil.getIdCdtrAcct());
 		pmtInfObject.setCdtrAcct(cdtrAcct);
 		
 		Cuenta cdtrAgtAcct = new Cuenta();
@@ -1791,6 +1820,14 @@ public class CceTransaccionController {
 	
 		return nombreEstadoBcv;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public void guardarAuditoria(String accion, boolean resultado, String codRespuesta,  String respuesta, HttpServletRequest request) {
 		try {
