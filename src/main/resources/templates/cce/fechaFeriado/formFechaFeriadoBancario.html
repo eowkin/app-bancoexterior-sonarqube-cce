@@ -27,51 +27,47 @@
       	</ol>
         <div class="container-fluid">
           <div class="animated fadeIn">
-			  <div class="row">
-			    <div class="col-lg-1-12">
-			      <div class="card">
-			        <div class="card-header">
-			          <i class="fa fa-align-justify" aria-hidden="true"></i> Historial Monto Tope Comisión Mínima	
-			          <div class="my-2 text-right">
-		              	<a class="btn btn-primary" th:href="@{/montoMinimoComision/index}" title="Volver" role="button">Volver</a>
-		              </div>
-			        </div><!--/.card-header-->
-			        <div class="card-body">
-			          <div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
+			    <div class="card">
+			      <div class="card-header">
+			        <strong>Fecha Feriado Bancario</strong>
+			      </div>
+			      <div class="card-body">
+			        <form  th:action = "@{/calendarioBancario/save}"  method="post"  th:object="${cceFechaFeriadoBancarioDto}"   class="form-horizontal">
+			        	<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
 		            		Ocurrio los siguientes errores:
 		            		<ul>
 		            			<li th:text="${mensajeError}"></li>
 		            		</ul>
 		            	</div>
-		              		
-			          <div th:if="${mensaje != null}" class="alert alert-success" th:text="${mensaje}" role="alert"></div>	
-			          <table class="table table-striped table-hover">
-			            <thead>
-			              <tr>
-			              	<th scope="col">Id</th>
-			                <th scope="col">Monto</th>
-			                <th scope="col">Tipo CLiente</th>
-			                <th scope="col">Usuario</th>
-			                <th scope="col">Fecha</th>
-			                
-			              </tr>
-			            </thead>
-			            <tbody>
-			              <tr th:each = "cceHistorialMontoMinimoComision: ${listCceHistorialMontoMinimoComision}">
-			                <td th:text="${cceHistorialMontoMinimoComision.id}"></td>
-			                <td th:text="${cceHistorialMontoMinimoComision.montoString}"></td>
-			                <td th:text="${cceHistorialMontoMinimoComision.tipoCliente}"></td>
-			                <td th:text="${cceHistorialMontoMinimoComision.usuario}"></td>
-			                <td th:text="${#dates.format(cceHistorialMontoMinimoComision.fechaModificacion, 'dd-MM-yyyy')}"></td>
-			                
-			              </tr>
-			            </tbody>
-			          </table> 
-			        </div><!--/.card-body-->
-			      </div><!--/.card-->
-			    </div><!--/.col-lg-1-12-->
-			  </div><!--/.row-->    
-			</div><!--/.animated fadeIn-->
+		            	
+		            	
+		            	<div class="form-group row">
+		            		<label class="col-sm-3 col-form-label" for="input-large">Fecha Feriado:</label>
+		            		<div class="col-sm-3">
+		              			<input type="date" class="form-control" th:field="*{fechaFeriadoString}" name="fechaFeriadoString" id="fechaFeriadoString" placeholder="Fecha Feriado" required="required">
+		            		</div>
+		          		</div>
+			        	<div class="form-group row">
+			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripción:</label>
+			            	<div class="col-sm-6">
+			            	<textarea class="form-control" id="descripcion" rows="5"
+                             	 name="descripcion"
+                             	 placeholder="Description" th:text="${descripcion}"
+                             	 required="required">[[${descripcion}]]</textarea>
+			            </div>
+			          </div>
+			          <div class="card-footer">
+			        	<button type="submit" class="do-request btn btn-sm btn-primary"><i class="fa fa-circle-o" aria-hidden="true"></i> Aceptar</button>
+			        	<a   class="btn btn-sm btn-danger" role="button" th:href="@{/calendarioBancario/index}"><i class="fa fa-ban" aria-hidden="true"></i>Cancelar</a>
+			      	  </div>
+			        </form>
+			        <div id="loading-screen" style="display:none">
+    					<img alt="logo" th:src="@{/img/spinning-circles.svg}"/>
+			  		</div>
+			      </div>
+			      
+			    </div>
+			  </div><!--/.col-->
         </div>
       </main>
       
@@ -90,5 +86,6 @@
     <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/appFomTipoTransaccion.js}"></script>
   </body>
 </html>

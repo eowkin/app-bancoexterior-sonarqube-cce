@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -227,13 +228,13 @@ public class LibreriaUtil {
     public String getSchmeNm(String nroIdEmisor) {
     	char valor = nroIdEmisor.charAt(0);
     
-    	if(valor == 'J' || valor == 'G' || valor == 'C' || valor == 'R') {
+    	if(valor == 'J' || valor == 'j' || valor == 'G' || valor == 'g' || valor == 'C' || valor == 'c' || valor == 'R' || valor == 'r') {
     		return "SRIF";
     	}else {
-    		if(valor == 'V' || valor == 'E') {
+    		if(valor == 'V' || valor == 'v' || valor == 'E' || valor == 'e') {
     			return "SCID";
     		}else {
-    			if(valor == 'P') {
+    			if(valor == 'P' || valor == 'p') {
     				return "SPAS";
     			}else {
     				return "NO-ASIGNADO";
@@ -495,9 +496,7 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
    }
 	
 	public boolean isFechaValidaDesdeHastaDate(Date fechaHoy, Date fechaValor) {
-		
-		LOGGER.info("fechaValor: "+fechaValor);
-		LOGGER.info("fechaHoy: "+fechaHoy);
+	
 		
 		if(fechaValor.before(fechaHoy) ){
         	LOGGER.info("La fechaHasta es menor que la fechaDesde");
@@ -514,6 +513,33 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
        
 	}	
 	
+	public boolean isFechaIgualDate(Date fechaHoy, Date fechaValor) {
+	
+		
+		if(fechaValor.before(fechaHoy) ){
+        	LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        	return false;
+        }else{
+        	if(fechaHoy.before(fechaValor) ){
+        	    LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    return false;
+        	}else{
+        	    LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    return true;
+        	} 
+        }
+       
+	}	
+	
+	
+	public boolean isFechaFinDeSemana(Date fecha) {
+	
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+        return (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY);
+        	 
+           
+	}
 	
 	
  }

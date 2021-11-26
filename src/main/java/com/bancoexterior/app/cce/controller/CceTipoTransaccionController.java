@@ -82,6 +82,8 @@ public class CceTipoTransaccionController {
 	
 	private static final String TIPOTRANSACCION = "tipoTransaccion";
 	
+	private static final String TIPOTRANSACCIONTITULO = "CCE - Tipo Transacción";
+	
 	private static final String MENSAJEERROR = "mensajeError";
 	
 	private static final String MENSAJECONSULTANOARROJORESULTADOS = "La consulta no arrojo resultado.";
@@ -257,7 +259,7 @@ public class CceTipoTransaccionController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = TIPOTRANSACCION;
+		arrUriP[1] = TIPOTRANSACCIONTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

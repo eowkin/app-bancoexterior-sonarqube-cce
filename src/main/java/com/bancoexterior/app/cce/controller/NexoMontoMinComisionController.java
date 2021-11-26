@@ -73,7 +73,7 @@ public class NexoMontoMinComisionController {
 	
 	private static final String NEXOMONTOMINIMOCOMISIONCONTROLLERGUARDARF = "[==== FIN Guardar NexoMontoMinimoComision - Controller ====]";
 	
-	private static final String MENSAJEERROR = "mensajeError";
+	private static final String MENSAJEERROR = "mensajeErrorNexo";
 	
 	private static final String URLINDEX = "cce/comisionNexoPersona/listaNexoMontoMinComision";
 	
@@ -81,7 +81,7 @@ public class NexoMontoMinComisionController {
 	
 	private static final String URLFORMEDITNEXOMONTOMINCOMISION = "cce/comisionNexoPersona/formEditNexoMontoMinComision";
 	
-	private static final String REDIRECTINDEX = "redirect:/comisionNexoPersona/index";
+	private static final String REDIRECTMONTOMINIMOCOMISIONINDEX = "redirect:/montoMinimoComision/index";
 	
 	private static final String LISTANEXOMONTOMINCOMISION = "listaNexoMontoMinComision";
 	
@@ -91,11 +91,11 @@ public class NexoMontoMinComisionController {
 	
 	private static final String LISTAERROR = "listaError";
 	
-	private static final String MENSAJE = "mensaje";
+	private static final String MENSAJE = "mensajeNexo";
 	
 	private static final String GUARDAR = "guardar";
 	
-	private static final String COMISIONNEXOPERSONA = "comisionNexoPersona";
+	private static final String COMISIONNEXOPERSONATITULO = "CCE - Monto Tope Comisión Mínima  Crédito Inmediato";
 	
 	@GetMapping("index")
 	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
@@ -188,14 +188,14 @@ public class NexoMontoMinComisionController {
 			}else {
 				redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
 				LOGGER.info(NEXOMONTOMINIMOCOMISIONCONTROLLEREDITF);
-				return REDIRECTINDEX;
+				return REDIRECTMONTOMINIMOCOMISIONINDEX;
 			}
 			
 			
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
 			redirectAttributes.addFlashAttribute(MENSAJEERROR, e.getMessage());
-			return REDIRECTINDEX;
+			return REDIRECTMONTOMINIMOCOMISIONINDEX;
 		}	
 		
 		
@@ -234,13 +234,13 @@ public class NexoMontoMinComisionController {
 			LOGGER.info(respuesta);
 			redirectAttributes.addFlashAttribute(MENSAJE, respuesta);
 			LOGGER.info(NEXOMONTOMINIMOCOMISIONCONTROLLERGUARDARF);
-			return REDIRECTINDEX;
+			return REDIRECTMONTOMINIMOCOMISIONINDEX;
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
 			result.addError(new ObjectError(LISTAERROR, e.getMessage()));
 			listaError.add(e.getMessage());
 			model.addAttribute(LISTAERROR, listaError);
-			return URLFORMEDITNEXOMONTOMINCOMISION;
+			return REDIRECTMONTOMINIMOCOMISIONINDEX;
 		}
 		
 		
@@ -301,7 +301,7 @@ public class NexoMontoMinComisionController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = COMISIONNEXOPERSONA;
+		arrUriP[1] = COMISIONNEXOPERSONATITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 }

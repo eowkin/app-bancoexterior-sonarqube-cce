@@ -29,26 +29,45 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Información Importante</strong>
+			        <strong>Editar Fecha Feriado Bancario</strong>
 			      </div>
 			      <div class="card-body">
-			      	
-			        <form>
+			        <form  th:action = "@{/calendarioBancario/guardar}"  method="post"  th:object="${cceFechaFeriadoBancarioDto}"   class="form-horizontal">
 			        	<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
 		            		Ocurrio los siguientes errores:
-		           		<ul>
-		            		<li th:text="${mensajeError}"></li>
-		            	</ul>
-		            </div>
-				        
-			            
-			      </div>
+		            		<ul>
+		            			<li th:text="${mensajeError}"></li>
+		            		</ul>
+		            	</div>
+		            	<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+		            		Por favor corrija los siguientes errores:
+		            		<ul>
+		            			<li th:each="error : ${listaError}"  th:text="${error}"></li>
+		            		</ul>
+		            	</div>
+		            	<input type="hidden" th:field="*{id}">	
+		            	<div class="form-group row">
+		            		<label class="col-sm-3 col-form-label" for="input-large">Fecha Feriado:</label>
+		            		<div class="col-sm-3">
+		              			<input type="date" class="form-control"  format="DD/MM/YYYY"  th:field="*{fechaFeriadoString}" name="fechaFeriadoString" id="fechaFeriadoString" placeholder="Fecha Feriado" required="required">
+		            		</div>
+		          		</div>
+			        	<div class="form-group row">
+			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripción:</label>
+			            	<div class="col-sm-6">
+			            	<textarea class="form-control" id="descripcion" rows="5"
+                             	 name="descripcion"
+                             	 placeholder="Description" th:text="${descripcion}"
+                             	 required="required">[[${descripcion}]]</textarea>
+			            </div>
+			          </div>
 			          <div class="card-footer">
-			        	<a   class="btn btn-sm btn-primary" role="button" th:href="@{/cceTransaccionManual/index}"><i class="fa fa-ban" aria-hidden="true"></i>Volver</a>
+			        	<button type="submit" class="do-request btn btn-sm btn-primary"><i class="fa fa-circle-o" aria-hidden="true"></i> Aceptar</button>
+			        	<a   class="btn btn-sm btn-danger" role="button" th:href="@{/calendarioBancario/index}"><i class="fa fa-ban" aria-hidden="true"></i>Cancelar</a>
 			      	  </div>
 			        </form>
 			        <div id="loading-screen" style="display:none">
-    					<img  alt="logo" th:src="@{/img/spinning-circles.svg}"/>
+    					<img alt="logo" th:src="@{/img/spinning-circles.svg}"/>
 			  		</div>
 			      </div>
 			      
@@ -72,6 +91,6 @@
     <script th:src="@{/node_modules/chart.js/dist/Chart.min.js}"></script>
     <script th:src="@{/node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js}"></script>
     <script th:src="@{/js/main.js}"></script>
-    <script th:src="@{/js/appFomBuscarOrdenante.js}"></script>
+    <script th:src="@{/js/appFomTipoTransaccion.js}"></script>
   </body>
 </html>

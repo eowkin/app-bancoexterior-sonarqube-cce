@@ -31,7 +31,10 @@
 			    <div class="col-lg-1-12">
 			      <div class="card">
 			        <div class="card-header">
-			          <i class="fa fa-align-justify" aria-hidden="true"></i> Historial Monto Aprobacion Automatica	
+			          <i class="fa fa-align-justify" aria-hidden="true"></i> Historial Aprobación Automática	
+			          <div class="my-2 text-right">
+		              	<a class="btn btn-primary" th:href="@{/montoMaximoAprobacionAuto/index}" title="Volver" role="button">Volver</a>
+		              </div>	
 			        </div><!--/.card-header-->
 			        <div class="card-body">
 			          <div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">

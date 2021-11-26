@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Aprobar Transaccion Alto Valor</strong>
+			        <strong>Aprobar Transacción Alto Valor (Interbancaria)</strong>
 			      </div>
 			      <div class="card-body">
 			      		<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
@@ -121,7 +121,7 @@
 				        <div class="form-group row">
 				            <label class="col-sm-2 col-form-label" for="montoString">Monto:</label>
 				            <div class="col-sm-4">
-				              <input type="text" class="form-control" th:field="*{montoString}" id="montoString" name="montoString" disabled>
+				              <input type="text" class="form-control" style="text-align:right" th:field="*{montoString}" id="montoString" name="montoString" disabled>
 				            </div>				        
 				        </div>
 			            
@@ -133,18 +133,18 @@
 				        </div>	
 			            
 			            <div class="form-group row">
-				            <label class="col-sm-2 col-form-label" for="codTransaccion">Cod. Transaccion:</label>
+				            <label class="col-sm-2 col-form-label" for="codTransaccion">Cod. Transacción:</label>
 				            <div class="col-sm-4">
 				              <input type="text" class="form-control" th:field="*{codTransaccion}" id="codTransaccion" name="codTransaccion" disabled>
 				            </div>				        
 				        </div>	
 			            
 			            <div class="form-group row">
-			          		<label class="col-sm-2 col-form-label" for="descripcion">Descripcion:</label>
+			          		<label class="col-sm-2 col-form-label" for="descripcion">Descripción:</label>
 			            	<div class="col-sm-6">
 			            	<textarea class="form-control" id="descripcion" rows="5"
                              	 name="descripcion"
-                             	 placeholder="Description" th:text="${descripcion}"
+                             	 placeholder="Descripción" th:text="${descripcion}"
                              	 disabled>[[${descripcion}]]</textarea>
 			            </div>
 			            </div>	

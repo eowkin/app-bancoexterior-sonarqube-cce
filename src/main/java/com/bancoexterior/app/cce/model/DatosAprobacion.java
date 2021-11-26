@@ -24,6 +24,9 @@ public class DatosAprobacion implements Serializable{
 	@JsonProperty("status")
 	private String status;
 	
+	@JsonProperty("usuarioAprobador")
+	private String usuarioAprobador;
+	
 	@JsonProperty("fechaActualizacion")
 	private String fechaActualizacion;
 	

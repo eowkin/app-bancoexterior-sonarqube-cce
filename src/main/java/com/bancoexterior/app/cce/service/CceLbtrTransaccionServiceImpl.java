@@ -47,7 +47,7 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 	private static final String HORAHASTA = " 23:59:59";
 	
 	@Override
-	public Page<CceLbtrTransaccion> consultaLbtrTransacciones(int page) {
+	public Page<CceLbtrTransaccion> consultaLbtrTransacciones(int page, String userName) {
 		LOGGER.info(CCELBTRTRANSACCIONSERVICECONSULTATRANSACCIONESI);
 		int pageNumber = page;
 		int pageSize = 10;
@@ -55,7 +55,7 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 		Sort sort = Sort.by("fecha_actualizacion").descending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		LOGGER.info(CCELBTRTRANSACCIONSERVICECONSULTATRANSACCIONESF);
-		return repo.consultaLbtrTransacciones(pageable);
+		return repo.consultaLbtrTransacciones(userName, pageable);
 	}
 
 	@Override
@@ -80,12 +80,13 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 	}
 
 	@Override
-	public Page<CceLbtrTransaccion> consultaLbtrTransaccionesAprobarFechas(String bancoReceptor, String fechaDesde,
-			String fechaHasta, int page) {
+	public Page<CceLbtrTransaccion> consultaLbtrTransaccionesAprobarFechas(String bancoReceptor, String fechaHoy, int page) {
 		LOGGER.info(CCELBTRTRANSACCIONSERVICECONSULTATRANSACCIONESAPROBARFECHASI);
 		
-		fechaDesde = fechaDesde +HORADESDE;
-		fechaHasta = fechaHasta +HORAHASTA;
+		//fechaDesde = fechaDesde +HORADESDE;
+		//fechaHasta = fechaHasta +HORAHASTA;
+		fechaHoy = fechaHoy + HORADESDE; 
+		
 		
 		int pageNumber = page;
 		int pageSize = 10;
@@ -93,7 +94,7 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 		Sort sort = Sort.by("fecha_valor").descending();
 		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		LOGGER.info(CCELBTRTRANSACCIONSERVICECONSULTATRANSACCIONESAPROBARFECHASF);
-		return repo.consultaLbtrTransaccionesAprobarFechas(bancoReceptor, fechaDesde, fechaHasta, pageable);
+		return repo.consultaLbtrTransaccionesAprobarFechas(bancoReceptor, fechaHoy, pageable);
 	}
 
 	@Override

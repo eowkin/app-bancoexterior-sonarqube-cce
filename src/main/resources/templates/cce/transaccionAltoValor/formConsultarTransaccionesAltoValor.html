@@ -27,7 +27,7 @@
           <div class="animated fadeIn">
 		    <div class="card">
 		      <div class="card-header">
-		        <strong>Consulta de Transacciones Manuales Alto Valor</strong>
+		        <strong>Aprobación Alto Valor (Canales Internos)</strong>
 		      </div>
 		      <div class="card-body">
 		        <form  th:action = "@{/cceTransaccionManual/procesarConsultaTransaccionAltoValor}"   method="get" th:object="${cceLbtrTransaccionDto}"   class="form-horizontal">
@@ -51,19 +51,7 @@
 		            </div>
 		          </div>     
 			          
-		          <div class="form-group row">
-		            <label class="col-sm-5 col-form-label" for="input-large">Fecha Desde:</label>
-		            <div class="col-sm-3">
-		              <input type="date" class="form-control" th:field="*{fechaDesde}" name="fechaDesde" id="fechaDesde" placeholder="Fecha desde" required="required">
-		            </div>
-		          </div>
 		          
-		          <div class="form-group row">
-		            <label class="col-sm-5 col-form-label" for="input-large">Fecha Hasta:</label>
-		            <div class="col-sm-3">
-		              <input type="date" class="form-control" th:field="*{fechaHasta}" name="fechaHasta" id="fechaHasta" placeholder="Fecha hasta" required="required">
-		            </div>
-		          </div>
 		          
 		          <div class="card-footer">
 		        	<button type="submit" class="do-request btn btn-sm btn-primary"><i class="fa fa-circle-o" aria-hidden="true"></i> Aceptar</button>

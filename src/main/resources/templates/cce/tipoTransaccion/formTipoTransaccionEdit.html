@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Tipo Transaccion</strong>
+			        <strong>Editar Tipo Transacción</strong>
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/tipoTransaccion/guardar}"  method="post"  th:object="${cceTipoTransaccionDto}"   class="form-horizontal">
@@ -41,7 +41,7 @@
 		            	</div>
 		            	<input type="hidden" th:field="*{id}">
 			        	<div class="form-group row">
-			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripcion:</label>
+			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripción:</label>
 			            	<div class="col-sm-6">
 			            		<input type="text" class="form-control" id="descripcion" name="descripcion" th:field="*{descripcion}" placeholder="Descripcion" maxlength="40" required="required"> 
 			            	</div>

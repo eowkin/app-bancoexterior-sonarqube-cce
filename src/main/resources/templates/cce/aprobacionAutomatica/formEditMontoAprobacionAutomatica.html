@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Monto Aprobacion Automatica</strong>
+			        <strong>Editar Aprobación Automática</strong>
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/montoMaximoAprobacionAuto/guardar}"  method="post"  th:object="${cceMontoMaximoAproAutoDto}"   class="form-horizontal">
@@ -44,7 +44,7 @@
 			          	<div class="form-group row">
 			          		<label class="col-sm-3 col-form-label" for="montoString">Monto:</label>
 			            	<div class="col-sm-3">
-			            		<input type="text" class="form-control" id="montoString" name="montoString" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);"  required="required"> 
+			            		<input type="text" class="form-control" style="text-align:right" id="montoString" name="montoString" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);"  required="required"> 
 			            	</div>
 			            </div>	
 			          </div>

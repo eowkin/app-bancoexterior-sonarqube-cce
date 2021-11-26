@@ -102,6 +102,8 @@ public class CceCodigosTransaccionController {
 	
 	private static final String CODIGOTRANSACCION = "codigoTransaccion";
 	
+	private static final String CODIGOTRANSACCIONTITULO = "CCE - Código Transacción";
+	
 	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
 	
 	private static final String CODIGOSTRANSACCIONFUNCIONAUDITORIAI = "[==== INICIO Guardar Auditoria  CodigosTrasaccion - Controller ====]";
@@ -315,7 +317,7 @@ public class CceCodigosTransaccionController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = CODIGOTRANSACCION;
+		arrUriP[1] = CODIGOTRANSACCIONTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

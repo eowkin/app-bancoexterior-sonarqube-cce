@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Transaccion Alto Valor</strong>
+			        <strong>Editar Transacción Alto Valor (Interbancaria)</strong>
 			      </div>
 			      <div class="card-body">
 			      		<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
@@ -136,7 +136,7 @@
 				        <div class="form-group row">
 				            <label class="col-sm-2 col-form-label" for="montoString">Monto:</label>
 				            <div class="col-sm-4">
-				              <input type="text" class="form-control" th:field="*{montoString}" id="montoString" name="montoString" onkeypress="return soloNumerosPunto(event);" required>
+				              <input type="text" class="form-control" style="text-align:right" th:field="*{montoString}" id="montoString" name="montoString" onkeypress="return soloNumerosPunto(event);" required>
 				            </div>				        
 				        </div>
 			            
@@ -150,11 +150,11 @@
 				            </div>				        
 				        </div>	   
 			            <div class="form-group row">
-			          		<label class="col-sm-2 col-form-label" for="descripcion">Descripcion:</label>
+			          		<label class="col-sm-2 col-form-label" for="descripcion">Descripción:</label>
 			            	<div class="col-sm-6">
 			            		<textarea class="form-control" id="descripcion" rows="5"
                              	 name="descripcion"
-                             	 placeholder="Description" th:text="${descripcion}"
+                             	 placeholder="Descripción" th:text="${descripcion}"
                              	 >[[${descripcion}]]</textarea>
 			            	</div>
 			            </div>	

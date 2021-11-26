@@ -96,11 +96,14 @@ public class CceLbtrTransaccion {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaActualizacion;
 	
-	@Column(name = "usuario", nullable = false)
-	private String usuario;
+	@Column(name = "usuario_creador", nullable = false)
+	private String usuarioCreador;
 	
 	@Column(name = "descripcion")
 	private String descripcion;
+	
+	@Column(name = "usuario_aprobador")
+	private String usuarioAprobador;
 
 	@Transient
 	private String montoString;

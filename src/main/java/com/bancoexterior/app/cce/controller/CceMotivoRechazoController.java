@@ -91,6 +91,8 @@ public class CceMotivoRechazoController {
 
 	private static final String MOTIVORECHAZO = "motivoRechazo";
 	
+	private static final String MOTIVORECHAZOTITULO = "CCE - Códigos Rechazo BCV";
+	
 	private static final String MOTIVORECHAZOFUNCIONAUDITORIAI = "[==== INICIO Guardar Auditoria  MotivoRechazo - Controller ====]";
 	
 	private static final String MOTIVORECHAZOFUNCIONAUDITORIAF = "[==== FIN Guardar Auditoria  MotivoRechazo - Controller ====]";
@@ -231,7 +233,7 @@ public class CceMotivoRechazoController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = MOTIVORECHAZO;
+		arrUriP[1] = MOTIVORECHAZOTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

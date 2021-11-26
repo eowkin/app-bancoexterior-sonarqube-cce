@@ -25,10 +25,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bancoexterior.app.cce.dto.CceMontoMinimoComisionDto;
+import com.bancoexterior.app.cce.dto.Filtros;
+import com.bancoexterior.app.cce.dto.MontoMinComisionConsultaRequest;
 import com.bancoexterior.app.cce.model.CceHistorialMontoMinimoComision;
 import com.bancoexterior.app.cce.model.CceMontoMinimoComision;
+import com.bancoexterior.app.cce.model.NexoMontoMinComision;
 import com.bancoexterior.app.cce.service.ICceHistorialMontoMinimoComisionService;
 import com.bancoexterior.app.cce.service.ICceMontoMinimoComisionService;
+import com.bancoexterior.app.cce.service.INexoMontoMinComisionService;
+import com.bancoexterior.app.convenio.exception.CustomException;
 import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
 
@@ -43,6 +48,12 @@ public class CceMontoMinimoComisionController {
 	
 	@Autowired
 	private ICceHistorialMontoMinimoComisionService serviceHistorial;
+	
+	@Autowired
+	private INexoMontoMinComisionService nexoMontoMinComisionService;
+	
+	@Value("${${app.ambiente}"+".canal}")
+    private String canal;
 	
 	@Autowired
 	private LibreriaUtil libreriaUtil;
@@ -66,6 +77,8 @@ public class CceMontoMinimoComisionController {
 	private static final String MONTOMINIMOCOMISIONCONTROLLERHISTORIALF = "[==== FIN Historial MontoMinimoComision Consultas - Controller ====]";
 	
 	private static final String MENSAJEERROR = "mensajeError";
+	
+	private static final String MENSAJEERRORNEXO = "mensajeErrorNexo";
 	
 	private static final String MENSAJECONSULTANOARROJORESULTADOS = "La consulta no arrojo resultado.";
 	
@@ -91,7 +104,13 @@ public class CceMontoMinimoComisionController {
 	
 	private static final String MONTOMINIMOCOMISION = "montoMinimoComision";
 	
+	private static final String MONTOMINIMOCOMISIONTITULO = "CCE - Monto Tope Comisión Mínima  Crédito Inmediato";
+	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	
+	private static final String LISTANEXOMONTOMINCOMISION = "listaNexoMontoMinComision";
+	
+	private static final String INDEX = "index";
 	
 	@GetMapping("/index")
 	public String index(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
@@ -101,18 +120,53 @@ public class CceMontoMinimoComisionController {
 			return URLNOPERMISO;
 		}
 		
-		List<CceMontoMinimoComision> listCceMontoMinimoComision = service.findAll();
+		////------------INICIO Codigo NUevo de Nexo Comision-------------////
+		List<NexoMontoMinComision> listaNexoMontoMinComision = new ArrayList<>();
+		MontoMinComisionConsultaRequest montoMinComisionConsultaRequest = getMontoMinComisionConsultaRequest();
+		Filtros comision = new Filtros();
+		comision.setId(0);
+		montoMinComisionConsultaRequest.setComision(comision);
 		
-		if(listCceMontoMinimoComision.isEmpty()) {
-			model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
-		}else {
-			convertirLista(listCceMontoMinimoComision);
+		
+	    ////------------FIN Codigo NUevo de Nexo Comision-------------////
+		try {
+			
+			listaNexoMontoMinComision = nexoMontoMinComisionService.listaNexoMontoMinComision(montoMinComisionConsultaRequest, INDEX, request);
+			if(listaNexoMontoMinComision.isEmpty()) {
+				model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+			}else {
+				convertirListaNexo(listaNexoMontoMinComision);
+			}
+			
+			model.addAttribute(LISTANEXOMONTOMINCOMISION, listaNexoMontoMinComision);
+			
+				
+			List<CceMontoMinimoComision> listCceMontoMinimoComision = service.findAll();
+			
+			if(listCceMontoMinimoComision.isEmpty()) {
+				model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+			}else {
+				convertirLista(listCceMontoMinimoComision);
+			}
+			guardarAuditoria(INDEX, true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+			model.addAttribute("listCceMontoMinimoComision", listCceMontoMinimoComision);
+			
+		} catch (CustomException e) {
+			LOGGER.error(e.getMessage());
+			model.addAttribute(MENSAJEERRORNEXO, e.getMessage());
+			List<CceMontoMinimoComision> listCceMontoMinimoComision = service.findAll();
+			
+			if(listCceMontoMinimoComision.isEmpty()) {
+				model.addAttribute(MENSAJEERROR, MENSAJECONSULTANOARROJORESULTADOS);
+			}else {
+				convertirLista(listCceMontoMinimoComision);
+			}
+			guardarAuditoria(INDEX, true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+			model.addAttribute("listCceMontoMinimoComision", listCceMontoMinimoComision);
+			
 		}
-		guardarAuditoria("index", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
-		model.addAttribute("listCceMontoMinimoComision", listCceMontoMinimoComision);
 		LOGGER.info(MONTOMINIMOCOMISIONCONTROLLERINDEXF);
 		return "cce/comisionMinima/listaMontosComisionMinima";
-		
 	}	
 	
 	@GetMapping("/historial")
@@ -195,6 +249,15 @@ public class CceMontoMinimoComisionController {
 		return model;
 	}
 	
+	public List<NexoMontoMinComision> convertirListaNexo(List<NexoMontoMinComision> listaNexoMontoMinComision){
+		for (NexoMontoMinComision nexoMontoMinComision : listaNexoMontoMinComision) {
+			nexoMontoMinComision.setMontoString(libreriaUtil.formatNumber(nexoMontoMinComision.getMonto()));
+		}
+		
+		return listaNexoMontoMinComision;
+	}
+	
+	
 	public List<CceMontoMinimoComision> convertirLista(List<CceMontoMinimoComision> listCceMontoMinimoComision){
 		
 		for (CceMontoMinimoComision cceMontoMinimoComision : listCceMontoMinimoComision) {
@@ -213,11 +276,26 @@ public class CceMontoMinimoComisionController {
 		return listCceHistorialMontoMinimoComision;
 	}
 	
+	
+	public MontoMinComisionConsultaRequest getMontoMinComisionConsultaRequest() {
+		
+		MontoMinComisionConsultaRequest montoMinComisionConsultaRequest = new MontoMinComisionConsultaRequest();
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		montoMinComisionConsultaRequest.setIdUsuarioMR(userName);
+		montoMinComisionConsultaRequest.setIdSesionMR(libreriaUtil.obtenerIdSesion());
+		montoMinComisionConsultaRequest.setCodUsuarioMR(userName);
+		montoMinComisionConsultaRequest.setCanalCM(canal);
+		return montoMinComisionConsultaRequest;
+	}
+	
+	
+	
+	
 	@ModelAttribute
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = MONTOMINIMOCOMISION;
+		arrUriP[1] = MONTOMINIMOCOMISIONTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

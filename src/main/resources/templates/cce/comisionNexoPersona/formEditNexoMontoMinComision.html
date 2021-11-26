@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Comision Nexo Persona</strong>
+			        <strong>Editar Crédito Inmediato</strong>
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/comisionNexoPersona/guardar}"  method="post"  th:object="${nexoMontoMinComision}"   class="form-horizontal">
@@ -44,11 +44,11 @@
 			          	<div class="form-group row">
 			          		<label class="col-sm-3 col-form-label" for="montoString">Monto:</label>
 			            	<div class="col-sm-3">
-			            		<input type="text" class="form-control" id="montoString" name="montoString" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);" required="required"> 
+			            		<input type="text" class="form-control" id="montoString" name="montoString" style="text-align:right" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);" required="required"> 
 			            	</div>
 			            </div>
 			            <div class="form-group row">
-			          		<label class="col-sm-3 col-form-label" for="descripcion">descripcion:</label>
+			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripción:</label>
 			            	<div class="col-sm-4">
 			            		<input type="text" class="form-control" id="descripcion" name="descripcion" th:field="*{descripcion}" placeholder="descripcion" maxlength="50" required="required"> 
 			            	</div>
@@ -57,7 +57,7 @@
 			          </div>
 			          <div class="card-footer">
 			        	<button type="submit" class="do-request btn btn-sm btn-primary"><i class="fa fa-circle-o" aria-hidden="true"></i> Aceptar</button>
-			        	<a   class="btn btn-sm btn-danger" role="button" th:href="@{/comisionNexoPersona/index}"><i class="fa fa-ban" aria-hidden="true"></i>Cancelar</a>
+			        	<a   class="btn btn-sm btn-danger" role="button" th:href="@{/montoMinimoComision/index}"><i class="fa fa-ban" aria-hidden="true"></i>Cancelar</a>
 			      	  </div>
 			        </form>
 			        <div id="loading-screen" style="display:none">

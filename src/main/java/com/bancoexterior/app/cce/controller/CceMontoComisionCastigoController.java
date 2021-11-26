@@ -92,6 +92,8 @@ public class CceMontoComisionCastigoController {
 	
 	private static final String MONTOCOMISIONCASTIGO = "montoComisionCastigo";
 	
+	private static final String MONTOCOMISIONCASTIGOTITULO = "CCE - Comisión Castigo Crédito Inmediato";
+	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
 	@GetMapping("/index")
@@ -219,7 +221,7 @@ public class CceMontoComisionCastigoController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = MONTOCOMISIONCASTIGO;
+		arrUriP[1] = MONTOCOMISIONCASTIGOTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

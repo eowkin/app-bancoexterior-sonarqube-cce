@@ -10,11 +10,11 @@ public interface ICceLbtrTransaccionService {
 	
 	public CceLbtrTransaccionDto save(CceLbtrTransaccionDto cceLbtrTransaccionDto);
 	
-	public Page<CceLbtrTransaccion> consultaLbtrTransacciones(int page);
+	public Page<CceLbtrTransaccion> consultaLbtrTransacciones(int page, String userName);
 	
 	public CceLbtrTransaccionDto findById(int id);
 	
-	public Page<CceLbtrTransaccion> consultaLbtrTransaccionesAprobarFechas(String bancoReceptor, String fechaDesde, String fechaHasta, int page);
+	public Page<CceLbtrTransaccion> consultaLbtrTransaccionesAprobarFechas(String bancoReceptor, String fechaHoy, int page);
 	
 	public int countCodigoLbtrTransaccionByTipo(String codTransaccion);
 }

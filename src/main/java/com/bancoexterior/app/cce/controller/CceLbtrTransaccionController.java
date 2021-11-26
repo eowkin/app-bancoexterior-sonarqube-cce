@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ import com.bancoexterior.app.cce.dto.TransaccionResponse;
 import com.bancoexterior.app.cce.model.Banco;
 import com.bancoexterior.app.cce.model.CceCodigosTransaccion;
 import com.bancoexterior.app.cce.model.CceCuentasUnicasBcv;
+import com.bancoexterior.app.cce.model.CceFechaFeriadoBancario;
 import com.bancoexterior.app.cce.model.CceLbtrTransaccion;
 import com.bancoexterior.app.cce.model.CceSubProducto;
 import com.bancoexterior.app.cce.model.Cuenta;
@@ -56,6 +58,7 @@ import com.bancoexterior.app.cce.service.IBancoService;
 import com.bancoexterior.app.cce.service.IBcvlbtService;
 import com.bancoexterior.app.cce.service.ICceCodigosTransaccionService;
 import com.bancoexterior.app.cce.service.ICceCuentasUnicasBcvService;
+import com.bancoexterior.app.cce.service.ICceFechaFeriadoBancarioService;
 import com.bancoexterior.app.cce.service.ICceLbtrTransaccionService;
 import com.bancoexterior.app.cce.service.ICceSubProductoService;
 import com.bancoexterior.app.cce.service.ICuentasConsultaService;
@@ -98,6 +101,10 @@ public class CceLbtrTransaccionController {
 	
 	@Autowired
 	private ICceLbtrTransaccionService cceLbtrTransaccionService;
+	
+	
+	@Autowired
+	private ICceFechaFeriadoBancarioService cceFechaFeriadoBancarioService;
 	
 	@Autowired
 	private IAuditoriaService auditoriaService;
@@ -234,6 +241,8 @@ public class CceLbtrTransaccionController {
 	
 	private static final String TRANSACCIONMANUAL = "cceTransaccionManual";
 	
+	private static final String TRANSACCIONMANUALTITULO = "CCE - Transacción Alto Valor (Interbancaria)";
+	
 	private static final String MENSAJEERROR = "mensajeError";
 	
 	private static final String MENSAJENORESULTADO = "La consulta no arrojo resultado.";
@@ -296,6 +305,10 @@ public class CceLbtrTransaccionController {
 	
 	private static final String MENSAJEERRORFECHAVALOR = "Fecha Valor Invalida, debe ser igual o mayor al dia actual.";
 	
+	private static final String MENSAJEERRORFECHAVALORFINDESEMANA = "Fecha Valor Invalida, no puede ser ni sabado ni domingo.";
+	
+	private static final String MENSAJEERRORFECHAVALORFERIADOBANCARIO = "Fecha Valor Invalida, no puede ser una fecha feriado bancario.";
+	
 	private static final String MENSAJEERRORTRANSACCIONEDIT = "La transaccion no se puede editar, informacion invalida";
 	
 	private static final String MENSAJEERRORTRANSACCIONRECHAZAR = "La transaccion no se puede rechazar, informacion invalida";
@@ -312,7 +325,8 @@ public class CceLbtrTransaccionController {
 			return URLNOPERMISO;
 		}
 		
-		Page<CceLbtrTransaccion> listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransacciones(0);
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		Page<CceLbtrTransaccion> listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransacciones(0, userName.toLowerCase());
 		if(listaCceLbtrTransaccion.isEmpty()) {
 			model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
 		}else {
@@ -335,8 +349,8 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
-		
-		Page<CceLbtrTransaccion> listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransacciones(page);
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		Page<CceLbtrTransaccion> listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransacciones(page, userName.toLowerCase());
 		
 		if(listaCceLbtrTransaccion.isEmpty()) {
 			model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
@@ -494,32 +508,58 @@ public class CceLbtrTransaccionController {
 			}	
 		}
 		asignarValores(cceLbtrTransaccionDto);
-		if(libreriaUtil.isFechaValidaDesdeHastaDate(fechaHoy(), cceLbtrTransaccionDto.getFechaValor())) {
-			CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
-			if(cceLbtrTransaccionDtoSave != null) {
-				redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
-				guardarAuditoriaTransaccionManual(SAVE, true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDtoSave, request);
+		LOGGER.info(libreriaUtil.isFechaFinDeSemana(cceLbtrTransaccionDto.getFechaValor()));
+		try {	
+			if(libreriaUtil.isFechaValidaDesdeHastaDate(fechaHoy(), cceLbtrTransaccionDto.getFechaValor())) {
+				if(isFechaIgualFechaFeriadoBancario(cceLbtrTransaccionDto.getFechaValor())) {
+					setModelError(model, cceLbtrTransaccionDto, request);
+					model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALORFERIADOBANCARIO);
+					return URLFORMTRASACCIONALTOVALOR;
+				}
+				
+				if(libreriaUtil.isFechaFinDeSemana(cceLbtrTransaccionDto.getFechaValor())) {
+					setModelError(model, cceLbtrTransaccionDto, request);
+					model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALORFINDESEMANA);
+					return URLFORMTRASACCIONALTOVALOR;
+				}
+				
+				CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
+				if(cceLbtrTransaccionDtoSave != null) {
+					redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
+					guardarAuditoriaTransaccionManual(SAVE, true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDtoSave, request);
+				}else {
+					redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJEOPERACIONFALLO);
+					guardarAuditoriaTransaccionManual(SAVE, false, "0001",  MENSAJEOPERACIONFALLIDA, cceLbtrTransaccionDto, request);
+				}
+				LOGGER.info(TRANSACCIONMANUALSAVECONTROLLERINDEXF);
+				return REDIRECTINDEX;	
+				
 			}else {
-				redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJEOPERACIONFALLO);
-				guardarAuditoriaTransaccionManual(SAVE, false, "0001",  MENSAJEOPERACIONFALLIDA, cceLbtrTransaccionDto, request);
-			}
-			LOGGER.info(TRANSACCIONMANUALSAVECONTROLLERINDEXF);
-			return REDIRECTINDEX;	
-			
-		}else {
-			try {
 				setModelError(model, cceLbtrTransaccionDto, request);
 				model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALOR);
 				return URLFORMTRASACCIONALTOVALOR;
-			} catch (CustomException e) {
-				LOGGER.error(e.getMessage());
-				model.addAttribute(MENSAJEERROR, e.getMessage());
-				return URLFORMTRASACCIONALTOVALOR;
+				
+			}
+		} catch (CustomException e) {
+			LOGGER.error(e.getMessage());
+			model.addAttribute(MENSAJEERROR, e.getMessage());
+			return URLFORMTRASACCIONALTOVALOR;
+		}
+			
+			
+	}
+	
+	public boolean isFechaIgualFechaFeriadoBancario(Date fecha) {
+		boolean respuesta = false;
+		List<CceFechaFeriadoBancario> listaCceFechaFeriadoBancario = cceFechaFeriadoBancarioService.listaFechasFeriado();
+		
+		for (CceFechaFeriadoBancario cceFechaFeriadoBancario : listaCceFechaFeriadoBancario) {
+			if(libreriaUtil.isFechaIgualDate(fecha, cceFechaFeriadoBancario.getFechaFeriado())){
+				respuesta = true;
+				break;
 			}
 		}
-		
-			
-			
+		return respuesta;
 	}
 	
 	
@@ -545,31 +585,47 @@ public class CceLbtrTransaccionController {
 				return URLFORMTRASACCIONALTOVALOREDIT;
 			}	
 		}
-		asignarValores(cceLbtrTransaccionDto);
-		if(libreriaUtil.isFechaValidaDesdeHastaDate(fechaHoy(), cceLbtrTransaccionDto.getFechaValor())) {
-			CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
-			if(cceLbtrTransaccionDtoSave != null) {
-				redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
-				guardarAuditoriaTransaccionManual("guardar", true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDtoSave, request);
-			}else {
-				redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJEOPERACIONFALLO);
-				guardarAuditoriaTransaccionManual("guardar", false, "0001",  MENSAJEOPERACIONFALLIDA, cceLbtrTransaccionDto, request);
-			}
-			LOGGER.info(TRANSACCIONMANUALGUARDARCONTROLLERINDEXF);
-			return REDIRECTINDEX;	
-			
-		}else {
-			try {
-				setModelError(model, cceLbtrTransaccionDto, request);
-				model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALOR);
-				return URLFORMTRASACCIONALTOVALOREDIT;
-			} catch (CustomException e) {
-				LOGGER.error(e.getMessage());
-				model.addAttribute(MENSAJEERROR, e.getMessage());
-				return URLFORMTRASACCIONALTOVALOREDIT;
-			}
-		}
 		
+		try {
+			asignarValores(cceLbtrTransaccionDto);
+			
+			
+			
+			if(libreriaUtil.isFechaValidaDesdeHastaDate(fechaHoy(), cceLbtrTransaccionDto.getFechaValor())) {
+				if(isFechaIgualFechaFeriadoBancario(cceLbtrTransaccionDto.getFechaValor())) {
+					setModelError(model, cceLbtrTransaccionDto, request);
+					model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALORFERIADOBANCARIO);
+					return URLFORMTRASACCIONALTOVALOREDIT;
+				}
+				
+				if(libreriaUtil.isFechaFinDeSemana(cceLbtrTransaccionDto.getFechaValor())) {
+					setModelError(model, cceLbtrTransaccionDto, request);
+					model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALORFINDESEMANA);
+					return URLFORMTRASACCIONALTOVALOREDIT;
+				}
+				CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
+				if(cceLbtrTransaccionDtoSave != null) {
+					redirectAttributes.addFlashAttribute(MENSAJE, MENSAJEOPERACIONEXITOSA);
+					guardarAuditoriaTransaccionManual("guardar", true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDtoSave, request);
+				}else {
+					redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJEOPERACIONFALLO);
+					guardarAuditoriaTransaccionManual("guardar", false, "0001",  MENSAJEOPERACIONFALLIDA, cceLbtrTransaccionDto, request);
+				}
+				LOGGER.info(TRANSACCIONMANUALGUARDARCONTROLLERINDEXF);
+				return REDIRECTINDEX;	
+				
+			}else {
+				
+					setModelError(model, cceLbtrTransaccionDto, request);
+					model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAVALOR);
+					return URLFORMTRASACCIONALTOVALOREDIT;
+				
+			}
+		} catch (CustomException e) {
+			LOGGER.error(e.getMessage());
+			model.addAttribute(MENSAJEERROR, e.getMessage());
+			return URLFORMTRASACCIONALTOVALOREDIT;
+		}
 			
 			
 	}
@@ -709,6 +765,8 @@ public class CceLbtrTransaccionController {
 		CceLbtrTransaccionDto cceLbtrTransaccionDto = cceLbtrTransaccionService.findById(id); 
 		
 		if(cceLbtrTransaccionDto != null) {
+			String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+			cceLbtrTransaccionDto.setUsuarioAprobador(userName.toLowerCase());
 			cceLbtrTransaccionDto.setStatus("E");
 			CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
 			if(cceLbtrTransaccionDtoSave != null) {
@@ -744,8 +802,6 @@ public class CceLbtrTransaccionController {
 		List<Banco> listaBancosED;
 		
 		try {
-			cceLbtrTransaccionDto.setFechaDesde(obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR));
-			cceLbtrTransaccionDto.setFechaHasta(obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR));
 			listaBancosED  = bancoService.listaBancos(bancoRequestED);
 			model.addAttribute(LISTABANCOS, listaBancosED);
 			guardarAuditoria(FORMCONSULTATRANSACCIONALTOVALOR, true, "0000",  MENSAJEOPERACIONEXITOSA, request);
@@ -772,39 +828,26 @@ public class CceLbtrTransaccionController {
 		List<Banco> listaBancosED;
 		Page<CceLbtrTransaccion> listaCceLbtrTransaccion;
 		try {
-			
-			if(libreriaUtil.isFechaValidaDesdeHasta(cceLbtrTransaccionDto.getFechaDesde(), cceLbtrTransaccionDto.getFechaHasta())){
-				
-				listaCceLbtrTransaccion = cceLbtrTransaccionService.consultaLbtrTransaccionesAprobarFechas(cceLbtrTransaccionDto.getBancoReceptor(), 
-						cceLbtrTransaccionDto.getFechaDesde(), cceLbtrTransaccionDto.getFechaHasta(), 0);
-				if(listaCceLbtrTransaccion.isEmpty()) {
-					model.addAttribute(LISTAERROR, MENSAJENORESULTADO);
-					listaBancosED  = bancoService.listaBancos(bancoRequestED);
-					model.addAttribute(LISTABANCOS, listaBancosED);
-					guardarAuditoriaTransaccionManualConsulta(PROCESARCONSULTATRANSACCIONALTOVALOR, false, "0001",  MENSAJENORESULTADO, cceLbtrTransaccionDto, request);
-					return URLFORMCONSULTARTRASACCIONESALTOVALOR;
-				}else {
-					convertirLista(listaCceLbtrTransaccion);
-					model.addAttribute(LISTACCELBTRTRANSACCION, listaCceLbtrTransaccion);
-					httpSession.setAttribute(BANCORECEPTOR, cceLbtrTransaccionDto.getBancoReceptor());
-					httpSession.setAttribute(FECHADESDE, cceLbtrTransaccionDto.getFechaDesde());
-					httpSession.setAttribute(FECHAHASTA, cceLbtrTransaccionDto.getFechaHasta());
-					
-					
-					guardarAuditoriaTransaccionManualConsulta(PROCESARCONSULTATRANSACCIONALTOVALOR, true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDto, request);
-					LOGGER.info(TRANSACCIONMANUALPROCESARCONSULTATRANSACCIONESCONTROLLERINDEXF);
-					return URLLISTAAPROBARTRASACCIONESALTOVALOR;
-					
-				}
-				
-			}else {
-				listaError.add(MENSAJEFECHASINVALIDAS);
-				model.addAttribute(LISTAERROR, listaError);
+			String fechaHoy = obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR);
+			listaCceLbtrTransaccion = cceLbtrTransaccionService.consultaLbtrTransaccionesAprobarFechas(cceLbtrTransaccionDto.getBancoReceptor(), 
+					fechaHoy, 0);
+			if(listaCceLbtrTransaccion.isEmpty()) {
+				model.addAttribute(LISTAERROR, MENSAJENORESULTADO);
 				listaBancosED  = bancoService.listaBancos(bancoRequestED);
 				model.addAttribute(LISTABANCOS, listaBancosED);
-				guardarAuditoriaTransaccionManualConsulta(PROCESARCONSULTATRANSACCIONALTOVALOR, false, "0001", MENSAJEFECHASINVALIDAS, cceLbtrTransaccionDto, request);
+				guardarAuditoriaTransaccionManualConsulta(PROCESARCONSULTATRANSACCIONALTOVALOR, false, "0001",  MENSAJENORESULTADO, cceLbtrTransaccionDto, request);
 				return URLFORMCONSULTARTRASACCIONESALTOVALOR;
+			}else {
+				convertirLista(listaCceLbtrTransaccion);
+				model.addAttribute(LISTACCELBTRTRANSACCION, listaCceLbtrTransaccion);
+				httpSession.setAttribute(BANCORECEPTOR, cceLbtrTransaccionDto.getBancoReceptor());
+				guardarAuditoriaTransaccionManualConsulta(PROCESARCONSULTATRANSACCIONALTOVALOR, true, "0000",  MENSAJEOPERACIONEXITOSA, cceLbtrTransaccionDto, request);
+				LOGGER.info(TRANSACCIONMANUALPROCESARCONSULTATRANSACCIONESCONTROLLERINDEXF);
+				return URLLISTAAPROBARTRASACCIONESALTOVALOR;
+					
 			}
+				
+			
 			
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
@@ -831,9 +874,8 @@ public class CceLbtrTransaccionController {
 		
 		Page<CceLbtrTransaccion> listaCceLbtrTransaccion;
 		String bancoReceptor = (String)httpSession.getAttribute(BANCORECEPTOR);
-		String fechaDesde = (String)httpSession.getAttribute(FECHADESDE);
-		String fechaHasta = (String)httpSession.getAttribute(FECHAHASTA);
-		listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransaccionesAprobarFechas(bancoReceptor, fechaDesde, fechaHasta, page);
+		String fechaHoy = obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR);
+		listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransaccionesAprobarFechas(bancoReceptor, fechaHoy, page);
 		convertirLista(listaCceLbtrTransaccion);
 		model.addAttribute(LISTACCELBTRTRANSACCION, listaCceLbtrTransaccion);
 		LOGGER.info(TRANSACCIONMANUALCONSULTAPAGEAPROBARCONTROLLERINDEXF);
@@ -900,11 +942,11 @@ public class CceLbtrTransaccionController {
 			return URLNOPERMISO;
 		}
 		String bancoReceptor = (String)httpSession.getAttribute(BANCORECEPTOR);
-		String fechaDesde = (String)httpSession.getAttribute(FECHADESDE);
-		String fechaHasta = (String)httpSession.getAttribute(FECHAHASTA);
+		String fechaHoy = obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR);
 		CceLbtrTransaccionDto cceLbtrTransaccionDto = cceLbtrTransaccionService.findById(id); 
 		
 		if(cceLbtrTransaccionDto != null) {
+			setUsuarioAprobador(cceLbtrTransaccionDto);
 			cceLbtrTransaccionDto.setStatus("RT");
 			CceLbtrTransaccionDto cceLbtrTransaccionDtoSave = cceLbtrTransaccionService.save(cceLbtrTransaccionDto); 
 			if(cceLbtrTransaccionDtoSave != null) {
@@ -916,7 +958,7 @@ public class CceLbtrTransaccionController {
 			}
 			
 			LOGGER.info(TRANSACCIONMANUALGUARDARCHAZARCONTROLLERINDEXF);
-			return REDIRECTINTERNO+getPage(page, bancoReceptor, fechaDesde, fechaHasta);	
+			return REDIRECTINTERNO+getPage(page, bancoReceptor, fechaHoy);	
 			
 		}else {
 			redirectAttributes.addFlashAttribute(MENSAJEERROR, MENSAJENORESULTADO);
@@ -991,8 +1033,7 @@ public class CceLbtrTransaccionController {
 		}
 		
 		String bancoReceptor = (String)httpSession.getAttribute(BANCORECEPTOR);
-		String fechaDesde = (String)httpSession.getAttribute(FECHADESDE);
-		String fechaHasta = (String)httpSession.getAttribute(FECHAHASTA);
+		String fechaHoy = obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR);
 		CceLbtrTransaccionDto cceLbtrTransaccionDto = cceLbtrTransaccionService.findById(id); 
 		TransaccionRequest transaccionRequest;
 		TransaccionResponse transaccionResponse;
@@ -1004,10 +1045,12 @@ public class CceLbtrTransaccionController {
 			}else {
 				if(transaccionResponse.getResultado().getCodigo().equals("0000")) {
 					cceLbtrTransaccionDto.setReferencia(libreriaUtil.getReferenciaUltimosOchoDigitos(transaccionResponse.getDatosTransaccion().getReferencia()));
+					setUsuarioAprobador(cceLbtrTransaccionDto);
 					//procesarAprobarAltoValor(cceLbtrTransaccionDto, "guardarAprobar", request);
 					Resultado resultadoResponse = procesarAprobarAltoValor(cceLbtrTransaccionDto, "guardarAprobar", request);
 					redirectAttributes.addFlashAttribute(MENSAJE, aprobarActualizar(resultadoResponse, cceLbtrTransaccionDto));
 				}else {
+					setUsuarioAprobador(cceLbtrTransaccionDto);
 					cceLbtrTransaccionDto.setStatus("RC");
 					redirectAttributes.addFlashAttribute(MENSAJEERROR, "Transaccion Rechazada por el Core. "+ transaccionResponse.getResultado().getDescripcion());
 					cceLbtrTransaccionService.save(cceLbtrTransaccionDto);
@@ -1020,6 +1063,7 @@ public class CceLbtrTransaccionController {
 			
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
+			setUsuarioAprobador(cceLbtrTransaccionDto);
 			cceLbtrTransaccionDto.setStatus("PP");
 			cceLbtrTransaccionService.save(cceLbtrTransaccionDto);
 			redirectAttributes.addFlashAttribute(MENSAJEERROR, e.getMessage());
@@ -1028,9 +1072,14 @@ public class CceLbtrTransaccionController {
 			
 		}	
 		
-		return REDIRECTINTERNO+getPage(page, bancoReceptor, fechaDesde, fechaHasta);	
+		return REDIRECTINTERNO+getPage(page, bancoReceptor, fechaHoy);	
 			
 		
+	}
+	
+	public void setUsuarioAprobador(CceLbtrTransaccionDto cceLbtrTransaccionDto) {
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		cceLbtrTransaccionDto.setUsuarioAprobador(userName.toLowerCase());
 	}
 	
 	
@@ -1255,7 +1304,7 @@ public class CceLbtrTransaccionController {
 		return bld.toString();
 	}
 	
-	public int getPage(int page, String bancoReceptor, String fechaDesde, String fechaHasta) {
+	public int getPage(int page, String bancoReceptor, String fechaHoy) {
 		int valorPage = 0;
 		
 		if(page == 0) {
@@ -1263,7 +1312,7 @@ public class CceLbtrTransaccionController {
 		}else {
 			Page<CceLbtrTransaccion> listaCceLbtrTransaccion;
 			listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransaccionesAprobarFechas(bancoReceptor, 
-					fechaDesde, fechaHasta, page);
+					fechaHoy, page);
 			if(listaCceLbtrTransaccion.isEmpty()) {
 				valorPage = page - 1;
 			}else {
@@ -1316,7 +1365,7 @@ public class CceLbtrTransaccionController {
 	
 	public void asignarValores(CceLbtrTransaccionDto cceLbtrTransaccionDto) {
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-		cceLbtrTransaccionDto.setUsuario(userName);
+		cceLbtrTransaccionDto.setUsuarioCreador(userName.toLowerCase());
 		cceLbtrTransaccionDto.setReferencia(referenciaConfiguracion);
 		cceLbtrTransaccionDto.setCanal(getCanal(cceLbtrTransaccionDto.getIdemEmisor()));
 		cceLbtrTransaccionDto.setCodTransaccion(getCodTransaccion(cceLbtrTransaccionDto.getIdemEmisor()));
@@ -1438,7 +1487,7 @@ public class CceLbtrTransaccionController {
 			
 			String[] arrUriP = new String[2]; 
 			arrUriP[0] = "Home";
-			arrUriP[1] = TRANSACCIONMANUAL;
+			arrUriP[1] = "CCE";
 			model.addAttribute("arrUri", arrUriP);
 		}
 		
@@ -1481,7 +1530,7 @@ public class CceLbtrTransaccionController {
 				LOGGER.info(TRANSACCIONMANUALFUNCIONAUDITORIAI);
 				auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 						TRANSACCIONMANUAL, accion, codRespuesta, resultado, respuesta+" LbtrTransacciones:[bancoReceptor="+cceLbtrTransaccionDto.getBancoReceptor()+""
-								+ ", fechaDesde="+cceLbtrTransaccionDto.getFechaDesde()+", fechaHasta="+cceLbtrTransaccionDto.getFechaHasta()+"]", request.getRemoteAddr());
+								+ ", fecha="+cceLbtrTransaccionDto.getFechaHoy()+"]", request.getRemoteAddr());
 				LOGGER.info(TRANSACCIONMANUALFUNCIONAUDITORIAF);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
@@ -1502,7 +1551,7 @@ public class CceLbtrTransaccionController {
 								+ ", idemEmisor="+cceLbtrTransaccionDto.getIdemEmisor()+", nomEmisor="+cceLbtrTransaccionDto.getNomEmisor()+""
 								+ ", idemReceptor="+cceLbtrTransaccionDto.getIdemReceptor()+", nomReceptor="+cceLbtrTransaccionDto.getNomReceptor()+""
 								+ ", status="+cceLbtrTransaccionDto.getStatus()+", fechaValor="+cceLbtrTransaccionDto.getFechaValor()+""
-								+ ", usuario="+cceLbtrTransaccionDto.getUsuario()+", fechaValor="+cceLbtrTransaccionDto.getFechaValor()+""
+								+ ", usuarioCreador="+cceLbtrTransaccionDto.getUsuarioCreador()+", fechaValor="+cceLbtrTransaccionDto.getFechaValor()+""
 								+ ", descripcion="+cceLbtrTransaccionDto.getDescripcion()+"]", request.getRemoteAddr());
 				LOGGER.info(TRANSACCIONMANUALFUNCIONAUDITORIAF);
 			} catch (Exception e) {

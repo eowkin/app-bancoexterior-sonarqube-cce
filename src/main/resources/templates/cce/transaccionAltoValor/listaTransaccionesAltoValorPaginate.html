@@ -29,12 +29,8 @@
 		      <div class="col-lg-1-12">
 		        <div class="card">
 		          <div class="card-header">
-		            <i class="fa fa-align-justify" aria-hidden="true"></i> Transaccion Alto Valor Manual
+		            <i class="fa fa-align-justify" aria-hidden="true"></i> Transacción Alto Valor (Interbancaria)
 		            <div class="my-2 text-right">
-		            	<form th:action="@{/cceTransaccionManual/searchIdOrdenante}"  th:object="${cceLbtrTransaccionDtoSearch}"  method="get" class="form-inline">
-        						<input type="text"  class="form-control mb-3"  th:field="*{idemEmisor}" maxlength="35" placeholder="Escriba una búsqueda" >&nbsp;
-            					<button type="submit" class="btn btn-primary mb-3">Buscar por Id. Ordenante</button>            
-          				</form>
 		              <a class="do-request btn btn-primary" th:href="@{/cceTransaccionManual/formBuscarOrdenante}" title="Crear Nueva Transaccion Alto Valor" role="button">Crear Transaccion Alto Valor</a>
 		            </div>
 		          </div><!--/.card-header-->

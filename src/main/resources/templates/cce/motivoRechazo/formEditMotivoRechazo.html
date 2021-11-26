@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Motivo Rechazo</strong>
+			        <strong>Editar Códigos Rechazo BCV</strong>
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/motivoRechazo/guardar}"  method="post"  th:object="${cceMotivoRechazoDto}"   class="form-horizontal">
@@ -42,13 +42,13 @@
 			          
 			          	<input type="hidden" th:field="*{codigo}">	
 			            <div class="form-group row">
-			          		<label class="col-sm-3 col-form-label" for="monto">Codigo:</label>
+			          		<label class="col-sm-3 col-form-label" for="monto">Código:</label>
 			            	<div class="col-sm-3">
 			            		<input type="text" class="form-control" id="codigo" name="codigo" th:field="*{codigo}" placeholder="Codigo" maxlength="5" disabled> 
 			            	</div>
 			            </div>
 			            <div class="form-group row">
-			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripcion:</label>
+			          		<label class="col-sm-3 col-form-label" for="descripcion">Descripción:</label>
 			            	<div class="col-sm-6">
 			            	<textarea class="form-control" id="descripcion" rows="5"
                              	 name="descripcion"
@@ -58,7 +58,7 @@
 			            </div>	
 			            
 			            <div class="form-group row">
-			            <label class="col-sm-3 col-form-label" for="aplicaComisionCastigo">Aplica comision castigo:</label>
+			            <label class="col-sm-3 col-form-label" for="aplicaComisionCastigo">Aplica comisión castigo:</label>
 			            <div class="col-sm-3">
 			              <select  class="form-control" th:field="*{aplicaComisionCastigo}" name="aplicaComisionCastigo" required="required">
 			                <option value = "S" >Si</option>

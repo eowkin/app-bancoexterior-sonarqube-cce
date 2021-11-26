@@ -5,16 +5,12 @@ $(document).ready(function(){
     var screen = $('#loading-screen');
     configureLoadingScreen(screen);
 
-	$("#montoDesde").bind("cut copy paste", function(e){
-		e.preventDefault();
-	});
-	
-	$("#montoHasta").bind("cut copy paste", function(e){
+	$("#montoString").bind("cut copy paste", function(e){
 		e.preventDefault();
 	});
 
     $('.do-request').on('click', function(){
-         if($("#fechaDesde").val() != "" && $("#fechaHasta").val() != ""){
+         if($("#montoString").val() != ""){
 			//alert("Si lo llamo");
 			 $.get('/ccetransacciones/cargarLoader')
              .done(function(){
@@ -31,7 +27,6 @@ $(document).ready(function(){
         
     })
 });
-
 
 
 //Funcion solo para admitir Letras
@@ -143,7 +138,6 @@ function soloNumerosPunto(e){
 	
 	
 }
-
 
 function configureLoadingScreen(screen){
     $(document)

@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Editar Monto Minimo Comision</strong>
+			        <strong>Editar Monto Tope Comisión Mínima</strong>
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/montoMinimoComision/guardar}"  method="post"  th:object="${cceMontoMinimoComisionDto}"   class="form-horizontal">
@@ -45,7 +45,7 @@
 			          	<div class="form-group row">
 			          		<label class="col-sm-3 col-form-label" for="montoString">Monto:</label>
 			            	<div class="col-sm-3">
-			            		<input type="text" class="form-control" id="montoString" name="montoString" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);" required="required"> 
+			            		<input type="text" class="form-control" id="montoString" name="montoString" style="text-align:right" th:field="*{montoString}" placeholder="Monto" onkeypress="return soloNumerosPunto(event);" required="required"> 
 			            	</div>
 			            </div>
 			            <div class="form-group row">

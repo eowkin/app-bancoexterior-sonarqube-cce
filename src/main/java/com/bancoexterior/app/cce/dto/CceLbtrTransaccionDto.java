@@ -72,8 +72,9 @@ public class CceLbtrTransaccionDto {
 	@Size(max = 140, message = "Nombre Ordenante no puede exceder mas de 140 caracteres")
 	private String nomEmisor;
 	
-	@NotBlank(message = "Id. Beneficiario no puede ser vacio")
-	@Size(max = 35, message = "Id. Beneficiario no puede exceder mas de 35 caracteres")
+	//@NotBlank(message = "Id. Beneficiario no puede ser vacio")
+	//@Size(max = 35, message = "Id. Beneficiario no puede exceder mas de 35 caracteres")
+	@Pattern(regexp = "[VEPJGC][0-9]{1,15}", message = "Id. Beneficiario debe comenzar por una letra [V,E,P,J,G,C] luego los caracteres numericos correspondiente.")
 	private String idemReceptor;
 	
 	@NotBlank(message = "Nombre Beneficiario no puede ser vacio")
@@ -86,19 +87,23 @@ public class CceLbtrTransaccionDto {
 	
 	private Date fechaActualizacion;
 	
-	private String usuario;
+	private String usuarioCreador;
+	
+	private String usuarioAprobador;
 	
 	@Size(max = 140, message = "Descripcion no puede exceder mas de 140 caracteres")
 	private String descripcion;
 	
-	@Pattern(regexp = "^[0-9]+([.][0-9]{1,2})?$", message = "El monto debe tener fotmato 0.00")
+	@Pattern(regexp = "^[0-9]+[.][0-9]{2,2}$", message = "El monto debe tener fotmato 0.00")
+	//@Pattern(regexp = "^[0-9]+([.][0-9]{1,2})?$", message = "El monto debe tener fotmato 0.00")
 	private String montoString;
 	
 	private String fechaValorString;
 	
-	private String fechaDesde;
+	//private String fechaDesde;
 	
-	private String fechaHasta;
+	//private String fechaHasta;
 	
+	private String fechaHoy;
 	
 }

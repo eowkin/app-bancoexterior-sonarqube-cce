@@ -27,7 +27,7 @@
           <div class="animated fadeIn">
 		    <div class="card">
 		      <div class="card-header">
-		        <strong>Consulta de Operaciones Aprobar Alto Valor</strong>
+		        <strong>Aprobación Alto Valor (Canales Digitales)</strong>
 		      </div>
 		      <div class="card-body">
 		        <form  th:action = "@{/ccetransacciones/procesarConsultaOperacionesAprobar}"   method="get" th:object="${cceTransaccionDto}"   class="form-horizontal">
@@ -40,14 +40,14 @@
 		            <div class="form-group row">
 			          	<label class="col-sm-5 col-form-label" for="montoDesde">Monto Desde:</label>
 			            <div class="col-sm-3">
-			              <input type="text" class="form-control" th:field="*{montoDesde}" id="montoDesde" name="montoDesde">
+			              <input type="text" class="form-control" style="text-align:right" th:field="*{montoDesde}" id="montoDesde" name="montoDesde" onkeypress="return soloNumerosPunto(event);">
 			              
 			            </div>
 			          </div>  	
 		            <div class="form-group row">
 			          	<label class="col-sm-5 col-form-label" for="montoHasta">Monto Hasta:</label>
 			            <div class="col-sm-3">
-			              <input type="text" class="form-control" th:field="*{montoHasta}" id="montoHasta" name="montoHasta">
+			              <input type="text" class="form-control" style="text-align:right" th:field="*{montoHasta}" id="montoHasta" name="montoHasta" onkeypress="return soloNumerosPunto(event);">
 			              
 			            </div>
 			          </div>	

@@ -1335,7 +1335,7 @@ public class CceTransaccionController {
 		datosAprobacion.setReferencia(bcvlbt.getReferencia());
 		datosAprobacion.setNroIdEmisor(bcvlbt.getNroIdEmisor());
 		datosAprobacion.setStatus(getStatus(resultadoAprobarResponse.getCodigo()));
-		
+		datosAprobacion.setUsuarioAprobador(SecurityContextHolder.getContext().getAuthentication().getName());
 		return datosAprobacion;
 	}
 	
@@ -1773,7 +1773,7 @@ public class CceTransaccionController {
 		
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = "cce";
+		arrUriP[1] = "CCE";
 		model.addAttribute("arrUri", arrUriP);
 	}
 	

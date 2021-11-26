@@ -88,6 +88,8 @@ public class CceMontoMaximoAproAutoController {
 	
 	private static final String MONTOMAXIMOAPROAUTO = "montoMaximoAproAuto";
 	
+	private static final String MONTOMAXIMOAPROAUTOTITULO = "CCE - Aprobación Automática";
+	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
 	
 	
@@ -211,7 +213,7 @@ public class CceMontoMaximoAproAutoController {
 	public void setGenericos(Model model) {
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = "montoMaximoAprobacionAuto";
+		arrUriP[1] = MONTOMAXIMOAPROAUTOTITULO;
 		model.addAttribute("arrUri", arrUriP);
 	}
 	
