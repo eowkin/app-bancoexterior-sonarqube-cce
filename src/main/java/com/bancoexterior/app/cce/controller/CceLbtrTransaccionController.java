@@ -247,7 +247,7 @@ public class CceLbtrTransaccionController {
 	
 	private static final String MENSAJENORESULTADO = "La consulta no arrojo resultado.";
 	
-	private static final String MENSAJENORESULTADOCUENTAS = "La consulta de las cuenatas del id Ordenante no arrojo resultado.";
+	private static final String MENSAJENORESULTADOCUENTAS = "La consulta de las cuentas del id Ordenante no arrojo resultado.";
 	
 	private static final String URLINDEX = "cce/transaccionAltoValor/listaTransaccionesAltoValorPaginate";
 	
@@ -257,13 +257,13 @@ public class CceLbtrTransaccionController {
 	
 	private static final String MENSAJE = "mensaje";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
-	private static final String MENSAJEOPERACIONFALLO = "Operacion fallida, ocurrio un error.";
+	private static final String MENSAJEOPERACIONFALLO = "Operación fallida, ocurrio un error.";
 	
 	private static final String CONSULTACUENTAS = "consultaCuentas";
 	
-	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	
 	private static final String MENSAJECONSULTANOARROJORESULTADOS = "La consulta no arrojo resultado.";
 	
@@ -274,12 +274,6 @@ public class CceLbtrTransaccionController {
 	private static final String ELIMINAR = "eliminar";
 	
 	private static final String DETALLE = "detalle";
-	
-	private static final String MENSAJEFECHASINVALIDAS = "Los valores de las fechas son invalidos";
-	
-	private static final String FECHADESDE = "fechaDesde";
-	
-	private static final String FECHAHASTA = "fechaHasta";
 	
 	private static final String BANCORECEPTOR = "bancoReceptor";
 	
@@ -303,17 +297,17 @@ public class CceLbtrTransaccionController {
 	
 	private static final String BALNK = "";
 	
-	private static final String MENSAJEERRORFECHAVALOR = "Fecha Valor Invalida, debe ser igual o mayor al dia actual.";
+	private static final String MENSAJEERRORFECHAVALOR = "Fecha Valor Inválida, debe ser igual o mayor al dia actual.";
 	
-	private static final String MENSAJEERRORFECHAVALORFINDESEMANA = "Fecha Valor Invalida, no puede ser ni sabado ni domingo.";
+	private static final String MENSAJEERRORFECHAVALORFINDESEMANA = "Fecha Valor Inválida, no puede ser ni sábado ni domingo.";
 	
-	private static final String MENSAJEERRORFECHAVALORFERIADOBANCARIO = "Fecha Valor Invalida, no puede ser una fecha feriado bancario.";
+	private static final String MENSAJEERRORFECHAVALORFERIADOBANCARIO = "Fecha Valor Inválida, no puede ser una fecha feriado bancario.";
 	
-	private static final String MENSAJEERRORTRANSACCIONEDIT = "La transaccion no se puede editar, informacion invalida";
+	private static final String MENSAJEERRORTRANSACCIONEDIT = "La transacción no se puede editar, informacion inválida";
 	
-	private static final String MENSAJEERRORTRANSACCIONRECHAZAR = "La transaccion no se puede rechazar, informacion invalida";
+	private static final String MENSAJEERRORTRANSACCIONRECHAZAR = "La transacción no se puede rechazar, información inválida";
 	
-	private static final String MENSAJEERRORTRANSACCIONAPROBAR = "La transaccion no se puede aprobar, informacion invalida";
+	private static final String MENSAJEERRORTRANSACCIONAPROBAR = "La transacción no se puede aprobar, información inválida";
 	
 	private static final String FORMATOFECHAINICIALIZAR =  "yyyy-MM-dd";
 	
@@ -823,7 +817,6 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
-		List<String> listaError = new ArrayList<>();
 		BancoRequest bancoRequestED = getBancoRequest();
 		List<Banco> listaBancosED;
 		Page<CceLbtrTransaccion> listaCceLbtrTransaccion;

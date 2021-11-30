@@ -9,6 +9,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -28,6 +29,14 @@ import com.bancoexterior.app.cce.dto.CceTransaccionDto;
 import com.bancoexterior.app.cce.model.CceTransaccion;
 import com.bancoexterior.app.cce.repository.ICceTransaccionRepository;
 import com.bancoexterior.app.util.Mapper;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfWriter;
 
 
 
@@ -301,6 +310,117 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	@Override
 	public int countTransaccionByCodTransaccion(String codTransaccion) {
 		return repo.countTransaccionByCodTransaccion(codTransaccion);
+	}
+
+
+
+	@Override
+	public void export(HttpServletResponse response, CceTransaccionDto cceTransaccionDtoDetalle){
+		
+		try(Document document = new Document(PageSize.A4);) {
+			
+			
+			PdfWriter.getInstance(document, response.getOutputStream());
+			document.open();
+			
+			Font fontTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			fontTitle.setSize(18);
+			
+			
+			Paragraph paragraphEsapcio = new Paragraph(" ");
+			
+			Paragraph paragraphTitle = new Paragraph("Detalle Transacción", fontTitle);
+			paragraphTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			
+			Font fontParrafo = FontFactory.getFont(FontFactory.HELVETICA);
+			fontTitle.setSize(12);
+			
+			Paragraph paragraphApp = new Paragraph("App-Cámara de Compensación Electrónica", fontParrafo);
+			paragraphApp.setAlignment(Paragraph.ALIGN_LEFT);
+			
+			Paragraph paragraphNombreBanco = new Paragraph("Banco Exterior", fontParrafo);
+			paragraphNombreBanco.setAlignment(Paragraph.ALIGN_LEFT);
+			
+			
+			Paragraph paragraphTipoTransaccion = new Paragraph();
+			paragraphTipoTransaccion.add(new Phrase("Tipo Transacción : ", fontTitle));
+			paragraphTipoTransaccion.add(new Phrase(cceTransaccionDtoDetalle.getNombreTransaccion(), fontParrafo));
+			
+			Paragraph paragraphFechaLiquidacion = new Paragraph();
+			paragraphFechaLiquidacion.add(new Phrase("Fecha Liquidación : ", fontTitle));
+			paragraphFechaLiquidacion.add(new Phrase(cceTransaccionDtoDetalle.getFechaModificacion().toString(), fontParrafo));
+			
+			Paragraph paragraphReferenciaBCV = new Paragraph();
+			paragraphReferenciaBCV.add(new Phrase("Referencia BCV : ", fontTitle));
+			paragraphReferenciaBCV.add(new Phrase(cceTransaccionDtoDetalle.getEndtoendId(), fontParrafo));
+			
+			Paragraph paragraphReferenciaIBS = new Paragraph();
+			paragraphReferenciaIBS.add(new Phrase("Referencia IBS : ", fontTitle));
+			paragraphReferenciaIBS.add(new Phrase(cceTransaccionDtoDetalle.getReferencia(), fontParrafo));
+			
+			Paragraph paragraphCiOrdenante = new Paragraph();
+			paragraphCiOrdenante.add(new Phrase("CI del Ordenante : ", fontTitle));
+			paragraphCiOrdenante.add(new Phrase(cceTransaccionDtoDetalle.getNumeroIdentificacion(), fontParrafo));
+			
+			Paragraph paragraphNombreOrdenante = new Paragraph();
+			paragraphNombreOrdenante.add(new Phrase("Nombre Ordenante : ", fontTitle));
+			paragraphNombreOrdenante.add(new Phrase(cceTransaccionDtoDetalle.getBeneficiarioOrigen(), fontParrafo));
+			
+			Paragraph paragraphCuentaOrdenante = new Paragraph();
+			paragraphCuentaOrdenante.add(new Phrase("Cuenta Ordenante : ", fontTitle));
+			paragraphCuentaOrdenante.add(new Phrase(cceTransaccionDtoDetalle.getCuentaOrigen(), fontParrafo));
+			
+			Paragraph paragraphCiBeneficiario = new Paragraph();
+			paragraphCiBeneficiario.add(new Phrase("CI del Beneficiario : ", fontTitle));
+			paragraphCiBeneficiario.add(new Phrase(cceTransaccionDtoDetalle.getNumeroIdentificacionDestino(), fontParrafo));
+			
+			Paragraph paragraphNombreBeneficiario = new Paragraph();
+			paragraphNombreBeneficiario.add(new Phrase("Nombre del Beneficiario : ", fontTitle));
+			paragraphNombreBeneficiario.add(new Phrase(cceTransaccionDtoDetalle.getBeneficiarioDestino(), fontParrafo));
+			
+			Paragraph paragraphCuentaBeneficiario = new Paragraph();
+			paragraphCuentaBeneficiario.add(new Phrase("Cuenta del Beneficiario : ", fontTitle));
+			paragraphCuentaBeneficiario.add(new Phrase(cceTransaccionDtoDetalle.getCuentaDestino(), fontParrafo));
+			
+			Paragraph paragraphMonto = new Paragraph();
+			paragraphMonto.add(new Phrase("Monto : ", fontTitle));
+			paragraphMonto.add(new Phrase(cceTransaccionDtoDetalle.getMontoString(), fontParrafo));
+			
+			Paragraph paragraphMotivo = new Paragraph();
+			paragraphMotivo.add(new Phrase("Motivo : ", fontTitle));
+			paragraphMotivo.add(new Phrase(cceTransaccionDtoDetalle.getConcepto(), fontParrafo));
+			
+			Paragraph paragraphEstado = new Paragraph();
+			paragraphEstado.add(new Phrase("Estado : ", fontTitle));
+			paragraphEstado.add(new Phrase(cceTransaccionDtoDetalle.getNombreEstadoBcv(), fontParrafo));
+			
+			
+			document.add(paragraphNombreBanco);
+			document.add(paragraphApp);
+			document.add(paragraphEsapcio);
+			document.add(paragraphTitle);
+			document.add(paragraphEsapcio);
+			document.add(paragraphTipoTransaccion);
+			document.add(paragraphFechaLiquidacion);
+			document.add(paragraphReferenciaBCV);
+			document.add(paragraphReferenciaIBS);
+			document.add(paragraphCiOrdenante);
+			document.add(paragraphNombreOrdenante);
+			document.add(paragraphCuentaOrdenante);
+			document.add(paragraphCiBeneficiario);
+			document.add(paragraphNombreBeneficiario);
+			document.add(paragraphCuentaBeneficiario);
+			document.add(paragraphMonto);
+			document.add(paragraphMotivo);
+			document.add(paragraphEstado);
+			
+		
+		} catch (DocumentException | IOException e) {
+			LOGGER.error(e.getMessage());
+		}
+ 
+		
+		
 	}
 
 	

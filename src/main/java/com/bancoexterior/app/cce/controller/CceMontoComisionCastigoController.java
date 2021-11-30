@@ -84,7 +84,7 @@ public class CceMontoComisionCastigoController {
 	
 	private static final String MENSAJE = "mensaje";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
 	private static final String MONTOCOMISIONCASTIGOFUNCIONAUDITORIAI = "[==== INICIO Guardar Auditoria  MontoComisionCastigo - Controller ====]";
 	
@@ -94,7 +94,7 @@ public class CceMontoComisionCastigoController {
 	
 	private static final String MONTOCOMISIONCASTIGOTITULO = "CCE - Comisión Castigo Crédito Inmediato";
 	
-	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	
 	@GetMapping("/index")
 	public String index(Model model, HttpSession httpSession, HttpServletRequest request) {

@@ -16,8 +16,8 @@ public class CceFechaFeriadoBancarioDto {
 
 	private Integer id;
 	
-	@NotBlank(message = "Descripcion no puede ser vacio,")
-	@Size(max = 140, message = "Descripcion no puede exceder mas de 140 caracteres")
+	@NotBlank(message = "Descripción no puede ser vacio,")
+	@Size(max = 140, message = "Descripción no puede exceder mas de 140 caracteres")
 	private String descripcion;
 	
 	//@Future(message = "La fecha invalida, debe ser una fecha futura.")

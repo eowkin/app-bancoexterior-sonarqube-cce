@@ -90,7 +90,7 @@ public class CceFechaFeriadoBancarioController {
 	
 	private static final String MENSAJE = "mensaje";
 	
-	private static final String MENSAJEOPERACIONFALLO = "Operacion fallida, ocurrio un error.";
+	private static final String MENSAJEOPERACIONFALLO = "Operación fallida, ocurrio un error.";
 	
 	private static final String MENSAJEERROR = "mensajeError";
 	
@@ -98,9 +98,9 @@ public class CceFechaFeriadoBancarioController {
 	
 	private static final String MENSAJECONSULTANOARROJORESULTADOS = "La consulta no arrojo resultado.";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
-	private static final String MENSAJEERRORFECHAFERIADO = "Fecha Feriado Invalida, debe ser igual o mayor al dia actual.";
+	private static final String MENSAJEERRORFECHAFERIADO = "Fecha Feriado Inválida, debe ser igual o mayor al día actual.";
 	
 	private static final String DESCRIPCION = "descripcion";
 	

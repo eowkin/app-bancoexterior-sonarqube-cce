@@ -88,7 +88,7 @@ public class CceTipoTransaccionController {
 	
 	private static final String MENSAJECONSULTANOARROJORESULTADOS = "La consulta no arrojo resultado.";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
 	private static final String TIPOTRANSACCIONFUNCIONAUDITORIAI = "[==== INICIO Guardar Auditoria  TipoTrasaccion - Controller ====]";
 	
@@ -102,11 +102,11 @@ public class CceTipoTransaccionController {
 	
 	private static final String REDIRECTINDEX = "redirect:/tipoTransaccion/index";
 	
-	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	
 	private static final String MENSAJE = "mensaje";
 	
-	private static final String MENSAJEERRORELIMINAR = "No se puede eliminar el tipo de transaccion ya que tiene codigos de transaccion asociadas.";
+	private static final String MENSAJEERRORELIMINAR = "No se puede eliminar el tipo de transacción ya que tiene códigos de transacción asociadas.";
 	
 	private static final String LISTAERROR = "listaError";
 	

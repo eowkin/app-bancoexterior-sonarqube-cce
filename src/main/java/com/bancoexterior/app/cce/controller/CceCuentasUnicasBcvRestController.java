@@ -25,43 +25,7 @@ public class CceCuentasUnicasBcvRestController {
 		
 		return cceCuentasUnicasBcvService.findById(codigoBic);
 		
-		/*
-		CceCuentasUnicasBcv cceCuentasUnicasBcv = new CceCuentasUnicasBcv();
 		
-		if(codigoBic.equals("0115")) {
-			cceCuentasUnicasBcv.setCodigoBic(codigoBic);
-			cceCuentasUnicasBcv.setCuenta("00010001360002000115");
-			cceCuentasUnicasBcv.setNombreBanco("Banco Exterior C.A. Banco Universal");
-			cceCuentasUnicasBcv.setStatus("A");
-		}else {
-			if(codigoBic.equals("0102")) {
-				cceCuentasUnicasBcv.setCodigoBic(codigoBic);
-				cceCuentasUnicasBcv.setCuenta("00010001340002000102");
-				cceCuentasUnicasBcv.setNombreBanco("Banco Venezuela");
-				cceCuentasUnicasBcv.setStatus("A");
-			}else {
-				if(codigoBic.equals("0105")) {
-					cceCuentasUnicasBcv.setCodigoBic(codigoBic);
-					cceCuentasUnicasBcv.setCuenta("00010001390002000105");
-					cceCuentasUnicasBcv.setNombreBanco("Banco Mercantil");
-					cceCuentasUnicasBcv.setStatus("A");
-				}else {
-					if(codigoBic.equals("0108")) {
-						cceCuentasUnicasBcv.setCodigoBic(codigoBic);
-						cceCuentasUnicasBcv.setCuenta("00010001330002000108");
-						cceCuentasUnicasBcv.setNombreBanco("Banco Provincial");
-						cceCuentasUnicasBcv.setStatus("A");
-					}else {
-						cceCuentasUnicasBcv.setCodigoBic(codigoBic);
-						cceCuentasUnicasBcv.setCuenta("00010001380002000114");
-						cceCuentasUnicasBcv.setNombreBanco("Banco del Caribe");
-						cceCuentasUnicasBcv.setStatus("A");
-					}
-				}
-			}
-		}
-		
-		return cceCuentasUnicasBcv;*/
 	}
 	
 	

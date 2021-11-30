@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor @NoArgsConstructor
 public class CceCodigosTransaccionDto {
 
-	@NotBlank(message = "Codigo no puede ser vacio")
-	@Size(min = 4,  max = 6, message = "Codigo debe tener un tamaño entre 4 y 6 caracteres")
+	@NotBlank(message = "Código no puede ser vacio")
+	@Size(min = 4,  max = 6, message = "Código debe tener un tamaño entre 4 y 6 caracteres")
 	private String codTransaccion;
 	
-	@NotBlank(message = "Descripcion no puede ser vacio")
-	@Size(max = 140, message = "Descripcion no puede exceder mas de 140 caracteres")
+	@NotBlank(message = "Descripción no puede ser vacio")
+	@Size(max = 140, message = "Descripción no puede exceder mas de 140 caracteres")
 	private String descripcion;
 	
 	@NotNull(message = "El tipo no puede ser nulo.")

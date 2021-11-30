@@ -37,8 +37,9 @@
 		            			<li th:each="error : ${listaError}"  th:text="${error}"></li>
 		            		</ul>
 		            	</div>
+		             <input type="hidden" th:field="*{endtoendId}">	
 		             <div class="form-group row">
-			          	<label class="col-sm-3 col-form-label" for="nombreTransaccion">Tipo Transaccion:</label>
+			          	<label class="col-sm-3 col-form-label" for="nombreTransaccion">Tipo Transacción:</label>
 			            <div class="col-sm-3">
 			              <input type="text" class="form-control" th:field="*{nombreTransaccion}" id="nombreTransaccion" name="nombreTransaccion" disabled="disabled">
 			              
@@ -136,7 +137,7 @@
 		        	<div class="card-footer">
 			      	 
 			         <a class="do-request btn btn-primary" th:href="@{/ccetransacciones/consultaMovimientosPage(page=${page}, tipoTransaccion=${tipoTransaccion}, bancoDestino=${bancoDestino}, numeroIdentificacion=${numeroIdentificacion}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}" title="Volver a lista Movimientos" role="button">Volver a lista Movimientos</a>
-			         
+			         <a class="btn btn-success" th:href="@{/ccetransacciones/export/pdf(endtoendId=${endtoendId})}" title="Exportar Pdf" role="button">Exportar Pdf</a>
 			      </div>
 		      	  </div>
 		        </form>

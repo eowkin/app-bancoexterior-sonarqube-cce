@@ -96,7 +96,7 @@ public class CceMontoMinimoComisionController {
 	
 	private static final String MENSAJE = "mensaje";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
 	private static final String MONTOMINIMOCOMISIONFUNCIONAUDITORIAI = "[==== INICIO Guardar Auditoria  MontoMinimoComision - Controller ====]";
 	
@@ -106,7 +106,7 @@ public class CceMontoMinimoComisionController {
 	
 	private static final String MONTOMINIMOCOMISIONTITULO = "CCE - Monto Tope Comisión Mínima  Crédito Inmediato";
 	
-	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	
 	private static final String LISTANEXOMONTOMINCOMISION = "listaNexoMontoMinComision";
 	

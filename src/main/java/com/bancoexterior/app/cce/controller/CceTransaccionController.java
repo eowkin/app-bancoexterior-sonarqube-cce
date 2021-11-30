@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
@@ -68,6 +69,7 @@ import com.bancoexterior.app.inicio.service.IAuditoriaService;
 import com.bancoexterior.app.util.LibreriaUtil;
 import com.bancoexterior.app.util.Mapper;
 import com.google.gson.Gson;
+import com.lowagie.text.DocumentException;
 
 
 @Controller
@@ -159,9 +161,9 @@ public class CceTransaccionController {
 	
 	private static final String LISTATRANSACCIONESEXCEL = "listaTransacciones";
 	
-	private static final String MENSAJENORESULTADO = "Operacion Exitosa.La consulta no arrojo resultado.";
+	private static final String MENSAJENORESULTADO = "Operación Exitosa.La consulta no arrojo resultado.";
 	
-	private static final String MENSAJEFECHASINVALIDAS = "Los valores de las fechas son invalidos";
+	private static final String MENSAJEFECHASINVALIDAS = "Los valores de las fechas son inválidos";
 	
 	private static final String URLLISTAMOVIMIENTOSCONSULTAALTOBAJOVALORPAGINATE = "cce/listaMovimientosConsultaAltoBajoValorPaginate";
 	
@@ -196,9 +198,9 @@ public class CceTransaccionController {
 	
 	private static final String MONTOAPROBACIONESLOTES = "montoAprobacionesLotes";
 	
-	private static final String MENSAJEFUERARANGO = "El monto a consultar esta fuera de rango Alto Valor Lote Automatico.";
+	private static final String MENSAJEFUERARANGO = "El monto a consultar esta fuera de rango Alto Valor Lote Automático.";
 	
-	private static final String MENSAJEMONTOSINVALIDAS = "Los valores de los montos son invalidos";
+	private static final String MENSAJEMONTOSINVALIDAS = "Los valores de los montos son inválidos";
 	
 	private static final String DATOSPAGINACION = "datosPaginacion";
 	
@@ -260,9 +262,9 @@ public class CceTransaccionController {
 	
 	private static final String CCE = "Cce";
 	
-	private static final String MENSAJEOPERACIONEXITOSA = "Operacion Exitosa.";
+	private static final String MENSAJEOPERACIONEXITOSA = "Operación Exitosa.";
 	
-	private static final String MENSAJEOPERACIONFALLIDA = "Operacion Fallida.";
+	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	
 	private static final String PROCESARCONSULTAMOVIMIENTOS = "procesarConsultaMovimientos";
 	
@@ -466,6 +468,7 @@ public class CceTransaccionController {
 		}
 		CceTransaccionDto cceTransaccionDto = service.findByEndtoendId(endtoendId);
 		if(cceTransaccionDto != null) {	
+			cceTransaccionDto.setEndtoendId(endtoendId);
 			if(!cceTransaccionDto.isEnvio()) {
 				LOGGER.info(cceTransaccionDto.getCodTransaccion());
 				String cuentaOrigen = cceTransaccionDto.getCuentaOrigen();
@@ -492,6 +495,7 @@ public class CceTransaccionController {
 			model.addAttribute(NUMEROIDENTIFICACION, numeroIdentificacion);
 			model.addAttribute(FECHADESDE, fechaDesde);
 			model.addAttribute(FECHAHASTA, fechaHasta);
+			model.addAttribute("endtoendId", endtoendId);
 			model.addAttribute("page", page);
 			guardarAuditoriaId("detalleMovimiento", true, "0000", MENSAJEOPERACIONEXITOSA, endtoendId, request);
 			LOGGER.info(CCETRANSACCIONCONTROLLERVERDETALLEMOVIMIENTOSF);
@@ -1097,6 +1101,50 @@ public class CceTransaccionController {
 		
 		return listaTransaccionesDto;
 	}
+	
+	
+	@GetMapping("/export/pdf")
+	public void exportToPdf(@RequestParam("endtoendId") String endtoendId, HttpServletResponse response) throws DocumentException, IOException {
+		response.setContentType("application/pdf");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=detalle_"+dateString()+".pdf";
+		
+		LOGGER.info(endtoendId);
+		CceTransaccionDto cceTransaccionDtoDetalle = service.findByEndtoendId(endtoendId);
+		setValoresDetalleTransaccion(cceTransaccionDtoDetalle);
+		response.setHeader(headerKey, headerValue);
+		
+		service.export(response, cceTransaccionDtoDetalle);
+	}
+	
+	public void setValoresDetalleTransaccion(CceTransaccionDto cceTransaccionDtoDetalle) {
+		if(!cceTransaccionDtoDetalle.isEnvio()) {
+			LOGGER.info(cceTransaccionDtoDetalle.getCodTransaccion());
+			String cuentaOrigen = cceTransaccionDtoDetalle.getCuentaOrigen();
+			String cuentaDestino = cceTransaccionDtoDetalle.getCuentaDestino();
+			cceTransaccionDtoDetalle.setCuentaOrigen(cuentaDestino);
+			cceTransaccionDtoDetalle.setCuentaDestino(cuentaOrigen);
+			String numeroIdentificacionCce = cceTransaccionDtoDetalle.getNumeroIdentificacion();
+			String numeroIdentificacionDestinoCce = cceTransaccionDtoDetalle.getNumeroIdentificacionDestino();
+			cceTransaccionDtoDetalle.setNumeroIdentificacion(numeroIdentificacionDestinoCce);
+			cceTransaccionDtoDetalle.setNumeroIdentificacionDestino(numeroIdentificacionCce);
+			String beneficiarioOrigen = cceTransaccionDtoDetalle.getBeneficiarioOrigen();
+			String beneficiarioDestino = cceTransaccionDtoDetalle.getBeneficiarioDestino();
+			cceTransaccionDtoDetalle.setBeneficiarioOrigen(beneficiarioDestino);
+			cceTransaccionDtoDetalle.setBeneficiarioDestino(beneficiarioOrigen);
+		}
+		
+		cceTransaccionDtoDetalle.setNombreTransaccion(nombreTransaccion(cceTransaccionDtoDetalle.getCodTransaccion())+"-"+cceTransaccionDtoDetalle.getCodTransaccion());
+		cceTransaccionDtoDetalle.setNombreEstadoBcv(nombreEstadoBcv(cceTransaccionDtoDetalle.getEstadobcv()));
+		cceTransaccionDtoDetalle.setMonto(libreriaUtil.stringToBigDecimal(libreriaUtil.formatNumber(cceTransaccionDtoDetalle.getMonto())));
+		cceTransaccionDtoDetalle.setMontoString(libreriaUtil.formatNumber(cceTransaccionDtoDetalle.getMonto()));
+	}
+	
+	public String dateString() {
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy:hh:mm:ss");
+		return dateFormat.format(new Date());
+	}
+	
 	
 	public void setAprobacionesConsultasRequestFiltrosPage(int numeroPagina, Filtros filtros, AprobacionesConsultasRequest aprobacionesConsultasRequest) {
 		aprobacionesConsultasRequest.setNumeroPagina(numeroPagina);   
