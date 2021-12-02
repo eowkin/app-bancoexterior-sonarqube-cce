@@ -71,6 +71,9 @@ public class BCVLBT implements Serializable{
 	@JsonProperty("codUsuario")
 	private String codUsuario;
 	
+	@JsonProperty("usuarioAprobador")
+	private String usuarioAprobador;
+	
 	private String montoString;
 	
 	private String fechaDesde;

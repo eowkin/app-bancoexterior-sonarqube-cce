@@ -31,15 +31,15 @@
 		      <div class="col-lg-1-12">
 		        <div class="card">
 		          <div class="card-header">
-		            <i class="fa fa-align-justify" aria-hidden="true"></i> Listado de Limites Generales
+		            <i class="fa fa-align-justify" aria-hidden="true"></i> Listado de Límites Generales
 		            <div class="my-2 text-right">
          					<form th:action="@{/limitesGenerales/search}"  th:object="${limitesGeneralesSearch}"  method="get" class="form-inline">
         						<input type="text"  class="form-control mb-3"  th:field="*{codMoneda}" maxlength="3" placeholder="Escriba una búsqueda" >&nbsp;
-            					<button type="submit" class="btn btn-primary mb-3">Buscar por codigo moneda</button>            
+            					<button type="submit" class="btn btn-primary mb-3">Buscar por código moneda</button>            
           					</form>
         			</div>
 		            <div class="my-2 text-right">
-		              <a class="btn btn-primary" th:href="@{/limitesGenerales/formLimitesGenerales}" title="Crear nueva Tasa" role="button"><i class="fa fa-file-o" aria-hidden="true"></i> Crear Limites Generales</a>
+		              <a class="btn btn-primary" th:href="@{/limitesGenerales/formLimitesGenerales}" title="Crear nueva Tasa" role="button"><i class="fa fa-file-o" aria-hidden="true"></i> Crear Límites Generales</a>
 		            </div>
 		          </div><!--/.card-header-->
 		          <div class="card-body">
@@ -54,11 +54,11 @@
     					<table class="table table-striped table-hover">
 					              <thead>
 					                <tr>
-					                  <th scope="col">Codigo Moneda</th>
-					                    <th scope="col">Tipo Transaccion</th>
+					                  <th scope="col">Código Moneda</th>
+					                    <th scope="col">Tipo Transacción</th>
 					                    <th scope="col">Tipo Cliente</th>
 					                    <th scope="col">Codigo Usuario</th>
-					                    <th scope="col">Fecha Modificacion</th>
+					                    <th scope="col">Fecha Modificación</th>
 					                    <th scope="col">Detalle</th>
 					                    <th scope="col">Editar</th>
 					                    <th scope="col">Activar/Inactivar</th>
@@ -73,7 +73,7 @@
 					                  </td>
 					                  <td>
 					                  	<span th:if="${limitesGenerales.tipoCliente == 'N'}">Natural</span>
-					                  	<span th:if="${limitesGenerales.tipoCliente == 'J'}">Juridico</span>
+					                  	<span th:if="${limitesGenerales.tipoCliente == 'J'}">Jurídico</span>
 					                  </td>    
 					                  <td th:text="${limitesGenerales.codUsuario}"></td>
 					               	  <td th:text="${limitesGenerales.fechaModificacion}"></td>

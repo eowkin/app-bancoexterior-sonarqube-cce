@@ -35,7 +35,7 @@
 		            <div class="my-2 text-right">
          					<form th:action="@{/agencias/search}"  th:object="${agenciaSearch}"  method="get" class="form-inline">
         						<input type="text"  class="form-control mb-3"  th:field="*{codAgencia}" maxlength="3" placeholder="Escriba una búsqueda" >&nbsp;
-            					<button type="submit" class="btn btn-primary mb-3">Buscar por codigo agencia</button>            
+            					<button type="submit" class="btn btn-primary mb-3">Buscar por código agencia</button>            
           					</form>
           					<form th:action="@{/agencias/searchNombre}"  th:object="${agenciaSearch}"  method="get" class="form-inline">
         						<input type="text"  class="form-control mb-3"  th:field="*{nombreAgencia}" maxlength="15" placeholder="Escriba una búsqueda" >&nbsp;
@@ -59,10 +59,10 @@
 		            <table class="table table-striped table-hover">
 		              <thead>
 		                <tr>
-		                  <th scope="col">Codigo Agencia</th>
+		                  <th scope="col">Código Agencia</th>
 		                  <th scope="col">Nombre Agencia</th>
-		                  <th scope="col">Codigo Usuario</th>
-		                  <th scope="col">Fecha Modificacion</th>
+		                  <th scope="col">Código Usuario</th>
+		                  <th scope="col">Fecha Modificación</th>
 		                  <th scope="col">Activar/Inactivar</th>
 		                </tr>
 		              </thead>

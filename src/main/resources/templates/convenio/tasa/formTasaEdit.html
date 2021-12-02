@@ -44,25 +44,25 @@
 		          		<input type="hidden" th:field="*{codMonedaDestino}">
 		          		<input type="hidden" th:field="*{tipoOperacion}">
 			          	
-		            <label class="col-sm-5 col-form-label" for="codMonedaOrigen">Codigo Moneda Origen:</label>
+		            <label class="col-sm-5 col-form-label" for="codMonedaOrigen">Código Moneda Origen:</label>
 		            <div class="col-sm-6">
 		            	<input type="text" class="form-control" id="codMonedaOrigen" name="codMonedaOrigen" th:field="*{codMonedaOrigen}" placeholder="Codigo de la moneda origen" required="required" disabled="disabled">
 		            </div>
 		          </div>
 		          <div class="form-group row">
-		            <label class="col-sm-5 col-form-label" for="codMonedaDestino">Codigo Moneda Destino:</label>
+		            <label class="col-sm-5 col-form-label" for="codMonedaDestino">Código Moneda Destino:</label>
 		            <div class="col-sm-6">
 		              <input type="text" class="form-control" id="codMonedaDestino" name="codMonedaDestino" th:field="*{codMonedaDestino}" placeholder="Codigo de la moneda origen" required="required" disabled="disabled">
 		   	        </div>
 		          </div>
 		          <div class="form-group row">
-		            <label class="col-sm-5 col-form-label" for="tipoOperacion">Tipo Operacion:</label>
+		            <label class="col-sm-5 col-form-label" for="tipoOperacion">Tipo Operación:</label>
 		            <div class="col-sm-6">
 		              <select  class="form-control"  name="tipoOperacion" th:field="*{tipoOperacion}" required="required" disabled="disabled">
-		                <option value = "">----Selecionar Tipo----</option>
+		                <option value = "">----Seleccionar Tipo----</option>
 		                <option value = 0>Mercado Internacional</option>
 		                <option value = 1>Mesa Cambio</option>
-		                <option value = 2>Intervencion</option>
+		                <option value = 2>Intervención</option>
 		                <option value = 3>Menudeo</option>
 		              </select>
 		              

@@ -56,7 +56,7 @@
 		            <label class="col-sm-5 col-form-label" for="bancoDestino">Banco Ordenante/Banco Beneficiario:</label>
 		            <div class="col-sm-4">
 		              <select  class="form-control"  name="bancoDestino" th:field="*{bancoDestino}">
-		                <option value="">----Selecionar Banco----</option>
+		                <option value="">----Seleccionar Banco----</option>
 		                <option th:each = "banco: ${listaBancos}" th:value="${banco.codBanco}" th:text="${banco.nbBanco}"></option>
 		              </select>
 		            </div>

@@ -42,10 +42,10 @@
 			        <form  th:action="@{/agencias/searchCrear}"  th:object="${agencia}"  method="get" class="form-horizontal">
 			         	
 			          	<div class="form-group row">
-				            <label class="col-sm-3 col-form-label" for="codAgencia">Codigo Agencia:</label>
+				            <label class="col-sm-3 col-form-label" for="codAgencia">Código Agencia:</label>
 				            <div class="col-sm-3">
 				              <select  class="form-control"  name="codAgencia" th:field="*{codAgencia}"  required="required">
-		                		<option value="">----Selecionar Moneda----</option>
+		                		<option value="">----Seleccionar Moneda----</option>
 		                																											
 		                		<option th:each = "agenciaB: ${listaAgencias}" th:value="${agenciaB.codAgencia}" th:text="${agenciaB.codAgencia} + ' - ' + ${agenciaB.nombreAgencia}"></option>
 		              		</select>

@@ -41,19 +41,19 @@
 		            	</div>
 
 		         <div class="form-group row">
-		            <label class="col-sm-5 col-form-label" for="codMoneda">Codigo Moneda:</label>
+		            <label class="col-sm-5 col-form-label" for="codMoneda">Código Moneda:</label>
 		            <div class="col-sm-6">
 		              <select  class="form-control"  name="codMoneda" th:field="*{codMoneda}">
-		                <option value="">----Selecionar Moneda----</option>
+		                <option value="">----Seleccionar Moneda----</option>
 		                <option th:each = "moneda: ${listaMonedas}" th:value="${moneda.codMoneda}" th:text="${moneda.descripcion}"></option>
 		              </select>
 		            </div>
 		          </div>
 		          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="tipoTransaccion">Tipo Transaccion:</label>
+			            <label class="col-sm-5 col-form-label" for="tipoTransaccion">Tipo Transacción:</label>
 			            <div class="col-sm-6">
 			              <select  class="form-control" th:field="*{tipoTransaccion}"  name="tipoTransaccion">
-			                <option value = "">----Selecionar Tipo Transaccion----</option>
+			                <option value = "">----Seleccionar Tipo Transacción----</option>
 			                <option value = "C" >Compra</option>
 			                <option value = "V" >Venta</option>
 			              </select>
@@ -63,7 +63,7 @@
 			            <label class="col-sm-5 col-form-label" for="estatus">Estatus:</label>
 			            <div class="col-sm-6">
 			              <select  class="form-control" th:field="*{estatus}"  name="estatus">
-					                <option value = "-1">----Selecionar Estatus----</option>
+					                <option value = "-1">----Seleccionar Estatus----</option>
 					                <option value = "0" >Por Aprobar</option>
 					                <option value = "1" >Aprobada Automática</option>
 					                <option value = "2" >Aprobada Funcional</option>
@@ -76,8 +76,8 @@
 			            <label class="col-sm-5 col-form-label" for="tipoCliente">Tipo Cliente:</label>
 			            <div class="col-sm-6">
 			              <select  class="form-control" th:field="*{tipoCliente}" name="tipoCliente" >
-			                <option value = "">----Selecionar Tipo Cleinte----</option>
-			                <option value = "J" >Juridico</option>
+			                <option value = "">----Seleccionar Tipo Cleinte----</option>
+			                <option value = "J" >Jurídico</option>
 			                <option value = "N" >Natural</option>
 			              </select>
 			            </div>

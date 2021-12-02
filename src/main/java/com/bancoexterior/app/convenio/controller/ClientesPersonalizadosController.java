@@ -91,7 +91,7 @@ public class ClientesPersonalizadosController {
 	
 	private static final String MENSAJEERROR = "mensajeError";
 	
-	private static final String MENSAJECREARCLIENTE = "Operacion exitosa, cliente creado. Puede crear limites Personalizados al cliente nuevo";
+	private static final String MENSAJECREARCLIENTE = "Operación exitosa, cliente creado. Puede crear límites Personalizados al cliente nuevo";
 	
 	private static final String REDIRECTINDEX = "redirect:/clientesPersonalizados/index/";
 	
@@ -103,7 +103,7 @@ public class ClientesPersonalizadosController {
 	 
 	private static final String NOTIENEPERMISO = "No tiene Permiso";
 	
-	private static final String MONTOSDEBESERNUMERICO = "Los valores de los montos debe ser numerico";
+	private static final String MONTOSDEBESERNUMERICO = "Los valores de los montos debe ser numérico";
 	
 	private static final String MENSAJENORESULTADO = "La consulta no arrojo resultado.";
 	

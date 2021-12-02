@@ -29,7 +29,7 @@
           <div class="animated fadeIn">
 			    <div class="card">
 			      <div class="card-header">
-			        <strong>Crear Limites Generales</strong>
+			        <strong>Crear Límites Generales</strong>
 			      </div>
 			      <div class="card-body">
 			        <form th:action = "@{/limitesGenerales/save}"   method="post" th:object="${limitesGenerales}"   class="form-horizontal">
@@ -40,20 +40,20 @@
 		            		</ul>
 		            	</div>
 			          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="codMoneda">Codigo Moneda:</label>
+			            <label class="col-sm-5 col-form-label" for="codMoneda">Código Moneda:</label>
 			            <div class="col-sm-6">
 			            	
 			              <select  class="form-control" th:field="*{codMoneda}" name="codMoneda" required="required">
-			                <option value="">----Selecionar Moneda----</option>
+			                <option value="">----Seleccionar Moneda----</option>
 			                <option th:each = "moneda: ${listaMonedas}" th:value="${moneda.codMoneda}" th:text="${moneda.descripcion}"></option>
 			              </select>
 			            </div>
 			          </div>
 			          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="tipoTransaccion">Tipo Transaccion:</label>
+			            <label class="col-sm-5 col-form-label" for="tipoTransaccion">Tipo Transacción:</label>
 			            <div class="col-sm-6">
 			              <select  class="form-control" th:field="*{tipoTransaccion}"  name="tipoTransaccion" required="required">
-			                <option value = "">----Selecionar Tipo Transaccion----</option>
+			                <option value = "">----Seleccionar Tipo Transacción----</option>
 			                <option value = "C" >Compra</option>
 			                <option value = "V" >Venta</option>
 			              </select>
@@ -63,20 +63,20 @@
 			            <label class="col-sm-5 col-form-label" for="tipoCliente">Tipo Cliente:</label>
 			            <div class="col-sm-6">
 			              <select  class="form-control" th:field="*{tipoCliente}" name="tipoCliente" required="required">
-			                <option value = "">----Selecionar Tipo Cleinte----</option>
-			                <option value = "J" >Juridico</option>
+			                <option value = "">----Seleccionar Tipo Cleinte----</option>
+			                <option value = "J" >Jurídico</option>
 			                <option value = "N" >Natural</option>
 			              </select>
 			            </div>
 			          </div>
 			          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="input-large">Monto Minimo:</label>
+			            <label class="col-sm-5 col-form-label" for="input-large">Monto Mínimo:</label>
 			            <div class="col-sm-6">
 			              <input type="text" class="form-control" th:field="*{montoMin}" id="montoMin" name="montoMin" required="required">
 			            </div>
 			          </div>
 			          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="input-large">Monto Maximo:</label>
+			            <label class="col-sm-5 col-form-label" for="input-large">Monto Máximo:</label>
 			            <div class="col-sm-6">
 			              <input type="text" class="form-control" th:field="*{montoMax}" id="montoMax" name="montoMax" required="required">
 			            </div>

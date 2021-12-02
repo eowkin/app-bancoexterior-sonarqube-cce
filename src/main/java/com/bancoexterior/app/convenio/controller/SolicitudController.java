@@ -168,7 +168,7 @@ public class SolicitudController {
 	
 	private static final String MENSAJENORESULTADO = "La consulta no arrojo resultado.";
 	
-	private static final String MENSAJEFECHASINVALIDAS = "Los valores de las fechas son invalidos";
+	private static final String MENSAJEFECHASINVALIDAS = "Los valores de las fechas son inválidos";
 	
 	private static final String LISTAERROR = "listaError";
 	

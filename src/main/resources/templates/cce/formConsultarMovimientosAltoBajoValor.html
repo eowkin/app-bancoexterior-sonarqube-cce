@@ -40,10 +40,10 @@
 
 		         
 		          <div class="form-group row">
-			            <label class="col-sm-5 col-form-label" for="tipoTransaccionInt">Tipo Transaccion:</label>
+			            <label class="col-sm-5 col-form-label" for="tipoTransaccionInt">Tipo Transacción:</label>
 			            <div class="col-sm-3">
 			            	<select  class="form-control"  name="tipoTransaccionInt" th:field="*{tipoTransaccionInt}">
-				            	<option value="0">----Selecionar Tipo Transaccion----</option>
+				            	<option value="0">----Seleccionar Tipo Transacción----</option>
 			                	<option th:each = "tipoTransaccion: ${listaTipoTransaccion}" th:value="${tipoTransaccion.id}" th:text="${tipoTransaccion.descripcion}"></option>
 			                </select>	
 			            </div>
@@ -53,7 +53,7 @@
 		            <label class="col-sm-5 col-form-label" for="bancoDestino">Banco Ordenante/Banco Beneficiario:</label>
 		            <div class="col-sm-4">
 		              <select  class="form-control"  name="bancoDestino" th:field="*{bancoDestino}">
-		                <option value="">----Selecionar Banco----</option>
+		                <option value="">----Seleccionar Banco----</option>
 		                <option th:each = "banco: ${listaBancos}" th:value="${banco.codBanco}" th:text="${banco.nbBanco}"></option>
 		              </select>
 		            </div>
