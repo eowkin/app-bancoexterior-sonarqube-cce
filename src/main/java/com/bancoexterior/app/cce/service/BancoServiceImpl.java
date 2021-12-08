@@ -86,7 +86,12 @@ public class BancoServiceImpl implements IBancoService{
 				LOGGER.info(BANCOSERVICELISTABANCOSF);
 	            return respuest2xxlistaBancos(retorno);
 			}else {
-				throw new CustomException(respuesta4xx(retorno));	
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xx(retorno));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -153,7 +158,12 @@ public class BancoServiceImpl implements IBancoService{
 				LOGGER.info(BANCOSERVICEBUSCARBANCOSF);
 	            return respuest2xxBanco(retorno);
 			}else {
-				throw new CustomException(respuesta4xx(retorno));	
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xx(retorno));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);

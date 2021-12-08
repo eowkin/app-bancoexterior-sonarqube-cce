@@ -97,11 +97,8 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		String montoMinComisionConsultaRequestJSON;
 		montoMinComisionConsultaRequestJSON = new Gson().toJson(montoMinComisionConsultaRequest);
 		wsrequest.setBody(montoMinComisionConsultaRequestJSON);
-		LOGGER.info(montoMinComisionConsultaRequestJSON);
 		wsrequest.setUrl(url);
-		LOGGER.info(url);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info(retorno);
 		return retorno;
     }
 	
@@ -124,13 +121,17 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsulta);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(NEXOMONTOMINCOMISIONSERVICELISTAF);
 				return respuesta2xxListaNexoMontoMinComision(retorno, accion, request);
 			}else {
-				throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -184,13 +185,17 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsultaHistorial);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(NEXOHISTORIALMONTOMINCOMISIONSERVICELISTAF);
 				return respuesta2xxListaNexoHistorialMontoMinComision(retorno, accion, request);
 			}else {
-				throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -224,13 +229,17 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsulta);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(NEXOMONTOMINCOMISIONBUSCARSERVICELISTAF);
 				return respuesta2xxBuscarNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request);
 			}else {
-				throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));	
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaNexoMontoMinComision(retorno, accion, montoMinComisionConsultaRequest, request));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -270,8 +279,13 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 				LOGGER.info(NEXOMONTOMINCOMISIONACTUALIZARSERVICELISTAF);
 				return respuesta4xxActualizarCrear(retorno,accion, montoMinComisionRequest, request);
 			}else {
-				String respuesta4xxActualizar = respuesta4xxActualizar(retorno,accion, montoMinComisionRequest, request);
-				throw new CustomException(respuesta4xxActualizar);
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					String respuesta4xxActualizar = respuesta4xxActualizar(retorno,accion, montoMinComisionRequest, request);
+					throw new CustomException(respuesta4xxActualizar);
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);

@@ -32,26 +32,25 @@
 		      <div class="card-body">
 		      		
 		      	  <div th:if="${listaAprobado != null}" class="alert alert-success" role="alert">
-		            		Resultado Transacciones Aprobadas:
+		            		Resultado Transacciones Enviadas Satisfactorias :
 		            		<div th:if="${mensaje != null}" class="alert alert-success" th:text="${mensaje}" role="alert"></div>
+		            		
+		            		<!-- 
 		            		<ul>
 		            			<li th:each="valor : ${listaAprobado}"  th:text="${valor}"></li>
-		            		</ul>
+		            		</ul>-->
 		            	</div>
 		          <div th:if="${listaError != null}" class="alert alert-danger" role="alert">
-		            		Resultado Transacciones No Aprobadas Error:
+		            		Resultado Transacciones Enviadas No satisfactorias:
 		            		<div th:if="${mensajeError != null}" class="alert alert-danger" th:text="${mensajeError}" role="alert"></div>
+		            		<!--
 		            		<ul>
 		            			<li th:each="error : ${listaError}"  th:text="${error}"></li>
-		            		</ul>
+		            		</ul>-->
 		            	</div>
 		          <div class="card-footer">
-		        	<div class="card-footer">
-			      	 
-			         <a class="btn btn-primary" th:href="@{/ccetransacciones/formConsultaOperacionesAprobarAltoBajoValor}" title="Volver" role="button">Volver</a>
-			         
-			      </div>
-		      	  </div>
+		        	 <a class="btn btn-primary" th:href="@{/}" title="Volver" role="button">Inicio</a>
+			       </div>
 		      
 		      </div>
 		      

@@ -268,11 +268,19 @@ public class CceTransaccionController {
 	
 	private static final String PROCESARCONSULTAMOVIMIENTOS = "procesarConsultaMovimientos";
 	
+	private static final String CONSULTAMOVIMIENTOSPAGE = "consultaMovimientosPage";
+	
+	private static final String DETALLEMOVIMIENTO = "detalleMovimiento";
+	
 	private static final String FORMCONSULTAMOVIMIENTOS = "formConsultaMovimientos";
+	
+	private static final String FORMCONSULTAOPERACIONESAPROBAR = "formConsultaOperacionesAprobar";
 	
 	private static final String FORMAPROBARAUTOMATICO = "formAprobarLoteAutomatico";
 	
 	private static final String URLRESULTADOAPROBARSELECCION = "cce/resultadoAprobarSeleccion";
+	
+	private static final String URLRESULTADOAPROBARAUTOMATO = "cce/resultadoAprobarAutomatico";
 	
 	private static final String CONSULTAOPERACIONESAPROBARPAGE = "consultaOperacionesAprobarPage";
 	
@@ -289,6 +297,11 @@ public class CceTransaccionController {
 	private static final String PROCESARAPROBARLOTEAUTOMATICO = "procesarAprobarLoteAutomatico";
 	
 	private static final String PROCESARAPROBARLOTESELECCION = "procesarAprobarLoteSeleccion";
+	
+	private static final String TRANSACCIONREFERENCIA = "Transaccion referencia: ";
+	
+	private static final String FLECHA = " --> ";
+	
 	
 	@GetMapping("/cargarLoader")
 	public String cargarLoaderPaginado() {
@@ -497,7 +510,7 @@ public class CceTransaccionController {
 			model.addAttribute(FECHAHASTA, fechaHasta);
 			model.addAttribute("endtoendId", endtoendId);
 			model.addAttribute("page", page);
-			guardarAuditoriaId("detalleMovimiento", true, "0000", MENSAJEOPERACIONEXITOSA, endtoendId, request);
+			guardarAuditoriaId(DETALLEMOVIMIENTO, true, "0000", MENSAJEOPERACIONEXITOSA, endtoendId, request);
 			LOGGER.info(CCETRANSACCIONCONTROLLERVERDETALLEMOVIMIENTOSF);
 			return URLFORMMOVIMIENTOSALTOBAJOVALORDETALLEFECHAS;
 		}else {
@@ -512,7 +525,7 @@ public class CceTransaccionController {
 			model.addAttribute(FECHADESDE, fechaDesde);
 			model.addAttribute(FECHAHASTA, fechaHasta);
 			model.addAttribute(MENSAJEERROR, MENSAJENORESULTADO);
-			guardarAuditoriaId("detalleMovimiento", true, "0001", MENSAJENORESULTADO, endtoendId, request);
+			guardarAuditoriaId(DETALLEMOVIMIENTO, true, "0001", MENSAJENORESULTADO, endtoendId, request);
 			return URLLISTAMOVIMIENTOSCONSULTAALTOBAJOVALORPAGINATE;
 			 
 		}
@@ -536,10 +549,10 @@ public class CceTransaccionController {
 		try {
 			List<Banco> listaBancos  = bancoService.listaBancos(bancoRequest);
 			model.addAttribute(LISTABANCOS, listaBancos);
-			guardarAuditoria("formConsultaOperacionesAprobar", true, "0000", MENSAJEOPERACIONEXITOSA, request);
+			guardarAuditoria(FORMCONSULTAOPERACIONESAPROBAR, true, "0000", MENSAJEOPERACIONEXITOSA, request);
 		} catch (CustomException e) {
 			LOGGER.error(e.getMessage());
-			guardarAuditoria("formConsultaOperacionesAprobar", false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
+			guardarAuditoria(FORMCONSULTAOPERACIONESAPROBAR, false, "0001", MENSAJEOPERACIONFALLIDA+" "+e.getMessage(), request);
 			model.addAttribute(LISTAERROR, e.getMessage());
 		}
 		LOGGER.info(CCETRANSACCIONCONTROLLERFORMCONSULTAROPERACIONESAPROBARALTOVALORF);
@@ -1104,7 +1117,7 @@ public class CceTransaccionController {
 	
 	
 	@GetMapping("/export/pdf")
-	public void exportToPdf(@RequestParam("endtoendId") String endtoendId, HttpServletResponse response) throws DocumentException, IOException {
+	public void exportToPdf(@RequestParam("endtoendId") String endtoendId, HttpServletResponse response) throws DocumentException {
 		response.setContentType("application/pdf");
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=detalle_"+dateString()+".pdf";
@@ -1322,7 +1335,7 @@ public class CceTransaccionController {
 		model.addAttribute("listaAprobado", listaAprobado);
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARAPROBARALTOVALORLOTEAUTOMATICOF);
 		httpSession.setMaxInactiveInterval(180);
-		return URLRESULTADOAPROBARSELECCION;
+		return URLRESULTADOAPROBARAUTOMATO;
 	}	
 	
 	@GetMapping("/procesarAprobarAltoValorLoteSeleccion")
@@ -1338,7 +1351,7 @@ public class CceTransaccionController {
 		List<BCVLBT> listaBCVLBTPorAprobar = getListaBCVLTSeleccionadosTrue((List<BCVLBT>)httpSession.getAttribute(LISTABCVLBTPORAPROBARSELECCION));
 		for (BCVLBT bcvlbt : listaBCVLBTPorAprobar) {
 			LOGGER.info(bcvlbt);
-			String transaccion = "Transaccion referencia: "+bcvlbt.getReferencia();  
+			String transaccion = TRANSACCIONREFERENCIA+bcvlbt.getReferencia();  
 			
 			try {
 				Resultado resultadoAprobarResponse = procesarAprobarAltoValor(bcvlbt, PROCESARAPROBARLOTESELECCION, request);
@@ -1355,10 +1368,12 @@ public class CceTransaccionController {
 			
 		}
 		
-		String mensajeError = "El total de trasnacciones fallidas son "+listaError.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		
+		//
+		String mensajeError = "El total de Transacciones Enviadas No satisfactorias "+listaError.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
 		model.addAttribute(MENSAJEERROR, mensajeError);
 		model.addAttribute(LISTAERROR, listaError);
-		String mensaje = "El total de transacciones aprobadas son "+listaAprobado.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		String mensaje = "El total de Transacciones Envidas Satisfactorias son "+listaAprobado.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
 		model.addAttribute("mensaje", mensaje);
 		model.addAttribute("listaAprobado", listaAprobado);
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARAPROBARALTOVALORLOTESELECCIONF);
@@ -1389,7 +1404,6 @@ public class CceTransaccionController {
 	
 	public String getStatus(String codigo) {
 		String status;
-		LOGGER.info("codigo: "+codigo);
 		if(codigo.equals("ACCP")) {
 			status = "PA";
 		}else {
@@ -1399,13 +1413,12 @@ public class CceTransaccionController {
 				status = "PP";
 			}
 		}
-		LOGGER.info("status: "+status);
 		return status;
 	}
 	
 	public String aprobarActualizar(Resultado resultadoAprobarResponse, BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
 		
-		String transaccion = "Transaccion referencia: "+bcvlbt.getReferencia();
+		String transaccion = TRANSACCIONREFERENCIA+bcvlbt.getReferencia();
 		
 		String descripcionAprobar = resultadoAprobarResponse.getCodigo() + " - " + resultadoAprobarResponse.getDescripcion();
 		String descripcionActualizar;
@@ -1417,13 +1430,13 @@ public class CceTransaccionController {
 		Resultado resultadoActualizarResponse = bcvlbtService.aporbarActualizar(aprobacionRequest, accion, request);
 		descripcionActualizar = resultadoActualizarResponse.getCodigo() + " - " + resultadoActualizarResponse.getDescripcion();
 		
-		return transaccion+ " --> " + descripcionAprobar + " --> " +descripcionActualizar;
+		return transaccion+ FLECHA + descripcionAprobar + FLECHA +descripcionActualizar;
 	}
 	
 	
 	public String aprobarActualizarError(String error, BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
 		
-		String transaccion = "Transaccion referencia: "+bcvlbt.getReferencia();
+		String transaccion = TRANSACCIONREFERENCIA+bcvlbt.getReferencia();
 		
 		String descripcionAprobar = error;
 		String descripcionActualizar;
@@ -1435,7 +1448,7 @@ public class CceTransaccionController {
 		Resultado resultadoActualizarResponse = bcvlbtService.aporbarActualizar(aprobacionRequest, accion, request);
 		descripcionActualizar = resultadoActualizarResponse.getCodigo() + " - " + resultadoActualizarResponse.getDescripcion();
 		
-		return transaccion+ " --> " + descripcionAprobar + " --> " +descripcionActualizar;
+		return transaccion+ FLECHA + descripcionAprobar + FLECHA +descripcionActualizar;
 	}
 	
 	public DatosAprobacion getDatosAprobacionError(BCVLBT bcvlbt) {
@@ -1449,13 +1462,6 @@ public class CceTransaccionController {
 	
 	public Resultado procesarAprobarAltoValor(BCVLBT bcvlbt, String accion, HttpServletRequest request) throws CustomException{
 		
-		LOGGER.info("bcvlbt: "+bcvlbt);
-		
-		
-		LOGGER.info("bcvlbt.getBancoReceptor(): "+bcvlbt.getBancoReceptor());
-		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoReceptor()));
-		LOGGER.info("bcvlbt.getBancoEmisor(): "+bcvlbt.getBancoEmisor());
-		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(bcvlbt.getBancoEmisor()));
 		
 		FiToFiCustomerCreditTransferRequest fiToFiCustomerCreditTransferRequest = new FiToFiCustomerCreditTransferRequest(); 
 		
@@ -1813,17 +1819,50 @@ public class CceTransaccionController {
 	}
 	
 	@ModelAttribute
-	public void setGenericos(Model model) {
+	public void setGenericos(Model model, HttpServletRequest request) {
 		CceTransaccionDto cceTransaccionDto = new CceTransaccionDto();
 		CceTransaccionDto cceTransaccionDtoSearch = new CceTransaccionDto();
 		model.addAttribute("cceTransaccionDto", cceTransaccionDto);
 		model.addAttribute("cceTransaccionDtoSearch", cceTransaccionDtoSearch);
 		
+		LOGGER.info(request.getRequestURI());
+        String titulo = getTitulo(request.getRequestURI());
+		
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = "CCE";
+		arrUriP[1] = "CCE - "+titulo;
 		model.addAttribute("arrUri", arrUriP);
 	}
+	
+	
+	public String getTitulo(String str) {
+		String titulo= "No Asignado";
+		String[] arrOfStr = str.split("/");
+		 
+        
+		
+        int ultimo = arrOfStr.length - 1;
+        
+        if(ultimo > 0) {
+        	String metodo = arrOfStr[ultimo];
+        	if(metodo.equals(FORMCONSULTAMOVIMIENTOS) || metodo.equals(PROCESARCONSULTAMOVIMIENTOS) || metodo.equals(CONSULTAMOVIMIENTOSPAGE) || 
+        			metodo.equals(DETALLEMOVIMIENTO)) {
+        		titulo = "Consulta de Movimientos";
+        	}else {
+        		if(metodo.equals(FORMAPROBARAUTOMATICO)) {
+            		titulo = "Aprobación automática Alto Valor";
+            	}else {
+            		titulo = "Aprobación Alto Valor (Canales Digitales)";
+            	}	
+        	}
+        	
+        }
+		
+        return titulo;
+		
+	}
+	
+	
 	
 	public Page<CceTransaccion> convertirLista(Page<CceTransaccion> listaTransacciones){
 		for (CceTransaccion cceTransaccion : listaTransacciones) {

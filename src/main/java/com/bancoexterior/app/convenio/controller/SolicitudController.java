@@ -250,6 +250,26 @@ public class SolicitudController {
 	
 	private static final String LISTATRANSACCIONESEXCELCONVENIO = "listaTransaccionesConvenio";
 	
+	private static final String LISTASOLICITUDESMOVIMIENTOSPORAPROBARVENTAS = "listaSolicitudesMovimientosPorAprobarVentas";
+	
+	private static final String LISTASOLICITUDESMOVIMIENTOSPORAPROBARCOMPRA = "listaSolicitudesMovimientosPorAprobarCompra";
+	
+	private static final String PROCESARCOMPRA = "procesarCompra";
+	
+	private static final String GUARDARPROCESARCOMPRA = "guardarProcesarCompra";
+	
+	private static final String PROCESARVENTA = "procesarVenta";
+	
+	private static final String GUARDARPROCESARVENTA = "guardarProcesarVenta";
+	
+	private static final String RECHAZARCOMPRA = "rechazarCompra";
+	
+	private static final String APROBARCOMPRA = "aprobarCompra";
+	
+	private static final String RECHAZARVENTA = "rechazarVenta";
+	
+	private static final String APROBARVENTA = "aprobarVenta";
+	
 	@GetMapping("/listaSolicitudesMovimientosPorAprobarVentas/{page}")
 	public String consultaMovimientoPorAprobarVenta(@PathVariable("page") int page,Model model, HttpSession httpSession) {
 		LOGGER.info(SOLICITUDCONTROLLERLISTAMOVIMIENTOSAPROBARVENTASI);
@@ -1410,10 +1430,39 @@ public class SolicitudController {
 		Movimiento movimientoSearch = new Movimiento();
 		model.addAttribute("movimientoSearch", movimientoSearch);
 		
+		LOGGER.info(request.getRequestURI());
+        String titulo = getTitulo(request.getRequestURI());
+		
 		String[] arrUriP = new String[2]; 
 		arrUriP[0] = "Home";
-		arrUriP[1] = "solicitudes";
+		arrUriP[1] = titulo;
 		model.addAttribute("arrUri", arrUriP);
+	}
+	
+	public String getTitulo(String str) {
+		String titulo= "No Asignado";
+		String[] arrOfStr = str.split("/");
+		 
+       
+		
+        LOGGER.info(arrOfStr.length);
+        int ultimo = 3;
+        LOGGER.info(arrOfStr[ultimo]);
+        
+        if(arrOfStr.length > 0) {
+        	String metodo = arrOfStr[ultimo];
+        	if(metodo.equals(LISTASOLICITUDESMOVIMIENTOSPORAPROBARVENTAS) || metodo.equals(LISTASOLICITUDESMOVIMIENTOSPORAPROBARCOMPRA) || metodo.equals(PROCESARCOMPRA) || 
+        			metodo.equals(GUARDARPROCESARCOMPRA) || metodo.equals(PROCESARVENTA) || metodo.equals(GUARDARPROCESARVENTA) || metodo.equals(RECHAZARCOMPRA) || 
+        			metodo.equals(APROBARCOMPRA) || metodo.equals(RECHAZARVENTA) || metodo.equals(APROBARVENTA)) {
+        		titulo = "Operación de Tesorería";
+        	}else {
+        		titulo = "Consulta de Solicitudes";	
+        	}
+        	
+        }
+		
+        return titulo;
+		
 	}
 	
 	

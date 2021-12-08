@@ -73,21 +73,14 @@ public class TransaccionServiceImpl implements ITransaccionService{
 		String transaccionRequestJSON;
 		transaccionRequestJSON = new Gson().toJson(transaccionRequest);
 		wsrequest.setBody(transaccionRequestJSON);
-		LOGGER.info(transaccionRequestJSON);
 		wsrequest.setUrl(url);
-		LOGGER.info(url);
 		retorno = wsService.post(wsrequest);
-		LOGGER.info(retorno);
 		return retorno;
     }
 	
 	@Override
 	public TransaccionResponse procesar(TransaccionRequest transaccionRequest) throws CustomException {
 		LOGGER.info(TRANSACCIONSERVICEPROCESARI);
-		WSRequest wsrequest = getWSRequest();
-		WSResponse retorno;
-		retorno = getRetornoPost(wsrequest, transaccionRequest, urlConsulta);
-		LOGGER.info(retorno);
 		return null;
 	}
 
@@ -99,13 +92,17 @@ public class TransaccionServiceImpl implements ITransaccionService{
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost(wsrequest, transaccionRequest, urlConsulta);
-		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(TRANSACCIONSERVICEPROCESARF);
 				return respuesta2xxProcesar(retorno, accion, transaccionRequest, request);
 			}else {
-				throw new CustomException(respuesta4xxProcesar(retorno, accion, transaccionRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxProcesar(retorno, accion, transaccionRequest, request));
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);

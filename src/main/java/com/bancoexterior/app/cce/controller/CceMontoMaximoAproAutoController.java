@@ -88,7 +88,7 @@ public class CceMontoMaximoAproAutoController {
 	
 	private static final String MONTOMAXIMOAPROAUTO = "montoMaximoAproAuto";
 	
-	private static final String MONTOMAXIMOAPROAUTOTITULO = "CCE - Aprobación Automática";
+	private static final String MONTOMAXIMOAPROAUTOTITULO = "CCE - Tope Aprobación Automática";
 	
 	private static final String MENSAJEOPERACIONFALLIDA = "Operación Fallida.";
 	

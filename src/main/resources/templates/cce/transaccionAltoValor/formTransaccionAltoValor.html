@@ -63,7 +63,7 @@
 				            <label class="col-sm-2 col-form-label" for="cuentaEmisor">Cuenta Ordenante:</label>
 				            <div class="col-sm-4">
 				              <select  class="form-control"  id="bancoEmisor" th:field="*{cuentaEmisor}" required>
-				                <option value="">----Selecionar Cuenta Ordenante----</option>
+				                <option value="">----Seleccionar Cuenta Ordenante----</option>
 				                <option th:each = "cuentaCliente: ${listaCuentaCliente}" th:value="${cuentaCliente.numero}" th:text="${cuentaCliente.numero}"></option>
 				              </select>
 				            </div>				        
@@ -92,7 +92,7 @@
 				            <label class="col-sm-2 col-form-label" for="bancoDestino">Banco Emisor:</label>
 				            <div class="col-sm-4">
 				              <select  class="form-control"  id="bancoEmisor" th:field="*{bancoEmisor}" disabled>
-				                <option value="">----Selecionar Banco----</option>
+				                <option value="">----Seleccionar Banco----</option>
 				                <option th:each = "banco: ${listaBancosEmisor}" th:value="${banco.codBanco}" th:text="${banco.codBanco}+' - '+${banco.nbBanco}"></option>
 				              </select>
 				            </div>
@@ -107,7 +107,7 @@
 				            <label class="col-sm-2 col-form-label" for="bancoReceptor">Banco Receptor:</label>
 				            <div class="col-sm-4">
 				              <select  class="form-control"  id="bancoReceptor" th:field="*{bancoReceptor}" required>
-				                <option value="">----Selecionar Banco----</option>
+				                <option value="">----Seleccionar Banco----</option>
 				                <option th:each = "banco: ${listaBancos}" th:value="${banco.codBanco}" th:text="${banco.codBanco}+' - '+${banco.nbBanco}"></option>
 				              </select>
 				            </div>
@@ -143,7 +143,7 @@
 				            <label class="col-sm-2 col-form-label" for="subProducto">Sub Producto:</label>
 				            <div class="col-sm-4">
 				              <select  class="form-control"  id="subProducto" th:field="*{subProducto}" required>
-				                <option value="">----Selecionar Sub Producto----</option>
+				                <option value="">----Seleccionar Sub Producto----</option>
 				                <option th:each = "cceSubProducto: ${listaCceSubProducto}" th:value="${cceSubProducto.codSubProducto}" th:text="${cceSubProducto.codSubProducto}+' - '+${cceSubProducto.nombreSubProducto}"></option>
 				              </select>
 				            </div>				        

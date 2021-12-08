@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -241,8 +240,6 @@ public class CceLbtrTransaccionController {
 	
 	private static final String TRANSACCIONMANUAL = "cceTransaccionManual";
 	
-	private static final String TRANSACCIONMANUALTITULO = "CCE - Transacción Alto Valor (Interbancaria)";
-	
 	private static final String MENSAJEERROR = "mensajeError";
 	
 	private static final String MENSAJENORESULTADO = "La consulta no arrojo resultado.";
@@ -295,6 +292,12 @@ public class CceLbtrTransaccionController {
 	
 	private static final String SAVE =  "save";
 	
+	private static final String INDEX = "index";
+	
+	private static final String CONSULTAPAGE = "consultaPage";
+	
+	private static final String FORMBUSCARORDENANTE =  "formBuscarOrdenante";
+	
 	private static final String BALNK = "";
 	
 	private static final String MENSAJEERRORFECHAVALOR = "Fecha Valor Inválida, debe ser igual o mayor al dia actual.";
@@ -311,6 +314,8 @@ public class CceLbtrTransaccionController {
 	
 	private static final String FORMATOFECHAINICIALIZAR =  "yyyy-MM-dd";
 	
+	
+	
 	@GetMapping("/index")
 	public String index(Model model, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(TRANSACCIONMANUALCONTROLLERINDEXI);
@@ -326,10 +331,8 @@ public class CceLbtrTransaccionController {
 		}else {
 			convertirLista(listaCceLbtrTransaccion);
 		}
-		
-		
 		model.addAttribute(LISTACCELBTRTRANSACCION, listaCceLbtrTransaccion);
-		guardarAuditoria("index", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+		guardarAuditoria(INDEX, true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 		LOGGER.info(TRANSACCIONMANUALCONTROLLERINDEXF);
 		return URLINDEX;
 		
@@ -343,6 +346,7 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
+		
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		Page<CceLbtrTransaccion> listaCceLbtrTransaccion =  cceLbtrTransaccionService.consultaLbtrTransacciones(page, userName.toLowerCase());
 		
@@ -370,11 +374,11 @@ public class CceLbtrTransaccionController {
 				+ "el codigo "+codTransaccionPersonaJuridica+" para Personas Juridicas";
 		
 		if(validarCodigosTransaccionManualExitan()) {
-			guardarAuditoria("formBuscarOrdenante", true, "0000",  MENSAJEOPERACIONEXITOSA, request);
+			guardarAuditoria(FORMBUSCARORDENANTE, true, "0000",  MENSAJEOPERACIONEXITOSA, request);
 			LOGGER.info(TRANSACCIONMANUALFORMBUSCARIDORDENANTECONTROLLERINDEXF);
 			return URLFORMBUSCARORDENANTE;
 		}else {
-			guardarAuditoria("formBuscarOrdenante", false, "0001",  mensajeError, request);
+			guardarAuditoria(FORMBUSCARORDENANTE, false, "0001",  mensajeError, request);
 			
 			model.addAttribute(MENSAJEERROR, mensajeError);
 			LOGGER.info(TRANSACCIONMANUALFORMBUSCARIDORDENANTECONTROLLERINDEXF);
@@ -792,6 +796,7 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
+		
 		BancoRequest bancoRequestED = getBancoRequest();
 		List<Banco> listaBancosED;
 		
@@ -817,6 +822,7 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
+		
 		BancoRequest bancoRequestED = getBancoRequest();
 		List<Banco> listaBancosED;
 		Page<CceLbtrTransaccion> listaCceLbtrTransaccion;
@@ -934,6 +940,7 @@ public class CceLbtrTransaccionController {
 			LOGGER.info(NOTIENEPERMISO);
 			return URLNOPERMISO;
 		}
+		
 		String bancoReceptor = (String)httpSession.getAttribute(BANCORECEPTOR);
 		String fechaHoy = obtenerFechaFormateada(new Date(), FORMATOFECHAINICIALIZAR);
 		CceLbtrTransaccionDto cceLbtrTransaccionDto = cceLbtrTransaccionService.findById(id); 
@@ -1039,7 +1046,6 @@ public class CceLbtrTransaccionController {
 				if(transaccionResponse.getResultado().getCodigo().equals("0000")) {
 					cceLbtrTransaccionDto.setReferencia(libreriaUtil.getReferenciaUltimosOchoDigitos(transaccionResponse.getDatosTransaccion().getReferencia()));
 					setUsuarioAprobador(cceLbtrTransaccionDto);
-					//procesarAprobarAltoValor(cceLbtrTransaccionDto, "guardarAprobar", request);
 					Resultado resultadoResponse = procesarAprobarAltoValor(cceLbtrTransaccionDto, "guardarAprobar", request);
 					redirectAttributes.addFlashAttribute(MENSAJE, aprobarActualizar(resultadoResponse, cceLbtrTransaccionDto));
 				}else {
@@ -1121,13 +1127,6 @@ public class CceLbtrTransaccionController {
 	
 	public Resultado procesarAprobarAltoValor(CceLbtrTransaccionDto cceLbtrTransaccionDto, String accion, HttpServletRequest request) throws CustomException{
 		
-		LOGGER.info("bcvlbt: "+cceLbtrTransaccionDto);
-		
-		
-		LOGGER.info("bcvlbt.getBancoReceptor(): "+cceLbtrTransaccionDto.getBancoReceptor());
-		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(cceLbtrTransaccionDto.getBancoReceptor()));
-		LOGGER.info("bcvlbt.getBancoEmisor(): "+cceLbtrTransaccionDto.getBancoEmisor());
-		LOGGER.info(cceCuentasUnicasBcvService.consultaCuentasUnicasBcvByCodigoBic(cceLbtrTransaccionDto.getBancoEmisor()));
 		
 		FiToFiCustomerCreditTransferRequest fiToFiCustomerCreditTransferRequest = new FiToFiCustomerCreditTransferRequest(); 
 		
@@ -1151,7 +1150,6 @@ public class CceLbtrTransaccionController {
 		moneda.setAmt(cceLbtrTransaccionDto.getMonto().doubleValue());
 		grpHdr.setCtrlSum(moneda);
 		grpHdr.setIntrBkSttlmDt(libreriaUtil.obtenerFechaYYYYMMDD());
-		//grpHdr.setLclInstrm(libreriaUtil.getProducto(cceLbtrTransaccionDto.getProducto()));
 		grpHdr.setLclInstrm(cceLbtrTransaccionDto.getProducto());
 		grpHdr.setChannel(libreriaUtil.getChannel(cceLbtrTransaccionDto.getCanal()));
 		
@@ -1408,7 +1406,7 @@ public class CceLbtrTransaccionController {
 	}
 	
 	public Date fechaHoy() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat(FORMATOFECHAINICIALIZAR);
 		try {
 			return sdf.parse(sdf.format(new Date()));
 		} catch (ParseException e) {
@@ -1473,18 +1471,44 @@ public class CceLbtrTransaccionController {
 		}
 		
 		@ModelAttribute
-		public void setGenericos(Model model) {
+		public void setGenericos(Model model, HttpServletRequest request) {
 			
 			CceLbtrTransaccionDto cceLbtrTransaccionDtoSearch = new CceLbtrTransaccionDto();
 			model.addAttribute("cceLbtrTransaccionDtoSearch", cceLbtrTransaccionDtoSearch);
 			
+			LOGGER.info(request.getRequestURI());
+	        String titulo = getTitulo(request.getRequestURI());
+			
 			String[] arrUriP = new String[2]; 
 			arrUriP[0] = "Home";
-			arrUriP[1] = "CCE";
+			arrUriP[1] = "CCE - "+titulo;
 			model.addAttribute("arrUri", arrUriP);
 		}
 		
-
+		
+		public String getTitulo(String str) {
+			String titulo= "No Asignado";
+			String[] arrOfStr = str.split("/");
+			 
+			
+	        int ultimo = arrOfStr.length - 1;
+	        
+	        if(ultimo > 0) {
+	        	String metodo = arrOfStr[ultimo];
+	        	if(metodo.equals(INDEX) || metodo.equals(CONSULTAPAGE) || metodo.equals(FORMBUSCARORDENANTE) || 
+	        			metodo.equals(PROCESARCONSULTATRANSACCIONALTOVALOR) || metodo.equals(SEARCHCREAR) || 
+	        			metodo.equals(DETALLE) || metodo.equals(EDIT) || metodo.equals(SAVE)) {
+	        		titulo = "Transacción Alto Valor (Interbancaria)";
+	        	}else {
+	        		titulo = "Aprobación Alto Valor (Canales Internos)";
+	        	}
+	        	
+	        }
+			
+	        return titulo;
+			
+		}
+		
 		public void guardarAuditoria(String accion, boolean resultado, String codRespuesta,  String respuesta, HttpServletRequest request) {
 			try {
 				LOGGER.info(TRANSACCIONMANUALFUNCIONAUDITORIAI);

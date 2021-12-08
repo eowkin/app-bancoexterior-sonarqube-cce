@@ -137,8 +137,13 @@ public class MonedaServiceApiRestImpl implements IMonedaServiceApiRest{
 				LOGGER.info(MONEDASERVICELISTAMONEDASF);
 	            return respuesta2xxlistaMonedas(retorno);
 			}else {
-				String respuesta4xx = respuesta4xx(retorno);
-				throw new CustomException(respuesta4xx);	
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					String respuesta4xx = respuesta4xx(retorno);
+					throw new CustomException(respuesta4xx);
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -158,8 +163,13 @@ public class MonedaServiceApiRestImpl implements IMonedaServiceApiRest{
 				LOGGER.info(MONEDASERVICELISTAMONEDASF);
 	            return respuesta2xxlistaMonedas(retorno, accion, monedasRequest, request);
 			}else {
-				String respuesta4xx = respuesta4xx(retorno, accion, monedasRequest, request);
-				throw new CustomException(respuesta4xx);	
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					String respuesta4xx = respuesta4xx(retorno, accion, monedasRequest, request);
+					throw new CustomException(respuesta4xx);
+				}	
 			}
 		}else {
 			LOGGER.error(ERRORMICROCONEXION);

@@ -97,13 +97,17 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost( wsrequest, aprobacionesConsultasRequest, urlConsulta);
-		LOGGER.info(retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICELISTALISTATRANSACCIONESPORAPROBARF);
 				return respuesta2xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno);
 			} else {
-				throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno));
+				}	
 			}
 		} else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -156,7 +160,12 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 			if (retorno.getStatus() == 200) {
 				return respuesta2xxBCVLBT(retorno);
 			} else {
-				throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno));
+				}	
 			}
 		} else {
 			throw new CustomException(ERRORMICROCONEXION);
@@ -189,9 +198,7 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		String aprobacionesConsultasJSON;
 		aprobacionesConsultasJSON = new Gson().toJson(aprobacionesConsultasRequest);
 		wsrequest.setBody(aprobacionesConsultasJSON);
-		LOGGER.info("aprobacionesConsultasJSON: "+aprobacionesConsultasJSON);
 		wsrequest.setUrl(url);	
-		LOGGER.info("url: "+url);
 		retorno = wsService.post(wsrequest);
 		return retorno;
 	}
@@ -214,13 +221,17 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
 		retorno = getRetornoPost( wsrequest, aprobacionesConsultasRequest, urlConsulta);
-		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICELISTALISTATRANSACCIONESPORAPROBARF);
 				return respuesta2xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno, accion, aprobacionesConsultasRequest, request);
 			} else {
-				throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno, accion, aprobacionesConsultasRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxListaTransaccionesPorAporbarAltoValorPaginacion(retorno, accion, aprobacionesConsultasRequest, request));
+				}	
 			}
 		} else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -293,15 +304,18 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		LOGGER.info(BCVLBTSERVICEPORAPROBARTRANSACCIONESI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		LOGGER.info("fiToFiCustomerCreditTransferRequest: "+fiToFiCustomerCreditTransferRequest);
 		retorno = getRetornoAprobarPost( wsrequest, fiToFiCustomerCreditTransferRequest, urlAprobacion);
-		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200 || retorno.getStatus() == 202) {
 				LOGGER.info(BCVLBTSERVICEPORAPROBARTRANSACCIONESF);
 				return respuesta2xxAporbar(retorno, accion, fiToFiCustomerCreditTransferRequest, request);
 			} else {
-				throw new CustomException(respuesta4xxAporbar(retorno, accion, fiToFiCustomerCreditTransferRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxAporbar(retorno, accion, fiToFiCustomerCreditTransferRequest, request));
+				}	
 			}
 		} else {
 			LOGGER.error(ERRORMICROCONEXION);
@@ -377,15 +391,18 @@ public class BcvlbtServiceImpl implements IBcvlbtService{
 		LOGGER.info(BCVLBTSERVICEPORAPROBARACTUALIZARTRANSACCIONESI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		LOGGER.info("aprobacionRequest: "+aprobacionRequest);
 		retorno = getRetornoAprobarPut( wsrequest, aprobacionRequest, urlAprobacionActualizar);
-		LOGGER.info("retorno: "+retorno);
 		if (retorno.isExitoso()) {
 			if (retorno.getStatus() == 200) {
 				LOGGER.info(BCVLBTSERVICEPORAPROBARACTUALIZARTRANSACCIONESF);
 				return respuesta2xxAporbarActualizar(retorno, accion, aprobacionRequest, request);
 			} else {
-				throw new CustomException(respuesta4xxAporbarActualizar(retorno, accion, aprobacionRequest, request));
+				if(retorno.getStatus() == 502 || retorno.getStatus() == 503) {
+					LOGGER.error(ERRORMICROCONEXION);
+					throw new CustomException(ERRORMICROCONEXION);
+				}else {
+					throw new CustomException(respuesta4xxAporbarActualizar(retorno, accion, aprobacionRequest, request));
+				}	
 			}
 		} else {
 			LOGGER.error(ERRORMICROCONEXION);
