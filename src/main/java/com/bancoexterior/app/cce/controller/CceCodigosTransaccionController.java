@@ -167,8 +167,8 @@ public class CceCodigosTransaccionController {
 	}
 	
 	@PostMapping("/save")
-	public String save(@Valid  CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult result,
-			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String save(@Valid  CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult resultSCT,
+			Model modelSCT, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -176,24 +176,24 @@ public class CceCodigosTransaccionController {
 		}
 		
 		List<String> listaError = new ArrayList<>();
-		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
+		if (resultSCT.hasErrors()) {
+			for (ObjectError error : resultSCT.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
 				listaError.add(error.getDefaultMessage());
 			}
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
-			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
-			model.addAttribute(LISTAERROR, listaError);
+			modelSCT.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			modelSCT.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			modelSCT.addAttribute(LISTAERROR, listaError);
 			return URLFORMCODIGOTRANSACCION;
 		}
 		
 		
 		if(cceCodigosTransaccionDto.getIdTipo() == 0) {
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
-			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
-			model.addAttribute(MENSAJEERROR, MENSAJEERRORSELECCIONTIPO);
+			modelSCT.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			modelSCT.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			modelSCT.addAttribute(MENSAJEERROR, MENSAJEERRORSELECCIONTIPO);
 			LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEF);
 			return URLFORMCODIGOTRANSACCION;
 		}
@@ -208,9 +208,9 @@ public class CceCodigosTransaccionController {
 			
 		}else {
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
-			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
-			model.addAttribute(MENSAJEERROR, MENSAJECODIGOEXISTE);
+			modelSCT.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			modelSCT.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			modelSCT.addAttribute(MENSAJEERROR, MENSAJECODIGOEXISTE);
 			guardarAuditoriaCodigoTransaccion("save", false, "0001", MENSAJECODIGOEXISTE, cceCodigosTransaccionDto, request);
 			LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEF);
 			return URLFORMCODIGOTRANSACCION;
@@ -246,8 +246,8 @@ public class CceCodigosTransaccionController {
 	}	
 	
 	@PostMapping("/guardar")
-	public String guardar(@Valid CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult result, 
-			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String guardar(@Valid CceCodigosTransaccionDto cceCodigosTransaccionDto, BindingResult resultGCT, 
+			Model modelGCT, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(CODIGOSTRANSACCIONCONTROLLERGUARDARI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -256,23 +256,23 @@ public class CceCodigosTransaccionController {
 		
 		
 		List<String> listaError = new ArrayList<>();
-		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
+		if (resultGCT.hasErrors()) {
+			for (ObjectError error : resultGCT.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
 				listaError.add(error.getDefaultMessage());
 			}
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
-			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
-			model.addAttribute(LISTAERROR, listaError);
+			modelGCT.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			modelGCT.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			modelGCT.addAttribute(LISTAERROR, listaError);
 			return URLFORMCODIGOTRANSACCIONEDIT;
 		}
 		
 		if(cceCodigosTransaccionDto.getIdTipo() == 0) {
 			List<CceTipoTransaccion> listaTipoTransaccion = tipoTransaccionService.findAll();
-			model.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
-			model.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
-			model.addAttribute(MENSAJEERROR, MENSAJEERRORSELECCIONTIPO);
+			modelGCT.addAttribute(LISTATIPOTRANSACCION, listaTipoTransaccion);
+			modelGCT.addAttribute(DESCRIPCION, cceCodigosTransaccionDto.getDescripcion());
+			modelGCT.addAttribute(MENSAJEERROR, MENSAJEERRORSELECCIONTIPO);
 			LOGGER.info(CODIGOSTRANSACCIONCONTROLLERSAVEF);
 			return URLFORMCODIGOTRANSACCIONEDIT;
 		}

@@ -33,6 +33,12 @@
 			      </div>
 			      <div class="card-body">
 			        <form  th:action = "@{/motivoRechazo/save}"  method="post"  th:object="${cceMotivoRechazoDto}"   class="form-horizontal">
+			        	<div th:if="${mensajeError != null}" class="alert alert-danger" role="alert">
+		            		Ocurrio los siguientes errores:
+		            		<ul>
+		            			<li th:text="${mensajeError}"></li>
+		            		</ul>
+		            	</div>
 			        	<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
 		            		Por favor corrija los siguientes errores:
 		            		<ul>

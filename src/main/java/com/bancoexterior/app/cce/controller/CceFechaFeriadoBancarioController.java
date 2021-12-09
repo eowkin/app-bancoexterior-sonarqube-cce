@@ -144,8 +144,8 @@ public class CceFechaFeriadoBancarioController {
 	}
 	
 	@PostMapping("/save")
-	public String save(@Valid CceFechaFeriadoBancarioDto cceFechaFeriadoBancarioDto, BindingResult result, 
-			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String save(@Valid CceFechaFeriadoBancarioDto cceFechaFeriadoBancarioDto, BindingResult resultSFB, 
+			Model modelSFB, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(FECHAFERIADOBANCARIOCONTROLLERSAVEI); 
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -153,13 +153,13 @@ public class CceFechaFeriadoBancarioController {
 		}
 		
 		List<String> listaError = new ArrayList<>();
-		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
+		if (resultSFB.hasErrors()) {
+			for (ObjectError error : resultSFB.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
 				listaError.add(error.getDefaultMessage());
 			}
-			model.addAttribute(LISTAERROR, listaError);
-			model.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
+			modelSFB.addAttribute(LISTAERROR, listaError);
+			modelSFB.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
 			return URLFORMFECHAFERIADOBANCARIO;
 		}
 		
@@ -180,8 +180,8 @@ public class CceFechaFeriadoBancarioController {
 			return REDIRECTINDEX;
 			
 		}else {
-			model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAFERIADO);
-			model.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
+			modelSFB.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAFERIADO);
+			modelSFB.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
 			return URLFORMFECHAFERIADOBANCARIO;
 		}
 			
@@ -214,8 +214,8 @@ public class CceFechaFeriadoBancarioController {
 	}
 	
 	@PostMapping("/guardar")
-	public String guardar(@Valid CceFechaFeriadoBancarioDto cceFechaFeriadoBancarioDto, BindingResult result, 
-			Model model, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
+	public String guardar(@Valid CceFechaFeriadoBancarioDto cceFechaFeriadoBancarioDto, BindingResult resultGFB, 
+			Model modelGFB, RedirectAttributes redirectAttributes, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(FECHAFERIADOBANCARIOCONTROLLERGUARDARI); 
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -223,13 +223,13 @@ public class CceFechaFeriadoBancarioController {
 		}
 		
 		List<String> listaError = new ArrayList<>();
-		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
+		if (resultGFB.hasErrors()) {
+			for (ObjectError error : resultGFB.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
 				listaError.add(error.getDefaultMessage());
 			}
-			model.addAttribute(LISTAERROR, listaError);
-			model.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
+			modelGFB.addAttribute(LISTAERROR, listaError);
+			modelGFB.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
 			return URLFORMFECHAFERIADOBANCARIOEDIT;
 		}
 		
@@ -248,8 +248,8 @@ public class CceFechaFeriadoBancarioController {
 			return REDIRECTINDEX;
 			
 		}else {
-			model.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAFERIADO);
-			model.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
+			modelGFB.addAttribute(MENSAJEERROR, MENSAJEERRORFECHAFERIADO);
+			modelGFB.addAttribute(DESCRIPCION, cceFechaFeriadoBancarioDto.getDescripcion());
 			return URLFORMFECHAFERIADOBANCARIOEDIT;
 		}
 			

@@ -1486,26 +1486,25 @@ public class CceLbtrTransaccionController {
 		}
 		
 		
-		public String getTitulo(String str) {
-			String titulo= "No Asignado";
-			String[] arrOfStr = str.split("/");
+		public String getTitulo(String strLbtr) {
+			String tituloLbtr= "No Asignado";
+			String[] arrOfStrLbtr = strLbtr.split("/");
 			 
 			
-	        int ultimo = arrOfStr.length - 1;
+	        int ultimo = arrOfStrLbtr.length - 1;
 	        
 	        if(ultimo > 0) {
-	        	String metodo = arrOfStr[ultimo];
+	        	String metodo = arrOfStrLbtr[ultimo];
 	        	if(metodo.equals(INDEX) || metodo.equals(CONSULTAPAGE) || metodo.equals(FORMBUSCARORDENANTE) || 
-	        			metodo.equals(PROCESARCONSULTATRANSACCIONALTOVALOR) || metodo.equals(SEARCHCREAR) || 
-	        			metodo.equals(DETALLE) || metodo.equals(EDIT) || metodo.equals(SAVE)) {
-	        		titulo = "Transacción Alto Valor (Interbancaria)";
+	        			metodo.equals(SEARCHCREAR) || metodo.equals(DETALLE) || metodo.equals(EDIT) || metodo.equals(SAVE)) {
+	        		tituloLbtr = "Transacción Alto Valor (Interbancaria)";
 	        	}else {
-	        		titulo = "Aprobación Alto Valor (Canales Internos)";
+	        		tituloLbtr = "Aprobación Alto Valor (Canales Internos)";
 	        	}
 	        	
 	        }
 			
-	        return titulo;
+	        return tituloLbtr;
 			
 		}
 		

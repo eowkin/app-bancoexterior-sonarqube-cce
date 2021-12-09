@@ -53,11 +53,13 @@ $(document).ready(function(){
 function getNroCuenta(){
    codigoBic = $("#bancoReceptor").val();
    //alert(codigoBic); 
-   urlString = "http://localhost:7090/site/cuentasUnicasBcvRest/"+codigoBic;
-   //urlStringPrueba = "[[@{'/cuentasUnicasBcvRest/'}]]";
-   //alert(urlStringPrueba);
+   urlString = "/cuentasUnicasBcvRest/"+codigoBic;
+   urlStringPrueba = "[[@{'/cuentasUnicasBcvRest/'}]]" + codigoBic;
+   //urlStringPrueba = "[[@ @ ^ {/cuentasUnicasBcvRest/}]]";
+  
+   alert(urlStringPrueba);
    
-   $.get(urlString, function(data){
+   $.get(urlStringPrueba, function(data){
 		 cuentaBcvReceptor = $("#cuentaBcvReceptor");
 	   console.log(data);
 	   //var obj = responseJson;

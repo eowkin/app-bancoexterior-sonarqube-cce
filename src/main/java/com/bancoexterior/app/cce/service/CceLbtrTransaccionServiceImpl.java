@@ -44,7 +44,6 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 	
 	private static final String HORADESDE = " 00:00:00";
 	
-	private static final String HORAHASTA = " 23:59:59";
 	
 	@Override
 	public Page<CceLbtrTransaccion> consultaLbtrTransacciones(int page, String userName) {
@@ -83,8 +82,6 @@ public class CceLbtrTransaccionServiceImpl implements ICceLbtrTransaccionService
 	public Page<CceLbtrTransaccion> consultaLbtrTransaccionesAprobarFechas(String bancoReceptor, String fechaHoy, int page) {
 		LOGGER.info(CCELBTRTRANSACCIONSERVICECONSULTATRANSACCIONESAPROBARFECHASI);
 		
-		//fechaDesde = fechaDesde +HORADESDE;
-		//fechaHasta = fechaHasta +HORAHASTA;
 		fechaHoy = fechaHoy + HORADESDE; 
 		
 		

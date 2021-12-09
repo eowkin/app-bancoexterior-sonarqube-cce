@@ -2,7 +2,6 @@ package com.bancoexterior.app.cce.dto;
 
 import java.util.Date;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -20,7 +19,6 @@ public class CceFechaFeriadoBancarioDto {
 	@Size(max = 140, message = "Descripción no puede exceder mas de 140 caracteres")
 	private String descripcion;
 	
-	//@Future(message = "La fecha invalida, debe ser una fecha futura.")
 	private Date fechaFeriado;
 	
 	private String fechaFeriadoString; 

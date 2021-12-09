@@ -1330,9 +1330,13 @@ public class CceTransaccionController {
 			
 		}
 		
-		
+		String mensajeError = "El total de Transacciones Enviadas No satisfactorias "+listaError.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		model.addAttribute(MENSAJEERROR, mensajeError);
 		model.addAttribute(LISTAERROR, listaError);
+		String mensaje = "El total de Transacciones Envidas Satisfactorias son "+listaAprobado.size()+ " / "+listaBCVLBTPorAprobar.size()+ ".";
+		model.addAttribute("mensaje", mensaje);
 		model.addAttribute("listaAprobado", listaAprobado);
+		
 		LOGGER.info(CCETRANSACCIONCONTROLLERPROCESARAPROBARALTOVALORLOTEAUTOMATICOF);
 		httpSession.setMaxInactiveInterval(180);
 		return URLRESULTADOAPROBARAUTOMATO;

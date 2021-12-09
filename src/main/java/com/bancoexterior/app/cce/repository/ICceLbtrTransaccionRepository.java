@@ -33,8 +33,7 @@ public interface ICceLbtrTransaccionRepository extends JpaRepository<CceLbtrTran
 			+ "fecha_valor = to_timestamp(?2, 'YYYY-MM-DD HH24:MI:SS')";
 	
 	
-	public static final String SELECTCCELBTRTRANSACCIONAPROBARFECHASCOUNT ="SELECT count(*) as cantidad "
-			+ "FROM cce.lbtr_transacciones "
+	public static final String SELECTCCELBTRTRANSACCIONAPROBARFECHASCOUNT ="SELECT count(*) as cantidad FROM cce.lbtr_transacciones "
 			+ "where banco_receptor = (case when ?1 = '' then banco_receptor else ?1 end) and "
 			+ "status = 'I' and "
 			+ "fecha_valor = to_timestamp(?2, 'YYYY-MM-DD HH24:MI:SS')";

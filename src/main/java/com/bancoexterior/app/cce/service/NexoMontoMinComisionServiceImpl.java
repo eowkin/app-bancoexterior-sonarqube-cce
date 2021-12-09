@@ -36,22 +36,22 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	private static final Logger LOGGER = LogManager.getLogger(NexoMontoMinComisionServiceImpl.class);
 	
 	@Autowired
-	private IWSService wsService;
+	private IWSService wsServiceNP;
 	
 	@Autowired 
-	private Mapper mapper;
+	private Mapper mapperNP;
 	
 	@Autowired
-	private IAuditoriaService auditoriaService;
+	private IAuditoriaService auditoriaServiceNP;
 	
 	@Value("${${app.ambiente}"+".ConnectTimeout}")
-    private int connectTimeout;
+    private int connectTimeoutNP;
 	
 	 @Value("${${app.ambiente}"+".SocketTimeout}")
-	private int socketTimeout;
+	private int socketTimeoutNP;
 	 
     @Value("${${app.ambiente}"+".nexo.montomincomision.urlconsulta}")
-	private String urlConsulta; 
+	private String urlConsultaNP; 
 	 
     @Value("${${app.ambiente}"+".nexo.historialmontomincomision.urlconsulta}")
 	private String urlConsultaHistorial;
@@ -85,9 +85,9 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public WSRequest getWSRequest() {
     	WSRequest wsrequest = new WSRequest();
-    	wsrequest.setConnectTimeout(connectTimeout);
+    	wsrequest.setConnectTimeout(connectTimeoutNP);
 		wsrequest.setContenType("application/json");
-		wsrequest.setSocketTimeout(socketTimeout);
+		wsrequest.setSocketTimeout(socketTimeoutNP);
     	return wsrequest;
     }
 	
@@ -98,7 +98,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		montoMinComisionConsultaRequestJSON = new Gson().toJson(montoMinComisionConsultaRequest);
 		wsrequest.setBody(montoMinComisionConsultaRequestJSON);
 		wsrequest.setUrl(url);
-		retorno = wsService.post(wsrequest);
+		retorno = wsServiceNP.post(wsrequest);
 		return retorno;
     }
 	
@@ -108,7 +108,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		montoMinComisionRequestJSON = new Gson().toJson(montoMinComisionRequest);
 		wsrequest.setBody(montoMinComisionRequestJSON);
 		wsrequest.setUrl(urlActualizar);
-		retorno = wsService.put(wsrequest);
+		retorno = wsServiceNP.put(wsrequest);
 		return retorno;
 	}
 	
@@ -120,7 +120,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		LOGGER.info(NEXOMONTOMINCOMISIONSERVICELISTAI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsulta);
+		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsultaNP);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(NEXOMONTOMINCOMISIONSERVICELISTAF);
@@ -143,7 +143,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public List<NexoMontoMinComision> respuesta2xxListaNexoMontoMinComision(WSResponse retorno, String accion, HttpServletRequest request){
 		try {
-			MontoMinComisionConsultaResponse montoMinComisionConsultaResponse = mapper.jsonToClass(retorno.getBody(), MontoMinComisionConsultaResponse.class);
+			MontoMinComisionConsultaResponse montoMinComisionConsultaResponse = mapperNP.jsonToClass(retorno.getBody(), MontoMinComisionConsultaResponse.class);
 			guardarAuditoria(accion, true, montoMinComisionConsultaResponse.getResultado().getCodigo(), montoMinComisionConsultaResponse.getResultado().getDescripcion(), request);
 			return montoMinComisionConsultaResponse.getComisiones();
 		} catch (IOException e) {
@@ -157,7 +157,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public String respuesta4xxListaNexoMontoMinComision(WSResponse retorno, String accion, MontoMinComisionConsultaRequest montoMinComisionConsultaRequest, HttpServletRequest request){
 		try {
-			Resultado resultado = mapper.jsonToClass(retorno.getBody(), Resultado.class);
+			Resultado resultado = mapperNP.jsonToClass(retorno.getBody(), Resultado.class);
 			if(accion.equals("index") || accion.equals("historial")) {
 				guardarAuditoria(accion, false, resultado.getCodigo(), resultado.getDescripcion(), request);
 			}else {
@@ -207,7 +207,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public List<NexoHistorialMontoMinComision> respuesta2xxListaNexoHistorialMontoMinComision(WSResponse retorno, String accion, HttpServletRequest request){
 		try {
-			HistorialMontoMinComisionConsultaResponse historialMontoMinComisionConsultaResponse = mapper.jsonToClass(retorno.getBody(), HistorialMontoMinComisionConsultaResponse.class);
+			HistorialMontoMinComisionConsultaResponse historialMontoMinComisionConsultaResponse = mapperNP.jsonToClass(retorno.getBody(), HistorialMontoMinComisionConsultaResponse.class);
 			guardarAuditoria(accion, true, historialMontoMinComisionConsultaResponse.getResultado().getCodigo(), historialMontoMinComisionConsultaResponse.getResultado().getDescripcion(), request);
 			return historialMontoMinComisionConsultaResponse.getComisiones();
 		} catch (IOException e) {
@@ -228,7 +228,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 		LOGGER.info(NEXOMONTOMINCOMISIONBUSCARSERVICELISTAI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsulta);
+		retorno = getRetornoPost(wsrequest, montoMinComisionConsultaRequest, urlConsultaNP);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
 				LOGGER.info(NEXOMONTOMINCOMISIONBUSCARSERVICELISTAF);
@@ -249,7 +249,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public NexoMontoMinComision respuesta2xxBuscarNexoMontoMinComision(WSResponse retorno, String accion, MontoMinComisionConsultaRequest montoMinComisionConsultaRequest, HttpServletRequest request){
 		try {
-			MontoMinComisionConsultaResponse montoMinComisionConsultaResponse = mapper.jsonToClass(retorno.getBody(), MontoMinComisionConsultaResponse.class);
+			MontoMinComisionConsultaResponse montoMinComisionConsultaResponse = mapperNP.jsonToClass(retorno.getBody(), MontoMinComisionConsultaResponse.class);
 			guardarAuditoriaId(accion, true, montoMinComisionConsultaResponse.getResultado().getCodigo(), montoMinComisionConsultaResponse.getResultado().getDescripcion(), 
 					montoMinComisionConsultaRequest.getComision().getId(), request);
 			
@@ -296,7 +296,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public String respuesta4xxActualizarCrear(WSResponse retorno, String accion, MontoMinComisionRequest montoMinComisionRequest, HttpServletRequest request) {
 		try {
-			Response response = mapper.jsonToClass(retorno.getBody(), Response.class);
+			Response response = mapperNP.jsonToClass(retorno.getBody(), Response.class);
 			guardarAuditoriaMontoMinimoComision(accion, true, response.getResultado().getCodigo(),  response.getResultado().getDescripcion(), montoMinComisionRequest, request);
 			return response.getResultado().getDescripcion();		
 		} catch (IOException e) {
@@ -309,7 +309,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	
 	public String respuesta4xxActualizar(WSResponse retorno,  String accion, MontoMinComisionRequest montoMinComisionRequest, HttpServletRequest request) {
 		try {
-			Response response = mapper.jsonToClass(retorno.getBody(), Response.class);
+			Response response = mapperNP.jsonToClass(retorno.getBody(), Response.class);
 			guardarAuditoriaMontoMinimoComision(accion, false, response.getResultado().getCodigo(),  response.getResultado().getDescripcion(), montoMinComisionRequest, request);
 			return response.getResultado().getDescripcion();
 		} catch (IOException e) {
@@ -322,7 +322,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	public void guardarAuditoria(String accion, boolean resultado, String codRespuesta,  String respuesta, HttpServletRequest request) {
 		try {
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAI);
-			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
+			auditoriaServiceNP.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					COMISIONNEXOPERSONA, accion, codRespuesta, resultado, respuesta, request.getRemoteAddr());
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAF);
 		} catch (Exception e) {
@@ -333,7 +333,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	public void guardarAuditoriaId(String accion, boolean resultado, String codRespuesta,  String respuesta, int id, HttpServletRequest request) {
 		try {
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAI);
-			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
+			auditoriaServiceNP.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					COMISIONNEXOPERSONA, accion, codRespuesta, resultado, respuesta+" MontoMinComision:[id="+id+"]", request.getRemoteAddr());
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAF);
 		} catch (Exception e) {
@@ -344,7 +344,7 @@ public class NexoMontoMinComisionServiceImpl implements INexoMontoMinComisionSer
 	public void guardarAuditoriaMontoMinimoComision(String accion, boolean resultado, String codRespuesta,  String respuesta, MontoMinComisionRequest montoMinComisionRequest, HttpServletRequest request) {
 		try {
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAI);
-			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
+			auditoriaServiceNP.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					COMISIONNEXOPERSONA, accion, codRespuesta, resultado, respuesta+" MontoMinimoComision:[id="+montoMinComisionRequest.getComision().getId()+""
 							+ ", monto="+montoMinComisionRequest.getComision().getMonto()+", descripcion="+montoMinComisionRequest.getComision().getDescripcion()+"]", request.getRemoteAddr());
 			LOGGER.info(NEXOMONTOMINCOMISIONFUNCIONAUDITORIAF);

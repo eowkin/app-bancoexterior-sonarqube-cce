@@ -31,22 +31,22 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	private static final Logger LOGGER = LogManager.getLogger(CuentasConsultaServiceImpl.class);
 	
 	@Autowired
-	private IWSService wsService;
+	private IWSService wsServiceCC;
 	
 	@Autowired 
-	private Mapper mapper;
+	private Mapper mapperCC;
 	
 	@Autowired
-	private IAuditoriaService auditoriaService;
+	private IAuditoriaService auditoriaServiceCC;
 	
 	@Value("${${app.ambiente}"+".ConnectTimeout}")
-    private int connectTimeout;
+    private int connectTimeoutCC;
 	
 	@Value("${${app.ambiente}"+".SocketTimeout}")
-	private int socketTimeout;
+	private int socketTimeoutCC;
 	 
 	@Value("${${app.ambiente}"+".interconex.consultarcuentas.urlconsultar}")
-	private String urlConsulta;  
+	private String urlConsultaCC;  
 	
 	private static final String CUENTASCONSULTASERVICELISTAI = "[==== INICIO Lista CuentasConsulta ConsultaCuentas - Service ====]";
 	
@@ -62,9 +62,9 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	 
 	public WSRequest getWSRequest() {
     	WSRequest wsrequest = new WSRequest();
-    	wsrequest.setConnectTimeout(connectTimeout);
+    	wsrequest.setConnectTimeout(connectTimeoutCC);
 		wsrequest.setContenType("application/json");
-		wsrequest.setSocketTimeout(socketTimeout);
+		wsrequest.setSocketTimeout(socketTimeoutCC);
     	return wsrequest;
     }
 	
@@ -76,7 +76,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 		LOGGER.info(cuentasConsultaRequestJSON);
 		wsrequest.setUrl(url);
 		LOGGER.info(url);
-		retorno = wsService.post(wsrequest);
+		retorno = wsServiceCC.post(wsrequest);
 		LOGGER.info(retorno);
 		return retorno;
     }
@@ -87,7 +87,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 		LOGGER.info(CUENTASCONSULTASERVICELISTAI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		retorno = getRetornoPost(wsrequest, cuentasConsultaRequest, urlConsulta);
+		retorno = getRetornoPost(wsrequest, cuentasConsultaRequest, urlConsultaCC);
 		LOGGER.info(retorno);
 		return null;
 	}
@@ -98,7 +98,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 		LOGGER.info(CUENTASCONSULTASERVICELISTAI);
 		WSRequest wsrequest = getWSRequest();
 		WSResponse retorno;
-		retorno = getRetornoPost(wsrequest, cuentasConsultaRequest, urlConsulta);
+		retorno = getRetornoPost(wsrequest, cuentasConsultaRequest, urlConsultaCC);
 		LOGGER.info(retorno);
 		if(retorno.isExitoso()) {
 			if(retorno.getStatus() == 200) {
@@ -115,8 +115,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	
 	public List<CuentaCliente> respuesta2xxConsultaCuentasCliente(WSResponse retorno, String accion, CuentasConsultaRequest cuentasConsultaRequest, HttpServletRequest request){
 		try {
-			CuentasConsultaResponse cuentasConsultaResponse = mapper.jsonToClass(retorno.getBody(), CuentasConsultaResponse.class);
-			//if(cuentasConsultaResponse.getResultado().getCodigo().equals("0000") && cuentasConsultaResponse.getDatos().getTotalCuentas() > 0) {
+			CuentasConsultaResponse cuentasConsultaResponse = mapperCC.jsonToClass(retorno.getBody(), CuentasConsultaResponse.class);
 			if(cuentasConsultaResponse.getResultado().getCodigo().equals("0000")) {
 				guardarAuditoriaId(accion, true, cuentasConsultaResponse.getResultado().getCodigo(),  cuentasConsultaResponse.getResultado().getDescripcion(), cuentasConsultaRequest.getIdCliente(), request);
 				return cuentasConsultaResponse.getDatos().getCuentas();
@@ -134,7 +133,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	
 	public String respuesta4xxConsultaCuentasCliente(WSResponse retorno, String accion, CuentasConsultaRequest cuentasConsultaRequest, HttpServletRequest request){
 		try {
-			Resultado resultado = mapper.jsonToClass(retorno.getBody(), Resultado.class);
+			Resultado resultado = mapperCC.jsonToClass(retorno.getBody(), Resultado.class);
 			guardarAuditoriaId(accion, false, resultado.getCodigo(),  resultado.getDescripcion(), cuentasConsultaRequest.getIdCliente(), request);				
 			return resultado.getDescripcion();
 		} catch (IOException e) {
@@ -147,7 +146,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	public void guardarAuditoria(String accion, boolean resultado, String codRespuesta,  String respuesta, HttpServletRequest request) {
 		try {
 			LOGGER.info(CUENTASCONSULTAFUNCIONAUDITORIAI);
-			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
+			auditoriaServiceCC.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					CUENTASCONSULTA, accion, codRespuesta, resultado, respuesta, request.getRemoteAddr());
 			LOGGER.info(CUENTASCONSULTAFUNCIONAUDITORIAF);
 		} catch (Exception e) {
@@ -158,7 +157,7 @@ public class CuentasConsultaServiceImpl implements ICuentasConsultaService{
 	public void guardarAuditoriaId(String accion, boolean resultado, String codRespuesta,  String respuesta, String idCliente, HttpServletRequest request) {
 		try {
 			LOGGER.info(CUENTASCONSULTAFUNCIONAUDITORIAI);
-			auditoriaService.save(SecurityContextHolder.getContext().getAuthentication().getName(),
+			auditoriaServiceCC.save(SecurityContextHolder.getContext().getAuthentication().getName(),
 					CUENTASCONSULTA, accion, codRespuesta, resultado, respuesta+" Cuenta:[idCliente="+idCliente+"]", request.getRemoteAddr());
 			LOGGER.info(CUENTASCONSULTAFUNCIONAUDITORIAF);
 		} catch (Exception e) {

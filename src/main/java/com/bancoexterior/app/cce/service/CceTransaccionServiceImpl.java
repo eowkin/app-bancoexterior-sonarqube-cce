@@ -31,6 +31,7 @@ import com.bancoexterior.app.cce.repository.ICceTransaccionRepository;
 import com.bancoexterior.app.util.Mapper;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
@@ -79,6 +80,7 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 	public static final char PUNTO                                = '.';
 	
 	public static final String NUMEROFORMAT                       = "#,##0.00";
+	
 	
 	
 		
@@ -330,16 +332,17 @@ public class CceTransaccionServiceImpl implements ICceTransaccionService{
 			Paragraph paragraphEsapcio = new Paragraph(" ");
 			
 			Paragraph paragraphTitle = new Paragraph("Detalle Transacción", fontTitle);
-			paragraphTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			
+			paragraphTitle.setAlignment(Element.ALIGN_CENTER);
 			
 			Font fontParrafo = FontFactory.getFont(FontFactory.HELVETICA);
 			fontTitle.setSize(12);
 			
 			Paragraph paragraphApp = new Paragraph("App-Cámara de Compensación Electrónica", fontParrafo);
-			paragraphApp.setAlignment(Paragraph.ALIGN_LEFT);
+			paragraphApp.setAlignment(Element.ALIGN_LEFT);
 			
 			Paragraph paragraphNombreBanco = new Paragraph("Banco Exterior", fontParrafo);
-			paragraphNombreBanco.setAlignment(Paragraph.ALIGN_LEFT);
+			paragraphNombreBanco.setAlignment(Element.ALIGN_LEFT);
 			
 			
 			Paragraph paragraphTipoTransaccion = new Paragraph();

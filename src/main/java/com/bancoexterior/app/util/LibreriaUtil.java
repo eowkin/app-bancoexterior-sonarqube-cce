@@ -43,6 +43,12 @@ public class LibreriaUtil {
     
     public static final String IDCDTRACCTGENERICO = "00010001300003000174";
     
+    public static final String MENSAJEFECHAHASTAMENORFECHADESDE = "La fechaHasta es menor que la fechaDesde";
+    
+    public static final String MENSAJEFECHADESDEMENORFECHAHASTA = "La fechaDesde es menor que la fechaHasta";
+    
+    public static final String MENSAJEFECHADESDEIGUALFECHAHASTA = "La fechaDesde es igual que la fechaHasta";
+    
     @Value("${trasaccionesAprobarMicroservicio.rmtinf}")
     private String valorRmtinf;
     
@@ -300,14 +306,15 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
         	Date fechaDate2Igual = formato.parse(fechaHasta);
         	
         	if ( fechaDate2Igual.before(fechaDate1Igual) ){
-        		LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        		
+        		LOGGER.info(MENSAJEFECHAHASTAMENORFECHADESDE);
         		return false;
         	}else{
         	     if ( fechaDate1Igual.before(fechaDate2Igual) ){
-        	    	 LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    	 LOGGER.info(MENSAJEFECHADESDEMENORFECHAHASTA);
         	    	 return false;
         	     }else{
-        	    	 LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    	 LOGGER.info(MENSAJEFECHADESDEIGUALFECHAHASTA);
         	    	 return true;
         	     } 
         	}
@@ -334,14 +341,15 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
         	Date fechaDate2 = formato.parse(fechaHasta);
         	
         	if ( fechaDate2.before(fechaDate1) ){
-        		LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        		
+        		LOGGER.info(MENSAJEFECHAHASTAMENORFECHADESDE);
         		return false;
         	}else{
         	     if ( fechaDate1.before(fechaDate2) ){
-        	    	 LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    	 LOGGER.info(MENSAJEFECHADESDEMENORFECHAHASTA);
         	    	 return true;
         	     }else{
-        	    	 LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    	 LOGGER.info(MENSAJEFECHADESDEIGUALFECHAHASTA);
         	    	 return true;
         	     } 
         	}
@@ -499,14 +507,14 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
 	
 		
 		if(fechaValor.before(fechaHoy) ){
-        	LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        	LOGGER.info(MENSAJEFECHAHASTAMENORFECHADESDE);
         	return false;
         }else{
         	if(fechaHoy.before(fechaValor) ){
-        	    LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    LOGGER.info(MENSAJEFECHADESDEMENORFECHAHASTA);
         	    return true;
         	}else{
-        	    LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    LOGGER.info(MENSAJEFECHADESDEIGUALFECHAHASTA);
         	    return true;
         	} 
         }
@@ -517,14 +525,14 @@ public boolean isFechaDesdeHastaIgual(String fechaDesde, String fechaHasta) {
 	
 		
 		if(fechaValor.before(fechaHoy) ){
-        	LOGGER.info("La fechaHasta es menor que la fechaDesde");
+        	LOGGER.info(MENSAJEFECHAHASTAMENORFECHADESDE);
         	return false;
         }else{
         	if(fechaHoy.before(fechaValor) ){
-        	    LOGGER.info("La fechaDesde es menor que la fechaHasta");
+        	    LOGGER.info(MENSAJEFECHADESDEMENORFECHAHASTA);
         	    return false;
         	}else{
-        	    LOGGER.info("La fechaDesde es igual que la fechaHasta");
+        	    LOGGER.info(MENSAJEFECHADESDEIGUALFECHAHASTA);
         	    return true;
         	} 
         }

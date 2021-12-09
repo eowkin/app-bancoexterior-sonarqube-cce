@@ -142,8 +142,8 @@ public class CceMotivoRechazoController {
 	}
 	
 	@PostMapping("/save")
-	public String save(@Valid  CceMotivoRechazoDto cceMotivoRechazoDto, BindingResult result,
-			Model model, HttpSession httpSession, HttpServletRequest request) {
+	public String save(@Valid  CceMotivoRechazoDto cceMotivoRechazoDto, BindingResult resultSMT,
+			Model modelSMT, HttpSession httpSession, HttpServletRequest request) {
 		LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEI);
 		if(!libreriaUtil.isPermisoMenu(httpSession, valorBD)) {
 			LOGGER.info(NOTIENEPERMISO);
@@ -151,13 +151,13 @@ public class CceMotivoRechazoController {
 		}
 		
 		List<String> listaError = new ArrayList<>();
-		if (result.hasErrors()) {
-			for (ObjectError error : result.getAllErrors()) {
+		if (resultSMT.hasErrors()) {
+			for (ObjectError error : resultSMT.getAllErrors()) {
 				LOGGER.info(error.getDefaultMessage());
 				listaError.add(error.getDefaultMessage());
 			}
-			model.addAttribute(LISTAERROR, listaError);
-			model.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
+			modelSMT.addAttribute(LISTAERROR, listaError);
+			modelSMT.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
 			return URLFORMMOTIVORECHAZO;
 		}
 		
@@ -169,8 +169,8 @@ public class CceMotivoRechazoController {
 			LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEF);
 			return REDIRECTINDEX;
 		}else {
-			model.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
-			model.addAttribute(MENSAJEERROR, MENSAJECODIGOEXISTE);
+			modelSMT.addAttribute(DESCRIPCION, cceMotivoRechazoDto.getDescripcion());
+			modelSMT.addAttribute(MENSAJEERROR, MENSAJECODIGOEXISTE);
 			guardarAuditoriaMotivoRechazo("save", false, "0001", MENSAJECODIGOEXISTE, cceMotivoRechazoDto, request);
 			LOGGER.info(MOTIVORECHAZOCONTROLLERSAVEF);
 			return URLFORMMOTIVORECHAZO;
